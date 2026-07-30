@@ -22,7 +22,7 @@ export default defineConfig({
 	},
 	build: {
 		sourcemap: true,
-		target: 'chrome109'
+		target: 'chrome108'
 	},
 	worker: {
 		format: 'es'
