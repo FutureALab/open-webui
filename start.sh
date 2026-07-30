@@ -1,0 +1,1 @@
+source .venv/bin/activate && export WEBUI_SECRET_KEY=$(python -c "import secrets; print(secrets.token_hex(32))") && echo "Generated key: $WEBUI_SECRET_KEY" && python -m uvicorn open_webui.main:app --host 0.0.0.0 --port 8080 --forwarded-allow-ips "*" --reload
