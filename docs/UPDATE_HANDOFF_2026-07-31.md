@@ -1,7 +1,9 @@
 # AIOps 更新交接文档
 
-日期：2026-07-31  
-分支：`feature_20260730_dev`  
+日期：2026-07-31
+
+分支：`feature_20260730_dev`
+
 远程：`origin`（`https://github.com/FutureALab/open-webui.git`）
 
 ## 1. 本次更新目标
