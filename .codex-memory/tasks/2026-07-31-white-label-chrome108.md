@@ -13,4 +13,4 @@
 
 ## 结果
 
-实现与浏览器回归已完成；截图输出到 `output/playwright/`。最终生产构建成功，Chromium 108 首次注册流程无页面错误，AIOps 名称和 512×512 Logo 加载正常。
+实现与浏览器回归已完成；截图输出到 `output/playwright/`。最终生产构建成功，Chromium 108 首次注册流程无页面错误，AIOps 名称和 512×512 Logo 加载正常。实现提交：`7f589fa2c`。
