@@ -393,6 +393,7 @@ input[type='number'] {
 
 .ProseMirror {
 	@apply h-full min-h-fit max-h-full whitespace-pre-wrap;
+	text-align: left;
 }
 
 .ProseMirror:focus {
