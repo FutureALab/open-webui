@@ -33,9 +33,6 @@
 	};
 
 	let loading = false;
-	const inputClass =
-		'w-full rounded-lg border border-gray-300 bg-gray-50/60 px-2 py-1.5 text-sm outline-hidden transition-colors placeholder:text-gray-400 hover:border-gray-400 focus:border-blue-500 dark:border-gray-700 dark:bg-white/[0.03] dark:placeholder:text-gray-600 dark:hover:border-gray-600 dark:focus:border-blue-500';
-	const textareaClass = `${inputClass} min-h-20 resize-y`;
 
 	const submitHandler = async () => {
 		loading = true;
@@ -145,7 +142,7 @@
 						<div class="flex-1">
 							<input
 								id="folder-name"
-								class={inputClass}
+								class="w-full text-sm bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-700 outline-hidden"
 								type="text"
 								bind:value={name}
 								placeholder={$i18n.t('Enter folder name')}
@@ -220,7 +217,7 @@
 							<div class="mb-2 text-xs text-gray-500">{$i18n.t('System Prompt')}</div>
 							<div>
 								<Textarea
-									className={textareaClass}
+									className=" text-sm w-full bg-transparent outline-hidden "
 									placeholder={$i18n.t(
 										'Write your model system prompt content here\ne.g.) You are Mario from Super Mario Bros, acting as an assistant.'
 									)}

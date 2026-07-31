@@ -22,7 +22,7 @@
 
 	$: outerClass =
 		variant === 'settings'
-			? `${outerClassName} h-7 items-center rounded-lg border border-gray-300 bg-gray-50/60 px-2 transition-colors hover:border-gray-400 focus-within:border-blue-500 dark:border-white/[0.08] dark:bg-white/[0.03] dark:hover:border-gray-700 dark:focus-within:border-blue-500`
+			? `${outerClassName} h-7 items-center rounded-lg border border-gray-100/50 bg-gray-50/40 px-2 transition-colors focus-within:border-blue-400 dark:border-white/[0.04] dark:bg-white/[0.03] dark:focus-within:border-blue-500`
 			: outerClassName;
 	$: inputBaseClass =
 		variant === 'settings'

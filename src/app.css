@@ -7,6 +7,12 @@
 }
 
 @font-face {
+	font-family: 'Archivo';
+	src: url('/assets/fonts/Archivo-Variable.ttf');
+	font-display: swap;
+}
+
+@font-face {
 	font-family: 'Vazirmatn';
 	src: url('/assets/fonts/Vazirmatn-Variable.ttf');
 	font-display: swap;
@@ -62,6 +68,10 @@ code {
 
 .app-interactive-active {
 	@apply bg-gray-50/40 dark:bg-gray-800/40;
+}
+
+.font-primary {
+	font-family: 'Archivo', 'Vazirmatn', sans-serif;
 }
 
 .marked a {

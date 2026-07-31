@@ -28,9 +28,9 @@
 
 	let banners: Banner[] = [];
 	const inputClass =
-		'w-full h-7 rounded-lg border border-gray-300 bg-gray-50/60 px-2 text-xs text-gray-700 outline-hidden transition-colors placeholder:text-gray-400 hover:border-gray-400 focus:border-blue-500 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:placeholder:text-gray-600 dark:hover:border-gray-700 dark:focus:border-blue-500';
+		'w-full h-7 rounded-lg border border-gray-100/50 bg-gray-50/40 px-2 text-xs text-gray-700 outline-hidden transition-colors placeholder:text-gray-300 focus:border-blue-400 dark:border-white/[0.04] dark:bg-white/[0.03] dark:text-gray-300 dark:placeholder:text-gray-700 dark:focus:border-blue-500';
 	const textareaClass =
-		'w-full rounded-lg border border-gray-300 bg-gray-50/60 px-2 py-1.5 text-xs text-gray-700 outline-hidden transition-colors placeholder:text-gray-400 hover:border-gray-400 focus:border-blue-500 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-300 dark:placeholder:text-gray-600 dark:hover:border-gray-700 dark:focus:border-blue-500';
+		'w-full rounded-lg border border-gray-100/50 bg-gray-50/40 px-2 py-1.5 text-xs text-gray-700 outline-hidden transition-colors placeholder:text-gray-300 focus:border-blue-400 dark:border-white/[0.04] dark:bg-white/[0.03] dark:text-gray-300 dark:placeholder:text-gray-700 dark:focus:border-blue-500';
 
 	const updateBanners = async () => {
 		_banners.set(await setBanners(localStorage.token, banners));

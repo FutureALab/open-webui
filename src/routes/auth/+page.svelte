@@ -43,12 +43,6 @@
 	let ldapUsername = '';
 
 	let submitting = false;
-	const authInputClass =
-		'my-0.5 w-full rounded-lg border border-gray-300 bg-gray-50/60 px-3 py-2 text-sm outline-hidden transition-colors placeholder:text-gray-400 hover:border-gray-400 focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:placeholder:text-gray-600 dark:hover:border-gray-600 dark:focus:border-blue-500';
-	const authSensitiveOuterClass =
-		'my-0.5 flex w-full items-center rounded-lg border border-gray-300 bg-gray-50/60 px-3 py-1.5 transition-colors hover:border-gray-400 focus-within:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600 dark:focus-within:border-blue-500';
-	const authSensitiveInputClass =
-		'w-full text-sm outline-hidden placeholder:text-gray-400 dark:placeholder:text-gray-600';
 
 	const setSessionUser = async (sessionUser, redirectPath: string | null = null) => {
 		if (sessionUser) {
@@ -229,14 +223,14 @@
 
 	{#if loaded}
 		<div
-			class="fixed bg-transparent min-h-screen w-full flex justify-center z-50 text-black dark:text-white"
+			class="fixed bg-transparent min-h-screen w-full flex justify-center font-primary z-50 text-black dark:text-white"
 			id="auth-container"
 		>
 			<div class="w-full px-10 min-h-screen flex flex-col text-center">
 				{#if ($config?.features.auth_trusted_header ?? false) || $config?.features.auth === false}
 					<div class=" my-auto pb-10 w-full sm:max-w-md">
 						<div
-							class="flex items-center justify-center gap-3 text-xl sm:text-2xl text-center font-normal dark:text-gray-200"
+							class="flex items-center justify-center gap-3 text-xl sm:text-2xl text-center font-medium dark:text-gray-200"
 						>
 							<div>
 								{$i18n.t('Signing in to {{WEBUI_NAME}}', { WEBUI_NAME: $WEBUI_NAME })}
@@ -269,7 +263,7 @@
 								}}
 							>
 								<div class="mb-1">
-									<div class=" text-2xl font-normal">
+									<div class=" text-2xl font-medium">
 										{#if $config?.onboarding ?? false}
 											{$i18n.t(`Get started with {{WEBUI_NAME}}`, { WEBUI_NAME: $WEBUI_NAME })}
 										{:else if mode === 'ldap'}
@@ -282,7 +276,7 @@
 									</div>
 
 									{#if $config?.onboarding ?? false}
-										<div class="mt-1 text-xs font-normal text-gray-600 dark:text-gray-500">
+										<div class="mt-1 text-xs font-medium text-gray-600 dark:text-gray-500">
 											ⓘ {$WEBUI_NAME}
 											{$i18n.t(
 												'does not make any external connections, and your data stays securely on your locally hosted server.'
@@ -295,14 +289,14 @@
 									<div class="flex flex-col mt-4">
 										{#if mode === 'signup'}
 											<div class="mb-2">
-												<label for="name" class="text-sm font-normal text-left mb-1 block"
+												<label for="name" class="text-sm font-medium text-left mb-1 block"
 													>{$i18n.t('Name')}</label
 												>
 												<input
 													bind:value={name}
 													type="text"
 													id="name"
-													class={authInputClass}
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Your Full Name')}
 													required
@@ -312,13 +306,13 @@
 
 										{#if mode === 'ldap'}
 											<div class="mb-2">
-												<label for="username" class="text-sm font-normal text-left mb-1 block"
+												<label for="username" class="text-sm font-medium text-left mb-1 block"
 													>{$i18n.t('Username')}</label
 												>
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													class={authInputClass}
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -328,14 +322,14 @@
 											</div>
 										{:else}
 											<div class="mb-2">
-												<label for="email" class="text-sm font-normal text-left mb-1 block"
+												<label for="email" class="text-sm font-medium text-left mb-1 block"
 													>{$i18n.t('Email')}</label
 												>
 												<input
 													bind:value={email}
 													type="email"
 													id="email"
-													class={authInputClass}
+													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -345,15 +339,15 @@
 										{/if}
 
 										<div>
-											<label for="password" class="text-sm font-normal text-left mb-1 block"
+											<label for="password" class="text-sm font-medium text-left mb-1 block"
 												>{$i18n.t('Password')}</label
 											>
 											<SensitiveInput
 												bind:value={password}
 												type="password"
 												id="password"
-												class={authSensitiveInputClass}
-												outerClassName={authSensitiveOuterClass}
+												class="placeholder:text-gray-300 dark:placeholder:text-gray-600"
+												outerClassName="flex flex-1 bg-transparent"
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
@@ -367,15 +361,14 @@
 											<div class="mt-2">
 												<label
 													for="confirm-password"
-													class="text-sm font-normal text-left mb-1 block"
+													class="text-sm font-medium text-left mb-1 block"
 													>{$i18n.t('Confirm Password')}</label
 												>
 												<SensitiveInput
 													bind:value={confirmPassword}
 													type="password"
 													id="confirm-password"
-													class={authSensitiveInputClass}
-													outerClassName={authSensitiveOuterClass}
+													outerClassName="flex flex-1 bg-transparent"
 													placeholder={$i18n.t('Confirm Your Password')}
 													autocomplete="new-password"
 													name="confirm-password"
@@ -389,7 +382,7 @@
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 										{#if mode === 'ldap'}
 											<button
-												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5 disabled:opacity-50 flex justify-center"
+												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5 disabled:opacity-50 flex justify-center"
 												type="submit"
 												disabled={submitting}
 											>
@@ -403,7 +396,7 @@
 											</button>
 										{:else}
 											<button
-												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5 disabled:opacity-50 flex justify-center"
+												class="bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5 disabled:opacity-50 flex justify-center"
 												type="submit"
 												disabled={submitting}
 											>
@@ -429,7 +422,7 @@
 														: $i18n.t('Already have an account?')}
 
 													<button
-														class=" font-normal underline"
+														class=" font-medium underline"
 														type="button"
 														on:click={() => {
 															if (mode === 'signin') {
@@ -453,7 +446,7 @@
 									<hr class="w-32 h-px my-4 border-0 dark:bg-gray-100/10 bg-gray-700/10" />
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 										<span
-											class="px-3 text-sm font-normal text-gray-900 dark:text-white bg-transparent"
+											class="px-3 text-sm font-medium text-gray-900 dark:text-white bg-transparent"
 											>{$i18n.t('or')}</span
 										>
 									{/if}
@@ -463,7 +456,7 @@
 								<div class="flex flex-col space-y-2">
 									{#if $config?.oauth?.providers?.google}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5"
+											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/google/login`;
 											}}
@@ -493,7 +486,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.microsoft}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5"
+											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/microsoft/login`;
 											}}
@@ -524,7 +517,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.github}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5"
+											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/github/login`;
 											}}
@@ -545,7 +538,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.oidc}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5"
+											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/oidc/login`;
 											}}
@@ -575,7 +568,7 @@
 									{/if}
 									{#if $config?.oauth?.providers?.feishu}
 										<button
-											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-normal text-sm py-2.5"
+											class="flex justify-center items-center bg-gray-700/5 hover:bg-gray-700/10 dark:bg-gray-100/5 dark:hover:bg-gray-100/10 dark:text-gray-300 dark:hover:text-white transition w-full rounded-full font-medium text-sm py-2.5"
 											on:click={() => {
 												window.location.href = `${WEBUI_BASE_URL}/oauth/feishu/login`;
 											}}
