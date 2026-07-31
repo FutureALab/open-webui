@@ -43,6 +43,12 @@
 	let ldapUsername = '';
 
 	let submitting = false;
+	const authInputClass =
+		'my-0.5 w-full rounded-lg border border-gray-300 bg-gray-50/60 px-3 py-2 text-sm outline-hidden transition-colors placeholder:text-gray-400 hover:border-gray-400 focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:placeholder:text-gray-600 dark:hover:border-gray-600 dark:focus:border-blue-500';
+	const authSensitiveOuterClass =
+		'my-0.5 flex w-full items-center rounded-lg border border-gray-300 bg-gray-50/60 px-3 py-1.5 transition-colors hover:border-gray-400 focus-within:border-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-gray-600 dark:focus-within:border-blue-500';
+	const authSensitiveInputClass =
+		'w-full text-sm outline-hidden placeholder:text-gray-400 dark:placeholder:text-gray-600';
 
 	const setSessionUser = async (sessionUser, redirectPath: string | null = null) => {
 		if (sessionUser) {
@@ -296,7 +302,7 @@
 													bind:value={name}
 													type="text"
 													id="name"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class={authInputClass}
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Your Full Name')}
 													required
@@ -312,7 +318,7 @@
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class={authInputClass}
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -329,7 +335,7 @@
 													bind:value={email}
 													type="email"
 													id="email"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+													class={authInputClass}
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -346,7 +352,8 @@
 												bind:value={password}
 												type="password"
 												id="password"
-												class="my-0.5 w-full text-sm outline-hidden bg-transparent placeholder:text-gray-300 dark:placeholder:text-gray-600"
+												class={authSensitiveInputClass}
+												outerClassName={authSensitiveOuterClass}
 												placeholder={$i18n.t('Enter Your Password')}
 												autocomplete={mode === 'signup' ? 'new-password' : 'current-password'}
 												name="password"
@@ -367,7 +374,8 @@
 													bind:value={confirmPassword}
 													type="password"
 													id="confirm-password"
-													class="my-0.5 w-full text-sm outline-hidden bg-transparent"
+													class={authSensitiveInputClass}
+													outerClassName={authSensitiveOuterClass}
 													placeholder={$i18n.t('Confirm Your Password')}
 													autocomplete="new-password"
 													name="confirm-password"

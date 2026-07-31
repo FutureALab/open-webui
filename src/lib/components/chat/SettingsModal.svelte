@@ -133,6 +133,9 @@
 		'admin:images': 'Experience',
 		'admin:db': 'Data'
 	};
+	// i18n parser markers for the group titles translated through settingGroupTitle().
+	// $i18n.t('Basics') $i18n.t('Services') $i18n.t('Preferences') $i18n.t('Data')
+	// $i18n.t('AI') $i18n.t('Quality') $i18n.t('Experience')
 	const settingGroupTitle = (tabId: string) =>
 		(isAdminTab(tabId) ? adminSettingGroups[tabId] : personalSettingGroups[tabId]) ?? 'General';
 	const shouldShowSettingGroup = (tabIds: string[], index: number) =>

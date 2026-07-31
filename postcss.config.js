@@ -10,12 +10,12 @@ export default {
 				displayP3: false
 			}
 		},
-		// Step 3: Convert color-mix() → rgba() fallback + strip @supports wrappers
-		// that Chrome 109 can't understand (oklab, color-mix, display-p3)
-		'./postcss-chrome109-fix.cjs': {},
-		// Step 4: Handle any remaining color-mix() that wasn't covered above
+		// Step 3: Handle color-mix() forms that can be statically reduced
 		'@csstools/postcss-color-mix-function': {
 			preserve: false
-		}
+		},
+		// Step 4: Remove legacy-breaking color-mix() declarations and unwrap
+		// unsupported @supports blocks after all other color transforms finish
+		'./postcss-chrome109-fix.cjs': {}
 	}
 };

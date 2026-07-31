@@ -20,6 +20,7 @@
 	import ToolCallDisplay from '$lib/components/common/ToolCallDisplay.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Download from '$lib/components/icons/Download.svelte';
+	import SvgPanZoom from '$lib/components/common/SVGPanZoom.svelte';
 	import ConsecutiveDetailsGroup from './ConsecutiveDetailsGroup.svelte';
 
 	import HtmlToken from './HTMLToken.svelte';
@@ -160,6 +161,12 @@
 				{onSourceClick}
 			/>
 		</svelte:element>
+	{:else if token.type === 'svgBlock'}
+		<SvgPanZoom
+			className="my-2 max-h-fit overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800"
+			svg={token.text}
+			content={token.text}
+		/>
 	{:else if token.type === 'code'}
 		{#if token.raw.includes('```')}
 			<CodeBlock
