@@ -960,7 +960,7 @@
 					}
 				}}
 			>
-				<div class="line-clamp-1 text-sm font-normal">
+				<div class="line-clamp-1 text-sm font-medium">
 					{#if loading}
 						{$i18n.t('Thinking...')}
 					{:else if muted}

@@ -10,3 +10,4 @@
 - [AIOps 白标决策](decisions/2026-07-31-aiops-white-label.md)
 - [白标与 Chrome 108 任务](tasks/2026-07-31-white-label-chrome108.md)
 - [Chrome 108 官方视觉对齐](tasks/2026-08-01-official-visual-parity.md)
+- [官方字体与特效全站补齐](tasks/2026-08-01-official-typography-effects.md)

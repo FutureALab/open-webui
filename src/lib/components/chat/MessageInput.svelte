@@ -1376,7 +1376,7 @@
 />
 
 {#if loaded}
-	<div class="w-full">
+	<div class="w-full font-primary">
 		<div class=" mx-auto inset-x-0 bg-transparent flex justify-center">
 			<div
 				class="flex flex-col px-3 {($settings?.widescreenMode ?? null)

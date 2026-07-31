@@ -101,7 +101,7 @@
 
 							<div class=" flex-1 min-w-0">
 								<div class="overflow-hidden w-ful mb-2">
-									<div class=" self-center capitalize font-normal truncate">
+									<div class=" self-center capitalize font-medium truncate">
 										{selectedUser.name}
 									</div>
 
@@ -218,9 +218,9 @@
 							</div>
 						</div>
 
-						<div class="flex justify-end pt-3 text-sm font-normal">
+						<div class="flex justify-end pt-3 text-sm font-medium">
 							<button
-								class="px-3.5 py-1.5 text-sm font-normal bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+								class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
 								type="submit"
 							>
 								{$i18n.t('Save')}

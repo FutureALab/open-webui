@@ -608,7 +608,7 @@
 		}}
 	>
 		<div class=" text-sm text-gray-500 truncate">
-			{$i18n.t('This will delete')} <span class="  font-normal">{selectedSkill.name}</span>.
+			{$i18n.t('This will delete')} <span class="  font-medium">{selectedSkill.name}</span>.
 		</div>
 	</DeleteConfirmDialog>
 {:else}

@@ -518,7 +518,7 @@
         
         
         {loading ? ' text-gray-500  dark:text-gray-400  ' : ' text-indigo-400 '} 
-       font-normal flex-1 mx-auto text-center"
+       font-medium flex-1 mx-auto text-center"
 			>
 				{formatSeconds(durationSeconds)}
 			</div>

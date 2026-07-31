@@ -538,7 +538,7 @@
 					</select>
 				</Tooltip>
 
-				<div class=" text-xs text-gray-400 font-normal">
+				<div class=" text-xs text-gray-400 font-medium">
 					{#if getVisibility(accessGrants ?? []) === 'private'}
 						{$i18n.t('Only select users and groups with permission can access')}
 					{:else if getVisibility(accessGrants ?? []) === 'public'}
@@ -572,7 +572,7 @@
 			</div>
 			<div class="flex gap-1">
 				<button
-					class="px-2 py-1 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition text-xs font-normal flex items-center gap-1"
+					class="px-2 py-1 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition text-xs font-medium flex items-center gap-1"
 					type="button"
 					on:click={() => {
 						showAddAccessModal = true;

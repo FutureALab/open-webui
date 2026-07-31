@@ -748,7 +748,7 @@
 		}}
 	>
 		<div class=" text-sm text-gray-500 truncate">
-			{$i18n.t('This will delete')} <span class="  font-normal">{selectedFunction.name}</span>.
+			{$i18n.t('This will delete')} <span class="  font-semibold">{selectedFunction.name}</span>.
 		</div>
 	</DeleteConfirmDialog>
 

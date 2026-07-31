@@ -304,7 +304,7 @@
 				<div class="w-full h-full flex flex-col justify-center items-center my-16 mb-24">
 					<div class="max-w-md text-center">
 						<div class="text-3xl mb-3">😕</div>
-						<div class="text-lg font-normal mb-1">{$i18n.t('No feedback found')}</div>
+						<div class="text-lg font-medium mb-1">{$i18n.t('No feedback found')}</div>
 						<div class="text-gray-500 text-center text-xs">
 							{$i18n.t('Try adjusting your search or filter to find what you are looking for.')}
 						</div>
@@ -421,7 +421,7 @@
 								class="dark:border-gray-850 text-xs cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition rounded-xl"
 								on:click={() => openFeedbackModal(feedback)}
 							>
-								<td class=" py-0.5 text-right font-normal">
+								<td class=" py-0.5 text-right font-medium">
 									<div class="flex justify-center">
 										<Tooltip content={feedback?.user?.name}>
 											<div class="shrink-0">
@@ -441,7 +441,7 @@
 											{#if feedback.data?.sibling_model_ids}
 												<Tooltip content={feedback.data?.model_id} placement="top-start">
 													<div
-														class="font-normal text-gray-600 dark:text-gray-400 flex-1 line-clamp-1"
+														class="font-medium text-gray-600 dark:text-gray-400 flex-1 line-clamp-1"
 													>
 														{feedback.data?.model_id}
 													</div>
@@ -465,7 +465,7 @@
 											{:else}
 												<Tooltip content={feedback.data?.model_id} placement="top-start">
 													<div
-														class="text-sm font-normal text-gray-600 dark:text-gray-400 flex-1 py-1.5 line-clamp-1"
+														class="text-sm font-medium text-gray-600 dark:text-gray-400 flex-1 py-1.5 line-clamp-1"
 													>
 														{feedback.data?.model_id}
 													</div>
@@ -476,7 +476,7 @@
 								</td>
 
 								{#if feedback?.data?.rating}
-									<td class="px-3 py-1 text-right font-normal text-gray-900 dark:text-white w-max">
+									<td class="px-3 py-1 text-right font-medium text-gray-900 dark:text-white w-max">
 										<div class=" flex justify-end">
 											{#if feedback?.data?.rating.toString() === '1'}
 												<Badge type="info" content={$i18n.t('Won')} />
@@ -489,11 +489,11 @@
 									</td>
 								{/if}
 
-								<td class=" px-3 py-1 text-right font-normal">
+								<td class=" px-3 py-1 text-right font-medium">
 									{dayjs(feedback.updated_at * 1000).fromNow()}
 								</td>
 
-								<td class=" px-3 py-1 text-right font-normal" on:click={(e) => e.stopPropagation()}>
+								<td class=" px-3 py-1 text-right font-medium" on:click={(e) => e.stopPropagation()}>
 									<FeedbackMenu
 										on:delete={(e) => {
 											deleteFeedbackHandler(feedback.id);

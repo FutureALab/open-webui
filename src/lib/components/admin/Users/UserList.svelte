@@ -347,7 +347,7 @@
 			<tbody class="">
 				{#each users as user (user.id)}
 					<tr class="dark:border-gray-850 text-xs">
-						<td class="px-3 py-1 font-normal text-gray-900 dark:text-white max-w-48">
+						<td class="px-3 py-1 font-medium text-gray-900 dark:text-white max-w-48">
 							<div class="flex items-center gap-2">
 								<ProfilePreview {user} side="right" align="center" sideOffset={6}>
 									<img
@@ -360,7 +360,7 @@
 									/>
 								</ProfilePreview>
 
-								<div class="font-normal truncate">{user.name}</div>
+								<div class="font-medium truncate">{user.name}</div>
 
 								{#if user?.last_active_at && Date.now() / 1000 - user.last_active_at < 180}
 									<div>

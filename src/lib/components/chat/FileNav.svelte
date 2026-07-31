@@ -1517,7 +1517,7 @@
 							clip-rule="evenodd"
 						/>
 					</svg>
-					<span class="font-normal">{$i18n.t('Terminal')}</span>
+					<span class="font-medium">{$i18n.t('Terminal')}</span>
 
 					{#if terminalExpanded}
 						<div

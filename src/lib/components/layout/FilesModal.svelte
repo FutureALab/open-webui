@@ -282,7 +282,7 @@
 				{#if files !== null}
 					<div class="w-full">
 						{#if files.length > 0}
-							<div class="flex text-xs font-normal mb-1.5">
+							<div class="flex text-xs font-medium mb-1.5">
 								<button
 									class="px-1.5 py-1 cursor-pointer select-none basis-3/5"
 									on:click={() => setSortKey('filename')}

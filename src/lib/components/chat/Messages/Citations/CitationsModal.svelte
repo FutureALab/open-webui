@@ -66,7 +66,7 @@
 							selectedCitation = citation;
 						}}
 					>
-						<div class=" font-normal">
+						<div class=" font-medium">
 							{idx + 1}.
 						</div>
 						<div

@@ -20,7 +20,7 @@
 	{#each Object.keys(valvesSpec.properties) as property}
 		<div class=" py-0.5 w-full justify-between">
 			<div class="flex w-full justify-between">
-				<div class=" self-center text-xs font-normal">
+				<div class=" self-center text-xs font-medium">
 					{valvesSpec.properties[property].title}
 
 					{#if (valvesSpec?.required ?? []).includes(property)}

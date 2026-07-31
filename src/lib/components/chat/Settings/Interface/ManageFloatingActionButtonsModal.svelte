@@ -58,7 +58,7 @@
 				>
 					<div>
 						<div class="text-xs flex items-center justify-between mb-2">
-							<div class="font-normal">{$i18n.t('Actions')}</div>
+							<div class="font-medium">{$i18n.t('Actions')}</div>
 
 							<div class="flex items-center gap-2 text-gray-500 dark:text-gray-500">
 								<button
@@ -172,9 +172,9 @@
 						{/if}
 					</div>
 
-					<div class="flex justify-end text-sm font-normal">
+					<div class="flex justify-end text-sm font-medium">
 						<button
-							class="px-3.5 py-1.5 text-sm font-normal bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+							class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
 							type="submit"
 						>
 							{$i18n.t('Save')}

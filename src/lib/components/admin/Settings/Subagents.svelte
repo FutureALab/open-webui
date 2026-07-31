@@ -187,9 +187,9 @@
 	</div>
 
 	{#if !loading}
-		<div class="flex justify-end pt-6 text-sm font-normal">
+		<div class="flex justify-end pt-6 text-sm font-medium">
 			<button
-				class="rounded-full bg-black px-3.5 py-1.5 text-sm font-normal text-white transition hover:bg-gray-900 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-gray-100"
+				class="rounded-full bg-black px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-gray-900 disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-gray-100"
 				type="submit"
 				disabled={saving}
 			>

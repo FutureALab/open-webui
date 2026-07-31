@@ -675,13 +675,13 @@
 
 											{#if !oauthClientInfo}
 												<div
-													class="text-xs font-normal px-1.5 rounded-md bg-yellow-500/20 text-yellow-700 dark:text-yellow-200"
+													class="text-xs font-medium px-1.5 rounded-md bg-yellow-500/20 text-yellow-700 dark:text-yellow-200"
 												>
 													{$i18n.t('Not Registered')}
 												</div>
 											{:else}
 												<div
-													class="text-xs font-normal px-1.5 rounded-md bg-green-500/20 text-green-700 dark:text-green-200"
+													class="text-xs font-medium px-1.5 rounded-md bg-green-500/20 text-green-700 dark:text-green-200"
 												>
 													{$i18n.t('Registered')}
 												</div>
@@ -961,7 +961,7 @@
 						<div
 							class=" bg-yellow-500/20 text-yellow-700 dark:text-yellow-200 rounded-2xl text-xs px-4 py-3 mb-2 mt-1"
 						>
-							<span class="font-normal">
+							<span class="font-medium">
 								{$i18n.t('Warning')}:
 							</span>
 							{$i18n.t(

@@ -10,7 +10,10 @@
 </script>
 
 <div class="flex items-center justify-between gap-4 {className}">
-	<div id={labelId} class="min-w-0 text-xs text-gray-600 dark:text-gray-400 {labelClassName}">
+	<div
+		id={labelId}
+		class="min-w-0 text-xs font-medium text-gray-700 dark:text-gray-300 {labelClassName}"
+	>
 		<slot name="label">{label}</slot>
 	</div>
 

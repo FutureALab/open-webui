@@ -407,7 +407,7 @@
 
 						{#if message.created_at}
 							<div
-								class="mt-1.5 flex shrink-0 items-center text-xs self-center invisible group-hover:visible text-gray-500 font-normal first-letter:capitalize"
+								class="mt-1.5 flex shrink-0 items-center text-xs self-center invisible group-hover:visible text-gray-500 font-medium first-letter:capitalize"
 							>
 								<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
 									{dayjs(message.created_at / 1000000).format('HH:mm')}
@@ -420,7 +420,7 @@
 				<div class="flex-auto w-0 pl-2">
 					{#if showUserProfile}
 						<Name>
-							<div class=" self-end text-base shrink-0 font-normal truncate">
+							<div class=" self-end text-base shrink-0 font-medium truncate">
 								{#if message?.meta?.model_id}
 									{message?.meta?.model_name ?? message?.meta?.model_id}
 								{:else}
@@ -430,7 +430,7 @@
 
 							{#if message.created_at}
 								<div
-									class=" self-center text-xs text-gray-400 font-normal first-letter:capitalize ml-0.5 translate-y-[1px]"
+									class=" self-center text-xs text-gray-400 font-medium first-letter:capitalize ml-0.5 translate-y-[1px]"
 								>
 									<Tooltip content={dayjs(message.created_at / 1000000).format('LLLL')}>
 										<span class="line-clamp-1">
@@ -502,7 +502,7 @@
 									}
 								}}
 							/>
-							<div class=" mt-2 mb-1 flex justify-end text-sm font-normal">
+							<div class=" mt-2 mb-1 flex justify-end text-sm font-medium">
 								<div class="flex space-x-1.5">
 									<button
 										id="close-edit-message-button"
@@ -607,7 +607,7 @@
 												<Emoji shortCode={reaction.name} />
 
 												{#if reaction.users.length > 0}
-													<div class="text-xs font-normal text-gray-500 dark:text-gray-400">
+													<div class="text-xs font-medium text-gray-500 dark:text-gray-400">
 														{reaction.users?.length}
 													</div>
 												{/if}
@@ -642,7 +642,7 @@
 										onThread(message.id);
 									}}
 								>
-									<span class="font-normal mr-1">
+									<span class="font-medium mr-1">
 										{$i18n.t('{{COUNT}} Replies', { COUNT: message.reply_count })}</span
 									><span>
 										{' - '}{$i18n.t('Last reply')}

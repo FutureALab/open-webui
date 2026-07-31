@@ -37,7 +37,7 @@
 		aria-expanded={expanded}
 		on:click={() => (expanded = !expanded)}
 	>
-		<span class="text-[0.75rem] font-normal shrink-0">
+		<span class="text-[0.75rem] font-medium shrink-0">
 			{$i18n.t('Background sub-agent finished')}
 		</span>
 		{#if summary}

@@ -616,7 +616,7 @@
 		<div>
 			<div class="space-y-2">
 				<div>
-					<div class=" mb-2 text-sm font-normal flex items-center gap-1.5">
+					<div class=" mb-2 text-sm font-medium flex items-center gap-1.5">
 						<div>
 							{$i18n.t('Pull a model from Ollama.com')}
 						</div>
@@ -717,7 +717,7 @@
 					<div class="mt-2 mb-1 text-xs text-gray-400 dark:text-gray-500">
 						{$i18n.t('To access the available model names for downloading,')}
 						<a
-							class=" text-gray-500 dark:text-gray-300 font-normal underline"
+							class=" text-gray-500 dark:text-gray-300 font-medium underline"
 							href="https://ollama.com/library"
 							target="_blank">{$i18n.t('click here.')}</a
 						>
@@ -761,12 +761,12 @@
 						{#each Object.keys($MODEL_DOWNLOAD_POOL) as model}
 							{#if 'pullProgress' in $MODEL_DOWNLOAD_POOL[model]}
 								<div class="flex flex-col">
-									<div class="font-normal mb-1">{model}</div>
+									<div class="font-medium mb-1">{model}</div>
 									<div class="">
 										<div class="flex flex-row justify-between space-x-4 pr-2">
 											<div class=" flex-1">
 												<div
-													class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
+													class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
 													style="width: {Math.max(
 														15,
 														$MODEL_DOWNLOAD_POOL[model].pullProgress ?? 0
@@ -817,7 +817,7 @@
 				</div>
 
 				<div>
-					<div class=" mb-2 text-sm font-normal">{$i18n.t('Delete a model')}</div>
+					<div class=" mb-2 text-sm font-medium">{$i18n.t('Delete a model')}</div>
 					<div class="flex w-full">
 						<div class="flex-1 mr-2">
 							<SettingsSelect
@@ -861,7 +861,7 @@
 				</div>
 
 				<div>
-					<div class=" mb-2 text-sm font-normal">{$i18n.t('Create a model')}</div>
+					<div class=" mb-2 text-sm font-medium">{$i18n.t('Create a model')}</div>
 					<div class="flex w-full">
 						<div class="flex-1 mr-2 flex flex-col gap-2">
 							<input
@@ -914,12 +914,12 @@
 
 					{#if createModelDigest !== ''}
 						<div class="flex flex-col mt-1">
-							<div class="font-normal mb-1">{createModelTag}</div>
+							<div class="font-medium mb-1">{createModelTag}</div>
 							<div class="">
 								<div class="flex flex-row justify-between space-x-4 pr-2">
 									<div class=" flex-1">
 										<div
-											class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
+											class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
 											style="width: {Math.max(15, createModelPullProgress ?? 0)}%"
 										>
 											{createModelPullProgress ?? 0}%
@@ -938,9 +938,9 @@
 
 				<div class="pt-1">
 					<div class="flex justify-between items-center text-xs">
-						<div class=" text-sm font-normal">{$i18n.t('Experimental')}</div>
+						<div class=" text-sm font-medium">{$i18n.t('Experimental')}</div>
 						<button
-							class=" text-xs font-normal text-gray-500"
+							class=" text-xs font-medium text-gray-500"
 							type="button"
 							on:click={() => {
 								showExperimentalOllama = !showExperimentalOllama;
@@ -956,7 +956,7 @@
 						}}
 					>
 						<div class=" mb-2 flex w-full justify-between">
-							<div class="  text-sm font-normal">{$i18n.t('Upload a GGUF model')}</div>
+							<div class="  text-sm font-medium">{$i18n.t('Upload a GGUF model')}</div>
 
 							<button
 								class="p-1 px-3 text-xs flex rounded-sm transition"
@@ -1077,7 +1077,7 @@
 						{#if (modelUploadMode === 'file' && modelInputFile && modelInputFile.length > 0) || (modelUploadMode === 'url' && modelFileUrl !== '')}
 							<div>
 								<div>
-									<div class=" my-2.5 text-sm font-normal">
+									<div class=" my-2.5 text-sm font-medium">
 										{$i18n.t('Modelfile Content')}
 									</div>
 									<textarea
@@ -1091,7 +1091,7 @@
 						<div class=" mt-1 text-xs text-gray-400 dark:text-gray-500">
 							{$i18n.t('To access the GGUF models available for downloading,')}
 							<a
-								class=" text-gray-500 dark:text-gray-300 font-normal underline"
+								class=" text-gray-500 dark:text-gray-300 font-medium underline"
 								href="https://huggingface.co/models?search=gguf"
 								target="_blank">{$i18n.t('click here.')}</a
 							>
@@ -1103,7 +1103,7 @@
 
 								<div class="w-full rounded-full dark:bg-gray-800">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
+										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
 										style="width: 100%"
 									>
 										{uploadMessage}
@@ -1119,7 +1119,7 @@
 
 								<div class="w-full rounded-full dark:bg-gray-800">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
+										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
 										style="width: {Math.max(15, uploadProgress ?? 0)}%"
 									>
 										{uploadProgress ?? 0}%

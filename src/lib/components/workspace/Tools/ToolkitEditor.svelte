@@ -328,7 +328,7 @@ class Tools:
 		<div class="shrink-0 py-2 text-xs text-gray-500">
 			<div class="flex items-center justify-between gap-3">
 				<div class="min-w-0">
-					<span class="font-normal dark:text-gray-200">{$i18n.t('Warning:')}</span>
+					<span class="font-semibold dark:text-gray-200">{$i18n.t('Warning:')}</span>
 					{$i18n.t('Tools can execute arbitrary code.')}
 					<span class="font-normal dark:text-gray-400">
 						{$i18n.t('Only install tools from sources you trust.')}

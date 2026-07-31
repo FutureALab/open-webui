@@ -148,7 +148,7 @@
 					<div class="flex flex-col w-full gap-2">
 						{#if document.metadata?.parameters}
 							<div>
-								<div class="text-sm font-normal dark:text-gray-300 mb-1">
+								<div class="text-sm font-medium dark:text-gray-300 mb-1">
 									{$i18n.t('Parameters')}
 								</div>
 
@@ -159,7 +159,7 @@
 
 						<div>
 							<div
-								class=" text-sm font-normal dark:text-gray-300 flex items-center gap-2 w-fit mb-1"
+								class=" text-sm font-medium dark:text-gray-300 flex items-center gap-2 w-fit mb-1"
 							>
 								{#if document.source?.url?.includes('http')}
 									{@const snippetUrl = getTextFragmentUrl(document)}
@@ -190,7 +190,7 @@
 
 												{#if typeof percentage === 'number'}
 													<span
-														class={`px-1 rounded-sm font-normal ${getRelevanceColor(percentage)}`}
+														class={`px-1 rounded-sm font-medium ${getRelevanceColor(percentage)}`}
 													>
 														{percentage.toFixed(2)}%
 													</span>

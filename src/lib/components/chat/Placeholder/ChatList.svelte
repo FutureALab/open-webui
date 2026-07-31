@@ -115,7 +115,7 @@
 
 {#if chatList}
 	{#if chatList.length > 0}
-		<div class="flex text-xs font-normal mb-1 items-center -mr-0.5">
+		<div class="flex text-xs font-medium mb-1 items-center -mr-0.5">
 			<button
 				class="px-1.5 py-1 cursor-pointer select-none basis-3/5"
 				on:click={() => setSortKey('title')}
@@ -180,7 +180,7 @@
 					(chat.updated_at != null && chat.updated_at > chat.last_read_at))}
 			{#if (idx === 0 || (idx > 0 && chat.time_range !== chatList[idx - 1].time_range)) && chat?.time_range}
 				<div
-					class="w-full text-xs text-gray-500 dark:text-gray-500 font-normal {idx === 0
+					class="w-full text-xs text-gray-500 dark:text-gray-500 font-medium {idx === 0
 						? ''
 						: 'pt-5'} pb-2 px-2"
 				>

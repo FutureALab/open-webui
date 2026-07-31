@@ -368,7 +368,7 @@
 						type="submit"
 						disabled={loading}
 					>
-						<div class="font-normal">{$i18n.t('Save')}</div>
+						<div class="font-medium">{$i18n.t('Save')}</div>
 						{#if loading}
 							<div class="ml-1.5">
 								<Spinner />
@@ -627,7 +627,7 @@
 					{/if}
 					<div class="text-xs text-gray-400 dark:text-gray-500">
 						ⓘ {$i18n.t('Use')}
-						<span class="font-normal text-gray-600 dark:text-gray-300"
+						<span class="font-medium text-gray-600 dark:text-gray-300"
 							>{'{{'}{$i18n.t('variable')}{'}}'}</span
 						>
 						{$i18n.t('for placeholders')}
@@ -655,7 +655,7 @@
 					type="submit"
 					disabled={loading}
 				>
-					<div class="font-normal">{$i18n.t('Save & Create')}</div>
+					<div class="font-medium">{$i18n.t('Save & Create')}</div>
 					{#if loading}
 						<div class="ml-1.5">
 							<Spinner />

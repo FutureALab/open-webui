@@ -204,7 +204,7 @@
 							class="text-xs group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"
 							on:click={() => openModal(model)}
 						>
-							<td class="px-3 py-1.5 font-normal text-gray-900 dark:text-white">
+							<td class="px-3 py-1.5 font-medium text-gray-900 dark:text-white">
 								{model.rating !== '-' ? idx + 1 : '-'}
 							</td>
 							<td class="px-3 py-1.5">
@@ -218,16 +218,16 @@
 										}}
 									/>
 									<Tooltip content={`${model.name} (${model.id})`} placement="top-start">
-										<span class="font-normal text-gray-800 dark:text-gray-200 line-clamp-1"
+										<span class="font-medium text-gray-800 dark:text-gray-200 line-clamp-1"
 											>{model.name}</span
 										>
 									</Tooltip>
 								</div>
 							</td>
-							<td class="px-3 py-1.5 text-right font-normal text-gray-900 dark:text-white">
+							<td class="px-3 py-1.5 text-right font-medium text-gray-900 dark:text-white">
 								{model.rating}
 							</td>
-							<td class="px-3 py-1.5 text-right font-normal text-green-500 w-10">
+							<td class="px-3 py-1.5 text-right font-medium text-green-500 w-10">
 								{#if model.stats.won === '-'}-{:else}
 									<span class="hidden group-hover:inline"
 										>{((Number(model.stats.won) / model.stats.count) * 100).toFixed(1)}%</span
@@ -235,7 +235,7 @@
 									<span class="group-hover:hidden">{model.stats.won}</span>
 								{/if}
 							</td>
-							<td class="px-3 py-1.5 text-right font-normal text-red-500 w-10">
+							<td class="px-3 py-1.5 text-right font-medium text-red-500 w-10">
 								{#if model.stats.lost === '-'}-{:else}
 									<span class="hidden group-hover:inline"
 										>{((Number(model.stats.lost) / model.stats.count) * 100).toFixed(1)}%</span

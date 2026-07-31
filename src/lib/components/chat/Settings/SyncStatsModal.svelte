@@ -319,7 +319,7 @@
 	<div class="w-full">
 		{#if completed}
 			<div class="px-5.5 py-5">
-				<div class="mb-1 text-xl font-normal">{$i18n.t('Sync Complete!')}</div>
+				<div class="mb-1 text-xl font-medium">{$i18n.t('Sync Complete!')}</div>
 				<div class="mb-3 text-xs text-gray-500">
 					{$i18n.t('Your usage stats have been successfully synced.')}
 				</div>
@@ -337,7 +337,7 @@
 			</div>
 		{:else if error}
 			<div class="px-5.5 py-5">
-				<div class="mb-1 text-xl font-normal">{$i18n.t('Sync Failed')}</div>
+				<div class="mb-1 text-xl font-medium">{$i18n.t('Sync Failed')}</div>
 				<div class="mb-3 text-xs text-gray-500">
 					{errorMessage || $i18n.t('There was an error syncing your stats. Please try again.')}
 				</div>
@@ -479,7 +479,7 @@
 					</button>
 
 					<button
-						class="px-3.5 py-1.5 text-sm font-normal bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition-colors rounded-full"
+						class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition-colors rounded-full"
 						on:click={syncStats}
 						disabled={syncing}
 					>

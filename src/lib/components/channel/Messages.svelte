@@ -91,7 +91,7 @@
 							</div>
 						{/if}
 
-						<div class="text-2xl font-normal capitalize">
+						<div class="text-2xl font-medium capitalize">
 							{#if channel?.name}
 								{channel.name}
 							{:else}

@@ -650,11 +650,11 @@
 					{/if}
 				</div>
 
-				<div class="flex justify-between items-center pt-4 text-sm font-normal">
+				<div class="flex justify-between items-center pt-4 text-sm font-medium">
 					<div>
 						{#if editing}
 							<button
-								class="px-1 py-1.5 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:underline transition"
+								class="px-1 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:underline transition"
 								type="button"
 								on:click={() => {
 									showDeleteConfirmDialog = true;
@@ -667,7 +667,7 @@
 
 					<button
 						type="submit"
-						class="px-3.5 py-1.5 text-sm font-normal bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
+						class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex flex-row space-x-1 items-center"
 					>
 						{$i18n.t('Save')}
 					</button>
@@ -717,7 +717,7 @@
 						class="flex-1 min-w-0 flex gap-1.5 items-center {webhook.enabled ? '' : 'opacity-50'}"
 					>
 						<div class="outline-hidden w-full bg-transparent text-sm truncate">
-							<span class="font-normal">
+							<span class="font-medium">
 								{webhook.id === 'default' ? $i18n.t('Default webhook') : webhook.name}
 							</span>
 							<span class="text-xs text-gray-500">

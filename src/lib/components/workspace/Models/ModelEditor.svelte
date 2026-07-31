@@ -978,7 +978,7 @@
 
 						<div class="my-3">
 							<div class="flex w-full justify-between mb-1">
-								<div class="self-center text-xs font-normal text-gray-500">
+								<div class="self-center text-xs font-medium text-gray-500">
 									{$i18n.t('TTS Voice')}
 								</div>
 							</div>
@@ -999,7 +999,7 @@
 								type="submit"
 								disabled={loading}
 							>
-								<div class=" self-center font-normal">
+								<div class=" self-center font-medium">
 									{#if edit}
 										{$i18n.t('Save & Update')}
 									{:else}
@@ -1017,7 +1017,7 @@
 
 						<div class="my-2 text-gray-300 dark:text-gray-700 pb-20">
 							<div class="flex w-full justify-between mb-2">
-								<div class=" self-center text-sm font-normal">{$i18n.t('JSON Preview')}</div>
+								<div class=" self-center text-sm font-medium">{$i18n.t('JSON Preview')}</div>
 
 								<button
 									class="p-1 px-3 text-xs flex rounded-sm transition"
