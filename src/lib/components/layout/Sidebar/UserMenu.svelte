@@ -112,11 +112,11 @@
 	<slot />
 
 	<div slot="content">
-		<DropdownMenu className="{className} font-sans text-xs">
+		<DropdownMenu className="{className} font-sans text-sm text-gray-900 dark:text-gray-100">
 			{#if $user}
 				<div>
 					<button
-						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-xs w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-left"
+						class="flex min-h-[4.25rem] items-center gap-3 rounded-2xl px-4 py-2.5 text-left w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						type="button"
 						on:click={async () => {
 							show = false;
@@ -128,14 +128,22 @@
 							}
 						}}
 					>
-						<div class="self-center shrink-0 size-4.5 flex items-center justify-center">
+						<div class="self-center shrink-0 size-11 flex items-center justify-center">
 							<img
 								src={`${WEBUI_API_BASE_URL}/users/${$user.id}/profile/image`}
 								alt=""
-								class="size-4.5 rounded-full object-cover"
+								class="size-11 rounded-full object-cover"
 							/>
 						</div>
-						<div class="self-center min-w-0 flex-1 truncate">{$user.name}</div>
+						<div class="self-center min-w-0 flex-1">
+							<div class="truncate text-base font-semibold leading-5">{$user.name}</div>
+							<div
+								class="mt-0.5 flex items-center gap-1.5 text-[13px] leading-4 text-gray-700 dark:text-gray-300"
+							>
+								<span class="size-2 rounded-full bg-green-500" />
+								<span>{$i18n.t('Active')}</span>
+							</div>
+						</div>
 
 						{#if showActiveUsers && ($config?.features?.enable_public_active_users_count || role === 'admin') && usage?.user_count}
 							<Tooltip
@@ -164,7 +172,7 @@
 				{#if $user?.status_emoji || $user?.status_message}
 					<div class="user-menu-status">
 						<button
-							class="w-full h-[1.6875rem] gap-2 rounded-xl px-2 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-xs flex items-center text-left"
+							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-sm leading-5 flex items-center text-left"
 							type="button"
 							on:click={() => {
 								show = false;
@@ -216,7 +224,7 @@
 				{:else}
 					<div class="user-menu-status">
 						<button
-							class="w-full h-[1.6875rem] gap-2 rounded-xl px-2 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-xs flex items-center text-left"
+							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-sm leading-5 flex items-center text-left"
 							type="button"
 							on:click={() => {
 								show = false;
@@ -241,7 +249,7 @@
 					<a
 						href="/workspace"
 						draggable="false"
-						class="flex flex-1 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -285,7 +293,7 @@
 					<a
 						href="/notes"
 						draggable="false"
-						class="flex flex-1 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -329,7 +337,7 @@
 					<a
 						href="/calendar"
 						draggable="false"
-						class="flex flex-1 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -373,7 +381,7 @@
 					<a
 						href="/automations"
 						draggable="false"
-						class="flex flex-1 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -417,7 +425,7 @@
 					<a
 						href="/playground"
 						draggable="false"
-						class="flex flex-1 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -462,7 +470,7 @@
 				<!-- {$i18n.t('Help')} -->
 
 				<button
-					class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 					type="button"
 					id="chat-share-button"
 					on:click={async () => {
@@ -488,7 +496,7 @@
 				<a
 					href="/admin"
 					draggable="false"
-					class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 					on:click={async (e) => {
 						if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
 							return;
@@ -510,7 +518,7 @@
 			{/if}
 
 			<button
-				class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					show = false;
@@ -530,7 +538,7 @@
 			</button>
 
 			<button
-				class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[13px] w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					const res = await userSignOut();

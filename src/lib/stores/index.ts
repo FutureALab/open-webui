@@ -108,7 +108,7 @@ export const chatRequestQueues: Writable<
 	Record<string, { id: string; prompt: string; files: any[] }[]>
 > = writable({});
 
-export const sidebarWidth = writable(245);
+export const sidebarWidth = writable(260);
 
 export type SettingsModalRequest = {
 	tab: string;

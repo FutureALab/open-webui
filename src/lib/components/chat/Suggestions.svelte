@@ -64,7 +64,7 @@
 	}
 </script>
 
-<div class="mb-1 flex gap-1 text-xs font-medium items-center text-gray-600 dark:text-gray-400">
+<div class="mb-1.5 flex gap-1.5 text-sm font-medium items-center text-gray-600 dark:text-gray-400">
 	{#if filteredPrompts.length > 0}
 		<Bolt />
 		{$i18n.t('Suggested')}
@@ -97,23 +97,23 @@
 					<div class="flex flex-col text-left leading-snug">
 						{#if prompt.title && prompt.title[0] !== ''}
 							<div
-								class="text-sm font-normal group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:text-white transition line-clamp-1"
+								class="text-base font-medium leading-5 group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:text-white transition line-clamp-1"
 							>
 								{prompt.title[0]}
 							</div>
 							<div
-								class="text-xs text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-100 font-normal line-clamp-1"
+								class="text-[13px] leading-[18px] text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-100 font-normal line-clamp-1"
 							>
 								{prompt.title[1]}
 							</div>
 						{:else}
 							<div
-								class="text-sm font-normal group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:text-white transition line-clamp-1"
+								class="text-base font-medium leading-5 group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:text-white transition line-clamp-1"
 							>
 								{prompt.content}
 							</div>
 							<div
-								class="text-xs text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-100 font-normal line-clamp-1"
+								class="text-[13px] leading-[18px] text-gray-600 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-100 font-normal line-clamp-1"
 							>
 								{$i18n.t('Prompt')}
 							</div>

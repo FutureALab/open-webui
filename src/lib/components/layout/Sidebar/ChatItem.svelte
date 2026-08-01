@@ -610,7 +610,7 @@
 					{/if}
 					<div
 						dir="auto"
-						class="text-left self-center overflow-hidden w-full h-[20px] truncate {unread
+						class="text-left self-center overflow-hidden w-full h-[20px] truncate text-[15px] leading-5 {unread
 							? 'font-medium text-gray-800 dark:text-gray-200'
 							: ''} {showInlineActions && !readonly ? 'pr-12' : ''}"
 					>

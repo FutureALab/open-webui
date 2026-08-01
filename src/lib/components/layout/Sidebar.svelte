@@ -612,7 +612,7 @@
 		isResizing = true;
 
 		startClientX = e.clientX;
-		startWidth = $sidebarWidth ?? 245;
+		startWidth = $sidebarWidth ?? 260;
 
 		document.body.style.userSelect = 'none';
 	};
@@ -637,7 +637,8 @@
 		try {
 			const width = Number(localStorage.getItem('sidebarWidth'));
 			if (!Number.isNaN(width) && width >= MIN_WIDTH && width <= MAX_WIDTH) {
-				sidebarWidth.set(width);
+				// Bring the former fixed default forward without overriding a custom width.
+				sidebarWidth.set(width === 245 ? 260 : width);
 			}
 		} catch {}
 
@@ -1143,7 +1144,7 @@
 				<a href="/" class="flex flex-1 px-0.5" on:click={newChatHandler}>
 					<div
 						id="sidebar-webui-name"
-						class=" self-center font-medium text-gray-850 dark:text-white font-primary"
+						class=" self-center text-[15px] leading-5 font-medium text-gray-850 dark:text-white font-primary"
 					>
 						{$WEBUI_NAME}
 					</div>
@@ -1194,12 +1195,14 @@
 							on:click={newChatHandler}
 							aria-label={$i18n.t('New Chat')}
 						>
-							<div class="self-center flex size-4 shrink-0 items-center justify-center">
-								<EditPencilIcon className=" size-4" strokeWidth="1.5" />
+							<div class="self-center flex size-4.5 shrink-0 items-center justify-center">
+								<EditPencilIcon className=" size-4.5" strokeWidth="1.5" />
 							</div>
 
 							<div class="flex flex-1 self-center translate-y-[0.5px]">
-								<div class=" self-center text-sm font-primary">{$i18n.t('New Chat')}</div>
+								<div class=" self-center text-[15px] leading-5 font-primary">
+									{$i18n.t('New Chat')}
+								</div>
 							</div>
 
 							<HotkeyHint name="newChat" className=" group-hover:visible invisible" />
@@ -1216,12 +1219,14 @@
 							draggable="false"
 							aria-label={$i18n.t('Search')}
 						>
-							<div class="self-center flex size-4 shrink-0 items-center justify-center">
-								<SearchIcon strokeWidth="1.5" className="size-4" />
+							<div class="self-center flex size-4.5 shrink-0 items-center justify-center">
+								<SearchIcon strokeWidth="1.5" className="size-4.5" />
 							</div>
 
 							<div class="flex flex-1 self-center translate-y-[0.5px]">
-								<div class=" self-center text-sm font-primary">{$i18n.t('Search')}</div>
+								<div class=" self-center text-[15px] leading-5 font-primary">
+									{$i18n.t('Search')}
+								</div>
 							</div>
 							<HotkeyHint name="search" className=" group-hover:visible invisible" />
 						</button>
@@ -1248,22 +1253,24 @@
 										draggable="false"
 										aria-label={$i18n.t(meta.label)}
 									>
-										<div class="self-center flex size-4 shrink-0 items-center justify-center">
+										<div class="self-center flex size-4.5 shrink-0 items-center justify-center">
 											{#if itemId === 'notes'}
-												<NotesIcon className="size-4" strokeWidth="1.5" />
+												<NotesIcon className="size-4.5" strokeWidth="1.5" />
 											{:else if itemId === 'workspace'}
-												<WorkspaceIcon className="size-4" strokeWidth="1.5" />
+												<WorkspaceIcon className="size-4.5" strokeWidth="1.5" />
 											{:else if itemId === 'automations'}
-												<ClockIcon className="size-4" strokeWidth="1.5" />
+												<ClockIcon className="size-4.5" strokeWidth="1.5" />
 											{:else if itemId === 'calendar'}
-												<CalendarIcon className="size-4" strokeWidth="1.5" />
+												<CalendarIcon className="size-4.5" strokeWidth="1.5" />
 											{:else if itemId === 'playground'}
-												<CodeIcon className="size-4" strokeWidth="1.5" />
+												<CodeIcon className="size-4.5" strokeWidth="1.5" />
 											{/if}
 										</div>
 
 										<div class="flex self-center translate-y-[0.5px]">
-											<div class=" self-center text-sm font-primary">{$i18n.t(meta.label)}</div>
+											<div class=" self-center text-[15px] leading-5 font-primary">
+												{$i18n.t(meta.label)}
+											</div>
 										</div>
 									</a>
 								</div>
@@ -1681,7 +1688,7 @@
 						<UserMenu
 							role={$user?.role}
 							profile={$config?.features?.enable_user_status ?? true}
-							className="w-[calc(var(--sidebar-width)-1rem)]"
+							className="w-[calc(var(--sidebar-width)-0.5rem)]"
 						>
 							<button
 								type="button"
@@ -1691,7 +1698,7 @@
 								<div class=" self-center mr-3 relative flex-shrink-0">
 									<img
 										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class="size-5.5 object-cover rounded-full"
+										class="size-7 object-cover rounded-full"
 										alt={$i18n.t('Open User Profile Menu')}
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
@@ -1708,7 +1715,9 @@
 										</div>
 									{/if}
 								</div>
-								<div class=" self-center font-medium truncate">{$user?.name}</div>
+								<div class=" self-center text-[15px] leading-5 font-medium truncate">
+									{$user?.name}
+								</div>
 							</button>
 						</UserMenu>
 					{/if}

@@ -141,7 +141,7 @@
 	const shouldShowSettingGroup = (tabIds: string[], index: number) =>
 		index === 0 || settingGroupTitle(tabIds[index]) !== settingGroupTitle(tabIds[index - 1]);
 	const settingGroupHeadingClass = (first: boolean) =>
-		`hidden md:block shrink-0 text-[0.625rem] text-gray-400 dark:text-gray-600 px-2 ${
+		`hidden md:block shrink-0 text-xs leading-4 text-gray-400 dark:text-gray-600 px-2.5 ${
 			first ? 'mt-0.5' : 'mt-2'
 		} mb-0.5`;
 
@@ -848,7 +848,7 @@
 	};
 
 	const tabButtonClass = (active: boolean) =>
-		`flex items-center gap-1.5 h-7 px-2 md:w-full shrink-0 rounded-lg text-xs text-left transition-colors duration-75 ${
+		`flex items-center gap-2 h-8 px-2.5 md:w-full shrink-0 rounded-lg text-sm text-left transition-colors duration-75 ${
 			active
 				? 'font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-white/[0.04]'
 				: 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
@@ -897,7 +897,7 @@
 		class="shrink-0 min-w-0 md:min-h-0 flex md:flex-col border-b md:border-b-0 md:border-r border-gray-100/30 dark:border-white/[0.02] md:w-[15rem]"
 	>
 		<button
-			class="flex items-center gap-1.5 h-7 px-2 m-1 md:mb-0 md:w-[calc(100%-0.5rem)] shrink-0 rounded-lg text-xs text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-75"
+			class="flex items-center gap-2 h-8 px-2.5 m-1 md:mb-0 md:w-[calc(100%-0.5rem)] shrink-0 rounded-lg text-sm text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-75"
 			type="button"
 			on:click={() => {
 				show = false;
@@ -908,7 +908,7 @@
 		</button>
 
 		<div
-			class="hidden md:flex items-center gap-1.5 h-7 px-2 mx-1 mt-1 mb-0.5 shrink-0 rounded-lg text-xs bg-gray-50/70 dark:bg-white/[0.03]"
+			class="hidden md:flex items-center gap-2 h-9 px-2.5 mx-1 mt-1 mb-1 shrink-0 rounded-xl text-sm bg-gray-50/70 dark:bg-white/[0.03]"
 		>
 			<div class="self-center rounded-l-xl bg-transparent">
 				<Search className="size-3.5" strokeWidth="1.5" />
@@ -916,7 +916,7 @@
 			<label class="sr-only" for="search-input-settings-modal">{$i18n.t('Search')}</label>
 			<input
 				data-settings-search
-				class="w-full text-xs bg-transparent py-1 outline-hidden dark:text-gray-300"
+				class="w-full text-sm bg-transparent py-1 outline-hidden dark:text-gray-300"
 				bind:value={search}
 				id="search-input-settings-modal"
 				on:input={searchDebounceHandler}
@@ -1122,7 +1122,9 @@
 				<div
 					class="hidden md:block shrink-0 self-stretch h-px mx-1 my-2 bg-gray-100/40 dark:bg-white/[0.025]"
 				></div>
-				<span class="hidden md:block text-[0.625rem] text-gray-400 dark:text-gray-600 px-2 mb-0.5">
+				<span
+					class="hidden md:block text-xs leading-4 text-gray-400 dark:text-gray-600 px-2.5 mb-0.5"
+				>
 					{$i18n.t('Admin')}
 				</span>
 

@@ -16,18 +16,40 @@ describe('official visual style parity', () => {
 
 	it('uses the official sidebar typography hierarchy', () => {
 		const sidebar = read('./src/lib/components/layout/Sidebar.svelte');
+		const sidebarStore = read('./src/lib/stores/index.ts');
+		const chatItem = read('./src/lib/components/layout/Sidebar/ChatItem.svelte');
 
 		expect(sidebar).toContain('font-medium text-gray-850 dark:text-white font-primary');
-		expect(sidebar).toContain("text-sm font-primary\">{$i18n.t('New Chat')}");
+		expect(sidebar).toContain('text-[15px] leading-5 font-primary');
 		expect(sidebar).toContain('class="flex flex-col font-primary"');
+		expect(sidebarStore).toContain('sidebarWidth = writable(260)');
+		expect(chatItem).toContain('text-[15px] leading-5');
 	});
 
-	it('uses the official settings emphasis and switch treatment', () => {
-		const settingRow = read('./src/lib/components/admin/Settings/AdminSettingRow.svelte');
+	it('uses the official settings scale, emphasis and switch treatment', () => {
+		const settingsModal = read('./src/lib/components/chat/SettingsModal.svelte');
+		const userSettingRow = read('./src/lib/components/chat/Settings/UserSettingRow.svelte');
+		const adminSettingRow = read('./src/lib/components/admin/Settings/AdminSettingRow.svelte');
 		const switchComponent = read('./src/lib/components/common/Switch.svelte');
 
-		expect(settingRow).toContain('text-xs font-medium text-gray-700');
+		expect(settingsModal).toContain('h-8 px-2.5 md:w-full');
+		expect(settingsModal).toContain('rounded-lg text-sm text-left');
+		expect(userSettingRow).toContain('text-sm font-medium leading-5 text-gray-700');
+		expect(adminSettingRow).toContain('text-sm font-medium leading-5 text-gray-700');
 		expect(switchComponent).toContain("'bg-emerald-500 dark:bg-emerald-700'");
 		expect(switchComponent).toContain('data-[state=checked]:translate-x-3');
+	});
+
+	it('uses the official account menu and landing-page type scale', () => {
+		const userMenu = read('./src/lib/components/layout/Sidebar/UserMenu.svelte');
+		const placeholder = read('./src/lib/components/chat/Placeholder.svelte');
+		const suggestions = read('./src/lib/components/chat/Suggestions.svelte');
+
+		expect(userMenu).toContain('font-sans text-sm');
+		expect(userMenu).toContain('text-sm text-gray-900');
+		expect(userMenu).toContain('size-11 rounded-full object-cover');
+		expect(userMenu).toContain('h-9 items-center gap-2.5');
+		expect(placeholder).toContain('text-[1.75rem] leading-9');
+		expect(suggestions).toContain('text-base font-medium');
 	});
 });

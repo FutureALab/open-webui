@@ -1,55 +1,62 @@
-# Design QA — Official typography and effects parity
+# Design QA — Official UI scale polish
 
-## Scope
+## Comparison target
 
-- Reference: official mirror screenshots supplied from `http://localhost:3010/`.
-- Implementation: local AIOps build served from an isolated QA instance.
-- Included: typography hierarchy, foreground contrast, input surfaces, shadows, borders, switches, and Chrome 108 compatibility.
-- Deliberately excluded: restructuring the settings page. The existing modal/settings framework is retained per user instruction.
+- Source visual truth:
+  - Main page: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-806e80fe-37fa-49b4-aa93-f950534cec6e.png`
+  - Account menu: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-e83e7a69-e8c8-48e2-aa69-4e2515905dc3.png`
+  - Settings: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-14bc0462-182a-4b6e-b1ec-0f2ed1e3bcaa.png`
+- Browser-rendered implementation:
+  - `E:\Project\open-webui\output\playwright\official-parity-20260801\main-chrome108-final.png`
+  - `E:\Project\open-webui\output\playwright\official-parity-20260801\account-menu-chrome108-final.png`
+  - `E:\Project\open-webui\output\playwright\official-parity-20260801\settings-chrome108-final.png`
+  - Responsive evidence: `E:\Project\open-webui\output\playwright\official-parity-20260801\main-1366-chrome108.png` and `settings-1366-chrome108-final.png`
 
-## Evidence
+## Capture normalization
 
-| Surface | Reference | Implementation |
-| --- | --- | --- |
-| Populated chat | `C:\Users\csc\AppData\Local\Temp\codex-clipboard-74a022dd-985d-439a-8a72-1aaa8fc456a9.png` | `C:\Users\csc\.codex\visualizations\2026\07\31\019fb896-24c3-7051-b5d3-68878e00a9a2\official-style-qa-20260801\03-current-populated-chat-chrome108.png` |
-| Admin settings | `C:\Users\csc\AppData\Local\Temp\codex-clipboard-d0bd9d9e-82f5-45d6-83fd-8d3dd417f085.png` | `C:\Users\csc\.codex\visualizations\2026\07\31\019fb896-24c3-7051-b5d3-68878e00a9a2\official-style-qa-20260801\02-current-settings-chrome108.png` |
-| Empty chat | n/a | `C:\Users\csc\.codex\visualizations\2026\07\31\019fb896-24c3-7051-b5d3-68878e00a9a2\official-style-qa-20260801\01-current-chat-chrome108.png` |
+- Browser: Playwright Chromium `108.0.5359.29`.
+- Primary implementation viewport and image: 2048 × 968 CSS pixels, 2048 × 968 physical pixels, device scale factor 1.
+- Source main page: 2048 × 968 pixels and directly comparable at 1:1.
+- Source account menu: 930 × 874 cropped region with unknown source viewport. It was compared as a focused region and normalized by its width relative to the visible sidebar rather than by raw pixels.
+- Source settings: 1812 × 978 pixels; implementation is the retained local unified settings framework at 2048 × 968. Typography, contrast, and navigation density were compared; the differing framework and memory-list state were not treated as fidelity defects because the user explicitly excluded a settings-framework redesign.
+- State: authenticated administrator, light theme, `zh-CN`, `deepseek-v4-flash` selected; account menu open and Personalization/Memory settings selected for their respective captures.
 
-- Browser: Chromium `108.0.5359.29` from Playwright 1.28.1.
-- Viewport: 2048 × 968 CSS pixels.
-- Captured image: 2048 × 968 physical pixels.
-- Device scale factor: 1.
-- Theme and locale: light, `zh-CN`.
-- State: authenticated admin; populated GDP conversation for the chat comparison; General settings open for the settings comparison.
+## Findings
 
-## Fidelity review
+No actionable P0, P1, or P2 differences remain in the requested scope.
 
-1. Content and structure — passed for the shared chat/sidebar/message/input regions. The official reference's artifact pane and open account menu are state-specific. Settings framework differences are explicitly out of scope.
-2. Typography — passed. Archivo is restored for primary navigation and chat input surfaces; product title computes to 14 px / 500. Markdown headings and action rows restore the official semibold/medium hierarchy.
-3. Color and effects — passed. Light-theme input boundaries and soft shadows remain visible in Chrome 108. Enabled switches compute to `rgb(0, 185, 129)` and disabled switches use the official neutral surface.
-4. Imagery and iconography — passed. Existing AIOps branding is retained while icon sizing, stroke contrast, and action-row treatment align with the official UI.
-5. Spatial and responsive behavior — passed for the requested style scope at 2048 × 968. No settings framework/layout changes were made.
+- Fonts and typography: passed. Primary navigation computes to 16px with the saved text scale, the settings tabs and content labels compute to 14px, the account menu computes to 14px with a 16px/600 identity line, the landing model title computes to 30px, and suggestions compute to 16px. Archivo/Inter and system CJK fallbacks retain the existing product font strategy, with kerning and antialiasing enabled.
+- Spacing and layout rhythm: passed. The main sidebar is 260px, matching the source proportion. The main input and title alignment closely track the 1:1 source. The account menu now measures 242px and visually fills the sidebar region without clipping. The settings structure was intentionally retained.
+- Colors and visual tokens: passed. Account identity text computes to `rgb(22, 22, 22)` at weight 600; the enabled switch, input border, light surfaces, and shadows remain visible in Chrome 108.
+- Image quality and asset fidelity: passed. Existing favicon, model avatar, profile avatar, and icon components remain sharp and unmodified; no placeholder, CSS-art, emoji, or custom SVG substitute was introduced.
+- Copy and content: passed for static UI strings. Dynamic prompt suggestions and the AIOps/model avatars differ from the official mirror data by design, not because of visual implementation drift.
+- Icons and interaction states: passed. Icon scale remains optically aligned with the enlarged text. Input focus, menu open, selected settings tab, and enabled switch states are visibly distinct.
+- Responsive behavior: passed at 2048 × 968 and 1366 × 768. There is no horizontal overflow; the main input, account menu, settings modal, and save action remain inside the viewport.
 
-## Interaction verification
+## Full-view and focused comparison evidence
 
-- Message input accepted focus, text entry, selection, and clearing.
-- Settings input accepted focus and retained a visible background/border.
-- First settings switch changed `true → false → true`; the original value was restored.
-- Sidebar expansion and admin settings navigation completed successfully.
-- No page errors or failed application requests were recorded during the final flows.
+- Full-view comparison: the 2048 × 968 source and final main screenshots were opened together. Sidebar width, central composition, title hierarchy, input position, and suggestion density are closely aligned.
+- Focused menu comparison: the source crop and final account-menu screenshot were opened together. Raw pixel dimensions were not compared because the source is cropped at an unknown scale; sidebar-relative width, type hierarchy, avatar scale, row rhythm, and foreground contrast were compared instead.
+- Focused settings comparison: the source and final Personalization screenshots were opened together. Shared navigation and content typography now use the larger official-like hierarchy. Framework and state differences are documented above.
 
-## Compatibility and regression checks
+## Interaction and compatibility verification
 
-- Targeted Vitest: 6/6 passed (`postcss-chrome109-fix.test.js`, `official-style-parity.test.js`).
+- Opened the account menu, navigated to Settings, switched to Personalization, and focused the message input.
+- Input focus retained a visible `rgb(235, 235, 235)` border and soft elevation.
+- At 1366 × 768, the account menu and settings modal both reported `fits: true`; document horizontal overflow was `false`.
+- Browser console/page errors during the final authenticated flow: 0.
+- Targeted Vitest: 7/7 passed (`postcss-chrome109-fix.test.js`, `official-style-parity.test.js`).
 - Production build: passed.
-- Unsupported generated CSS color tokens (`color-mix`, `oklab`, `oklch`, `display-p3`): 0.
-- Final visual pass found no actionable P0, P1, or P2 issue in the requested scope.
+- Unsupported generated CSS tokens for Chrome 108 (`color-mix`, `oklab`, `oklch`, `display-p3`): 0.
 
-## Iteration history
+## Comparison history
 
-1. Restored the official historical typography classes only where the non-font line signature still matched the official source.
-2. Restored Archivo on primary navigation/chat surfaces and official medium/semibold hierarchy on message and settings labels.
-3. Restored official green switches and low-contrast input surfaces, then rebuilt for Chrome 108 fallbacks.
-4. Repeated authenticated Chrome 108 visual and interaction checks with a populated conversation and the General settings panel.
+1. Initial comparison found a P2 scale mismatch: the local sidebar was 245px, common settings labels were 12px, the account menu mixed 12–13px text, and the landing title/suggestions were visibly smaller than the source. Fix: moved the shared components to the measured 260px/14–16px hierarchy and rebuilt.
+2. First post-fix comparison found a remaining P2 account-menu proportion/contrast mismatch: the menu was about 8px narrower than the source-normalized target and the identity line was optically weak. Fix: widened the popup, set the identity line to 600 weight, strengthened foreground tokens, rebuilt, and recaptured.
+3. Final comparison found no actionable P0/P1/P2 mismatch. Chrome 108 desktop and responsive captures confirmed stable layout and interaction states.
+
+## Follow-up polish
+
+- P3: the official mirror and this project use different brand/model/profile assets and dynamic suggestion content. These are expected product-data differences and were intentionally retained.
 
 final result: passed

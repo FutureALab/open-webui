@@ -6,7 +6,7 @@
 
 <section class="w-full {first ? '' : 'mt-4'} {className}">
 	{#if title}
-		<h3 class="mb-2 text-xs text-gray-600 dark:text-gray-400">
+		<h3 class="mb-2.5 text-sm font-medium leading-5 text-gray-700 dark:text-gray-300">
 			{title}
 		</h3>
 	{/if}
