@@ -11,7 +11,6 @@ const packages = [
 	'regex',
 	'sympy',
 	'tiktoken',
-	'seaborn',
 	'pytz',
 	'black',
 	'openai',
@@ -58,6 +57,32 @@ function initNetworkProxyFromEnv() {
 	console.log(`Initialized network proxy "${preferedProxy}" from env`);
 }
 
+/**
+ * Return true if static/pyodide/ is already populated with the same pyodide
+ * version as the installed node_modules/pyodide.
+ */
+async function isCacheValid() {
+	try {
+		const installedPyodideJson = JSON.parse(await readFile('node_modules/pyodide/package.json'));
+		const installedVersion = installedPyodideJson.version.replace('^', '');
+
+		const staticPyodideJson = JSON.parse(await readFile('static/pyodide/package.json'));
+		const staticVersion = staticPyodideJson.version.replace('^', '');
+
+		if (installedVersion !== staticVersion) {
+			console.log(`Pyodide version mismatch (static: ${staticVersion}, installed: ${installedVersion})`);
+			return false;
+		}
+
+		// Also check that pyodide-lock.json exists (indicates packages were downloaded)
+		await access('static/pyodide/pyodide-lock.json');
+		console.log(`Pyodide cache is valid (version ${installedVersion}), skipping network download`);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 async function downloadPackages() {
 	console.log('Setting up pyodide + micropip');
 
@@ -69,23 +94,6 @@ async function downloadPackages() {
 	} catch (err) {
 		console.error('Failed to load Pyodide:', err);
 		return;
-	}
-
-	const installedPyodidePackageJson = JSON.parse(
-		await readFile('node_modules/pyodide/package.json')
-	);
-	const pyodideVersion = installedPyodidePackageJson.version;
-
-	try {
-		const pyodidePackageJson = JSON.parse(await readFile('static/pyodide/package.json'));
-		const pyodidePackageVersion = pyodidePackageJson.version.replace('^', '');
-
-		if (pyodideVersion !== pyodidePackageVersion) {
-			console.log('Pyodide version mismatch, removing static/pyodide directory');
-			await rmdir('static/pyodide', { recursive: true });
-		}
-	} catch (err) {
-		console.log('Pyodide package not found, proceeding with download.', err);
 	}
 
 	try {
@@ -120,19 +128,44 @@ async function downloadPackages() {
 
 async function copyPyodide() {
 	console.log('Copying Pyodide files into static directory');
+	// Read the existing lock file first — copyPyodide() will overwrite it
+	// with the node_modules/pyodide version, but we need to preserve any
+	// PyPI-only package entries (black, pathspec, etc.) that were added
+	// by a previous run of downloadPyPIWheels().
+	let savedLockData = null;
+	try {
+		savedLockData = JSON.parse(await readFile('static/pyodide/pyodide-lock.json', 'utf-8'));
+	} catch {}
+
 	// Copy all files from node_modules/pyodide to static/pyodide
 	for await (const entry of await readdir('node_modules/pyodide')) {
 		await copyFile(`node_modules/pyodide/${entry}`, `static/pyodide/${entry}`);
 	}
 
-	// Avoid download-manager extensions intercepting the runtime's .zip request.
-	await copyFile('node_modules/pyodide/python_stdlib.zip', 'static/pyodide/python_stdlib.data');
+	// Restore PyPI-only package entries that the copy just overwrote
+	if (savedLockData) {
+		try {
+			const freshLockData = JSON.parse(await readFile('static/pyodide/pyodide-lock.json', 'utf-8'));
+			for (const pkg of pypiPackages) {
+				const normalizedName = pkg.replace(/-/g, '_');
+				if (savedLockData.packages[normalizedName] && !freshLockData.packages[normalizedName]) {
+					freshLockData.packages[normalizedName] = savedLockData.packages[normalizedName];
+				}
+			}
+			await writeFile('static/pyodide/pyodide-lock.json', JSON.stringify(freshLockData, null, 2));
+		} catch (err) {
+			console.warn('Failed to restore PyPI lock entries:', err?.message || err);
+		}
+	}
 }
 
 /**
  * Download pure-Python wheels from PyPI and save them into static/pyodide/.
  * Also injects entries into pyodide-lock.json so that micropip resolves these
  * packages from the local server instead of fetching them from the internet.
+ *
+ * Returns early if all pypiPackages are already present in pyodide-lock.json
+ * and their wheel files exist on disk (avoiding network calls in Docker builds).
  */
 async function downloadPyPIWheels() {
 	const lockPath = 'static/pyodide/pyodide-lock.json';
@@ -141,6 +174,28 @@ async function downloadPyPIWheels() {
 		lockData = JSON.parse(await readFile(lockPath, 'utf-8'));
 	} catch {
 		console.warn('Could not read pyodide-lock.json, skipping PyPI wheel download');
+		return;
+	}
+
+	// Check if all PyPI packages are already cached — skip network if so
+	let allCached = true;
+	for (const pkg of pypiPackages) {
+		const normalizedName = pkg.replace(/-/g, '_');
+		const entry = lockData.packages[normalizedName];
+		if (!entry) {
+			allCached = false;
+			break;
+		}
+		try {
+			await access(`static/pyodide/${entry.file_name}`);
+		} catch {
+			allCached = false;
+			break;
+		}
+	}
+
+	if (allCached) {
+		console.log('All PyPI packages already cached, skipping all PyPI network operations');
 		return;
 	}
 
@@ -201,6 +256,26 @@ async function downloadPyPIWheels() {
 }
 
 initNetworkProxyFromEnv();
-await downloadPackages();
-await copyPyodide();
-await downloadPyPIWheels();
+
+// ── Main ──────────────────────────────────────────────────────
+// Strategy:
+// 1. If static/pyodide/ matches the installed pyodide version AND has a full
+//    lock file, skip ALL network operations — Docker builds with pre-seeded
+//    static/pyodide/ in the build context will use this path.
+// 2. Otherwise, if the version matches but lock is missing → re-download
+//    packages (still needs network).
+// 3. If version mismatches → delete cache, full download.
+// 4. Finally, copy node_modules/pyodide runtime files → static/pyodide/
+//    and download any missing PyPI wheels.
+if (await isCacheValid()) {
+	await copyPyodide();
+	await downloadPyPIWheels();
+} else {
+	// Clear stale cache before downloading
+	try {
+		await rmdir('static/pyodide', { recursive: true });
+	} catch (_) { /* directory may not exist */ }
+	await downloadPackages();
+	await copyPyodide();
+	await downloadPyPIWheels();
+}
