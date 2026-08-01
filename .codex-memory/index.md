@@ -13,3 +13,4 @@
 - [官方字体与特效全站补齐](tasks/2026-08-01-official-typography-effects.md)
 - [官方界面字号与密度优化](tasks/2026-08-01-official-ui-scale-polish.md)
 - [设置字体规范化与中文审计](tasks/2026-08-01-settings-typography-localization.md)
+- [Pyodide IDM 拦截修复与界面收尾](tasks/2026-08-01-pyodide-idm-ui-polish.md)

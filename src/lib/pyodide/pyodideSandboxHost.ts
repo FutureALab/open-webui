@@ -18,6 +18,7 @@ const sandboxScript = String.raw`
 		stderr = null;
 		pyodide = await loadPyodide({
 			indexURL: self.__PYODIDE_INDEX_URL__ || '/pyodide/',
+			stdLibURL: (self.__PYODIDE_INDEX_URL__ || '/pyodide/') + 'python_stdlib.data',
 			stdout: function (text) {
 				stdout = stdout ? stdout + text + '\n' : text + '\n';
 			},

@@ -60,3 +60,12 @@
 - 新增 `settings-localization.test.js`，自动验证所有设置组件使用的本地化键都有非空中文值，并覆盖关键集成名称。
 - Chromium 108.0.5359.29 在 2048×1225 下完成账户菜单与管理员扩展功能面板复拍：菜单计算字号全部为 15px/20px，设置层级为 16/14/13px，可见纯英文项为 0，控制台错误与横向溢出均为 0。
 - 定向 Vitest 9/9 通过，生产构建成功；`design-qa.md` 最终结果为 passed。
+
+## 2026-08-01 Pyodide IDM 拦截修复与界面收尾
+
+- 定位到 IDM 浏览器扩展将 `/pyodide/python_stdlib.zip` 拦截为下载并向页面返回 204，造成 Pyodide 无法导入 `encodings`，所有代码执行以 `exit(1)` 结束。
+- Pyodide 沙盒和 Worker 显式加载 `/pyodide/python_stdlib.data`；准备脚本从原始 zip 生成等内容的 `.data` 资源，绕过下载管理器的扩展名规则。
+- 准备脚本改为读取 `node_modules/pyodide/package.json` 的实际版本，避免 `^0.28.2` 与已安装 `0.28.3` 被误判为版本不一致。
+- 删除未被当前入口引用的更新公告弹窗组件、前端状态及请求函数；后端兼容 API 保留。
+- 侧栏品牌图标从 20px 放大到 24px，聊天首页模型头像从 36/40px 放大到 40/44px，备用占位头像放大到 48px。
+- 定向 Vitest 9/9 通过，生产构建成功；隔离浏览器请求 `python_stdlib.data` 返回 200，Python 实跑输出 `hello`，控制台错误为 0。

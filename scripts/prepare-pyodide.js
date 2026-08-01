@@ -71,8 +71,10 @@ async function downloadPackages() {
 		return;
 	}
 
-	const packageJson = JSON.parse(await readFile('package.json'));
-	const pyodideVersion = packageJson.dependencies.pyodide.replace('^', '');
+	const installedPyodidePackageJson = JSON.parse(
+		await readFile('node_modules/pyodide/package.json')
+	);
+	const pyodideVersion = installedPyodidePackageJson.version;
 
 	try {
 		const pyodidePackageJson = JSON.parse(await readFile('static/pyodide/package.json'));
@@ -122,6 +124,9 @@ async function copyPyodide() {
 	for await (const entry of await readdir('node_modules/pyodide')) {
 		await copyFile(`node_modules/pyodide/${entry}`, `static/pyodide/${entry}`);
 	}
+
+	// Avoid download-manager extensions intercepting the runtime's .zip request.
+	await copyFile('node_modules/pyodide/python_stdlib.zip', 'static/pyodide/python_stdlib.data');
 }
 
 /**
