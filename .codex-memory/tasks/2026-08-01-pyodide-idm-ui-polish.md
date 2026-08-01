@@ -41,3 +41,10 @@
 - 2026-08-01：用户明确公共代码不应包含特定下载管理器适配，`.data` 复制与运行时 `stdLibURL` 覆盖已废弃。
 - 合并后的公共实现采用默认 Pyodide 标准库路径；资源准备使用跨平台缓存校验、可选环境代理和 PyPI lock 恢复。
 - 定向测试 9/9、生产构建和后端独立端口健康检查均通过。
+
+## 最终方案
+
+- 2026-08-01：用户最终选择恢复 `.data` 静态资源别名，但要求公共实现不包含任何 IDM 配置或单机耦合；本节取代上一节的“恢复默认路径”决定。
+- `prepare-pyodide.js` 在完成跨平台缓存校验、资源复制和 PyPI lock 恢复后，将官方 `python_stdlib.zip` 原样复制为 `python_stdlib.data`。
+- 沙盒主线程与 Worker 通过 `stdLibURL` 加载 `/pyodide/python_stdlib.data`；原始 zip 保留，二者 SHA-256 一致。
+- 定向 Vitest 9/9、8 GB Node 堆生产构建、本地 8080 健康检查均通过；真实浏览器 Python 输出 `hello`，`.data` 请求为 200，控制台错误为 0。

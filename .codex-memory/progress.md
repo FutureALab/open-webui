@@ -77,3 +77,11 @@
 - `prepare-pyodide.js` 采用远程跨平台实现：实际版本缓存校验、可选标准代理环境变量、PyPI wheel 缓存及 lock 条目恢复。
 - 移除公共运行时中的 `.data` 标准库覆盖，恢复 Pyodide 默认资源加载；同步更新回归测试。
 - 定向 Vitest 9/9 通过；Pyodide 准备命中 0.28.3 有效缓存且无网络操作；生产构建成功；后端在独立 18080 端口启动并通过 `/health` 检查。
+
+## 2026-08-01 通用 Pyodide 标准库资源别名
+
+- 根据用户最终决策恢复 `python_stdlib.data`，实现保持通用：准备脚本将官方 `python_stdlib.zip` 原样复制为静态别名，不包含下载管理器、浏览器扩展或单机路径配置。
+- 沙盒主线程和 Worker 均通过 Pyodide 官方 `stdLibURL` 参数加载该别名；原始 zip 继续保留，支持 Windows 与 Linux 的同一构建产物及离线部署。
+- 定向 Vitest 3 个文件、9 项全部通过；资源准备命中 Pyodide 0.28.3 本地缓存，zip 与 data 的 SHA-256 完全一致。
+- 默认 Node 堆下构建因约 4 GB 内存上限退出，改用 8 GB Node 堆后生产构建成功；属于构建环境内存限制，不是代码错误。
+- 本地服务在 `127.0.0.1:8080` 启动并通过 `/health`；真实浏览器中 Python 输出 `hello`，`/pyodide/python_stdlib.data` 返回 200，控制台错误为 0，未请求 `python_stdlib.zip`。

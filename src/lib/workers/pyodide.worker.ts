@@ -26,6 +26,7 @@ async function loadPyodideAndPackages(packages: string[] = []) {
 
 	self.pyodide = await loadPyodide({
 		indexURL: '/pyodide/',
+		stdLibURL: '/pyodide/python_stdlib.data',
 		stdout: (text) => {
 			console.log('Python output:', text);
 

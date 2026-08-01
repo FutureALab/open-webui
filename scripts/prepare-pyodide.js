@@ -142,6 +142,8 @@ async function copyPyodide() {
 		await copyFile(`node_modules/pyodide/${entry}`, `static/pyodide/${entry}`);
 	}
 
+	await copyFile('node_modules/pyodide/python_stdlib.zip', 'static/pyodide/python_stdlib.data');
+
 	// Restore PyPI-only package entries that the copy just overwrote
 	if (savedLockData) {
 		try {
