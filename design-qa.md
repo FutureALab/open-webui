@@ -1,62 +1,55 @@
-# Design QA — Official UI scale polish
+# Design QA — 设置面板字体与中文本地化
 
-## Comparison target
+## 对照目标
 
-- Source visual truth:
-  - Main page: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-806e80fe-37fa-49b4-aa93-f950534cec6e.png`
-  - Account menu: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-e83e7a69-e8c8-48e2-aa69-4e2515905dc3.png`
-  - Settings: `C:\Users\csc\AppData\Local\Temp\codex-clipboard-14bc0462-182a-4b6e-b1ec-0f2ed1e3bcaa.png`
-- Browser-rendered implementation:
-  - `E:\Project\open-webui\output\playwright\official-parity-20260801\main-chrome108-final.png`
-  - `E:\Project\open-webui\output\playwright\official-parity-20260801\account-menu-chrome108-final.png`
-  - `E:\Project\open-webui\output\playwright\official-parity-20260801\settings-chrome108-final.png`
-  - Responsive evidence: `E:\Project\open-webui\output\playwright\official-parity-20260801\main-1366-chrome108.png` and `settings-1366-chrome108-final.png`
+- 视觉基准：
+  - 账户菜单：`C:\Users\csc\AppData\Local\Temp\codex-clipboard-a29e4c0d-3cc7-44d9-819d-850f841e5b39.png`
+  - 管理员设置：`C:\Users\csc\AppData\Local\Temp\codex-clipboard-7af0c08b-c62e-4cdd-aa8b-07c2488c51e6.png`
+- 浏览器实现：
+  - 账户菜单：`E:\Project\open-webui\output\playwright\settings-typography-20260801\10-menu-focus-approved.png`
+  - 管理员设置：`E:\Project\open-webui\output\playwright\settings-typography-20260801\11-settings-2048x1225-approved.png`
+  - Chrome 108 验证：`08-menu-approved.png`、`09-settings-approved.png`
 
-## Capture normalization
+## 采集条件
 
-- Browser: Playwright Chromium `108.0.5359.29`.
-- Primary implementation viewport and image: 2048 × 968 CSS pixels, 2048 × 968 physical pixels, device scale factor 1.
-- Source main page: 2048 × 968 pixels and directly comparable at 1:1.
-- Source account menu: 930 × 874 cropped region with unknown source viewport. It was compared as a focused region and normalized by its width relative to the visible sidebar rather than by raw pixels.
-- Source settings: 1812 × 978 pixels; implementation is the retained local unified settings framework at 2048 × 968. Typography, contrast, and navigation density were compared; the differing framework and memory-list state were not treated as fidelity defects because the user explicitly excluded a settings-framework redesign.
-- State: authenticated administrator, light theme, `zh-CN`, `deepseek-v4-flash` selected; account menu open and Personalization/Memory settings selected for their respective captures.
+- 浏览器：Playwright Chromium `108.0.5359.29`。
+- 设置页视口与成图：2048 × 1225 CSS 像素、2048 × 1225 物理像素、DPR 1。
+- 账户菜单参考图为 342 × 466 裁剪图，来源缩放未知，因此按菜单内部字号层级、行高和相对节奏比较，不直接比较原始像素宽度。
+- 状态：管理员已登录、浅色主题、`zh-CN`；账户菜单展开，管理员“扩展功能”设置面板打开。
 
-## Findings
+## 结论
 
-No actionable P0, P1, or P2 differences remain in the requested scope.
+本次范围内没有剩余的 P0、P1 或 P2 问题。
 
-- Fonts and typography: passed. Primary navigation computes to 16px with the saved text scale, the settings tabs and content labels compute to 14px, the account menu computes to 14px with a 16px/600 identity line, the landing model title computes to 30px, and suggestions compute to 16px. Archivo/Inter and system CJK fallbacks retain the existing product font strategy, with kerning and antialiasing enabled.
-- Spacing and layout rhythm: passed. The main sidebar is 260px, matching the source proportion. The main input and title alignment closely track the 1:1 source. The account menu now measures 242px and visually fills the sidebar region without clipping. The settings structure was intentionally retained.
-- Colors and visual tokens: passed. Account identity text computes to `rgb(22, 22, 22)` at weight 600; the enabled switch, input border, light surfaces, and shadows remain visible in Chrome 108.
-- Image quality and asset fidelity: passed. Existing favicon, model avatar, profile avatar, and icon components remain sharp and unmodified; no placeholder, CSS-art, emoji, or custom SVG substitute was introduced.
-- Copy and content: passed for static UI strings. Dynamic prompt suggestions and the AIOps/model avatars differ from the official mirror data by design, not because of visual implementation drift.
-- Icons and interaction states: passed. Icon scale remains optically aligned with the enlarged text. Input focus, menu open, selected settings tab, and enabled switch states are visibly distinct.
-- Responsive behavior: passed at 2048 × 968 and 1366 × 768. There is no horizontal overflow; the main input, account menu, settings modal, and save action remain inside the viewport.
+- 字体层级：通过。账户菜单所有操作项统一为 15px/20px；设置页标题和分组标题统一为 16px/24px，功能标签为 14px/20px，说明文字为 13px/18px。
+- 字重与圆润度：通过。沿用现有 Archivo/Inter 与中文系统字体回退，标题使用 500，正文保持 400，避免同一层级混用粗细。
+- 颜色和特效：通过。浅色主题帮助文字对比度已提高，输入、开关、选中项和弹层阴影在 Chrome 108 中可辨识。
+- 布局与间距：通过。没有改动用户要求保留的设置框架；字号提升后未出现裁切、挤压或横向溢出。
+- 文案与本地化：通过。设置组件引用的 555 个缺失/空白简体中文条目已补齐；占位符变量全部保留。最终管理员扩展功能面板中没有仅英文的可见文案，API、URL、OAuth/OIDC、MIME、JSON 等技术术语按语义保留。
+- 图标与交互：通过。菜单图标与 15px 文字对齐；搜索、账户菜单、设置导航和保存入口状态清晰。
 
-## Full-view and focused comparison evidence
+## 五类界面检查
 
-- Full-view comparison: the 2048 × 968 source and final main screenshots were opened together. Sidebar width, central composition, title hierarchy, input position, and suggestion density are closely aligned.
-- Focused menu comparison: the source crop and final account-menu screenshot were opened together. Raw pixel dimensions were not compared because the source is cropped at an unknown scale; sidebar-relative width, type hierarchy, avatar scale, row rhythm, and foreground contrast were compared instead.
-- Focused settings comparison: the source and final Personalization screenshots were opened together. Shared navigation and content typography now use the larger official-like hierarchy. Framework and state differences are documented above.
+- 账户菜单：姓名、在线状态、状态更新、工作空间、笔记、日程、自动化任务、AI 对话探索区、管理员面板、设置、登出字号一致。
+- 用户设置：导航、字段标签、说明、搜索与返回按钮使用统一层级。
+- 管理员设置：导航、页面标题、分组标题、字段、说明和保存按钮使用统一层级。
+- 集成与扩展：External Tool Servers、Open Terminal、External Knowledge Sources 等用户可见名称已有中文表达；保留必要的产品/协议名。
+- 动态设置标题：`SettingsModal.svelte` 的 29 个动态标题均存在非空简体中文翻译。
 
-## Interaction and compatibility verification
+## 对比迭代记录
 
-- Opened the account menu, navigated to Settings, switched to Personalization, and focused the message input.
-- Input focus retained a visible `rgb(235, 235, 235)` border and soft elevation.
-- At 1366 × 768, the account menu and settings modal both reported `fits: true`; document horizontal overflow was `false`.
-- Browser console/page errors during the final authenticated flow: 0.
-- Targeted Vitest: 7/7 passed (`postcss-chrome109-fix.test.js`, `official-style-parity.test.js`).
-- Production build: passed.
-- Unsupported generated CSS tokens for Chrome 108 (`color-mix`, `oklab`, `oklch`, `display-p3`): 0.
+1. 初次审计发现账户菜单同时存在 13px 和 14px，设置说明存在 11px，且多处设置文案仍为英文。
+2. 首轮修复统一菜单行并补齐翻译；复拍发现 `DropdownMenu` 直接子项的 13px 强制样式仍覆盖账户菜单，旧版 11px 帮助文字也仍可见。
+3. 增加非紧凑菜单模式并统一旧帮助文字后，第二次复拍发现设置页顶级标题 14px、子项 13px，层级仍偏弱。
+4. 将设置标题调整为 16px、子项调整为 14px、帮助文字调整为 13px 并增强灰度对比。
+5. 最终同状态对比未发现可执行的 P0/P1/P2 差异。
 
-## Comparison history
+## 交互与兼容验证
 
-1. Initial comparison found a P2 scale mismatch: the local sidebar was 245px, common settings labels were 12px, the account menu mixed 12–13px text, and the landing title/suggestions were visibly smaller than the source. Fix: moved the shared components to the measured 260px/14–16px hierarchy and rebuilt.
-2. First post-fix comparison found a remaining P2 account-menu proportion/contrast mismatch: the menu was about 8px narrower than the source-normalized target and the identity line was optically weak. Fix: widened the popup, set the identity line to 600 weight, strengthened foreground tokens, rebuilt, and recaptured.
-3. Final comparison found no actionable P0/P1/P2 mismatch. Chrome 108 desktop and responsive captures confirmed stable layout and interaction states.
-
-## Follow-up polish
-
-- P3: the official mirror and this project use different brand/model/profile assets and dynamic suggestion content. These are expected product-data differences and were intentionally retained.
+- 已实际展开账户菜单、打开设置、进入管理员“扩展功能”面板并检查可见文案。
+- Chrome 108 页面控制台错误和 page error：0。
+- 文档与设置面板横向溢出：false。
+- 定向 Vitest：9/9 通过（`postcss-chrome109-fix.test.js`、`official-style-parity.test.js`、`settings-localization.test.js`）。
+- 生产构建：通过。
 
 final result: passed

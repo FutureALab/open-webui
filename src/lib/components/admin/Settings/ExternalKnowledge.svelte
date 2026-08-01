@@ -792,8 +792,10 @@
 
 <div class="flex w-full flex-col justify-between text-xs">
 	<div class="mb-2 flex items-center justify-between">
-		<div class="flex items-center gap-2 leading-none text-gray-600 dark:text-gray-400">
-			<div>{$i18n.t('External Knowledge Sources')}</div>
+		<div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+			<div class="text-sm font-medium leading-5 text-gray-700 dark:text-gray-300">
+				{$i18n.t('External Knowledge Sources')}
+			</div>
 			<span
 				class="inline-flex items-center text-[0.625rem] font-normal uppercase leading-none text-gray-400 dark:text-gray-600"
 			>

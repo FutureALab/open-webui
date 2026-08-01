@@ -33,20 +33,29 @@ describe('official visual style parity', () => {
 		const switchComponent = read('./src/lib/components/common/Switch.svelte');
 
 		expect(settingsModal).toContain('h-8 px-2.5 md:w-full');
-		expect(settingsModal).toContain('rounded-lg text-sm text-left');
-		expect(userSettingRow).toContain('text-sm font-medium leading-5 text-gray-700');
-		expect(adminSettingRow).toContain('text-sm font-medium leading-5 text-gray-700');
+		expect(settingsModal).toContain('rounded-lg text-[15px] leading-5 text-left');
+		expect(settingsModal).toContain('settings-panel-typography');
+		expect(settingsModal).toContain('h2.text-sm');
+		expect(settingsModal).toContain('font-size: 1rem');
+		expect(userSettingRow).toContain('text-[15px] font-medium leading-5 text-gray-700');
+		expect(userSettingRow).toContain('text-[13px] leading-[18px]');
+		expect(adminSettingRow).toContain('text-[15px] font-medium leading-5 text-gray-700');
+		expect(adminSettingRow).toContain('text-[13px] leading-[18px]');
 		expect(switchComponent).toContain("'bg-emerald-500 dark:bg-emerald-700'");
 		expect(switchComponent).toContain('data-[state=checked]:translate-x-3');
 	});
 
 	it('uses the official account menu and landing-page type scale', () => {
+		const dropdownMenu = read('./src/lib/components/common/DropdownMenu.svelte');
 		const userMenu = read('./src/lib/components/layout/Sidebar/UserMenu.svelte');
 		const placeholder = read('./src/lib/components/chat/Placeholder.svelte');
 		const suggestions = read('./src/lib/components/chat/Suggestions.svelte');
 
-		expect(userMenu).toContain('font-sans text-sm');
-		expect(userMenu).toContain('text-sm text-gray-900');
+		expect(userMenu).toContain('font-sans text-[15px]');
+		expect(userMenu).toContain('compact={false}');
+		expect(userMenu).not.toContain('px-3 text-sm leading-5');
+		expect(dropdownMenu).toContain("'[&>button]:h-9!");
+		expect(dropdownMenu).toContain('[&>a]:text-[15px]!');
 		expect(userMenu).toContain('size-11 rounded-full object-cover');
 		expect(userMenu).toContain('h-9 items-center gap-2.5');
 		expect(placeholder).toContain('text-[1.75rem] leading-9');

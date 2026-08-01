@@ -12,3 +12,4 @@
 - [Chrome 108 官方视觉对齐](tasks/2026-08-01-official-visual-parity.md)
 - [官方字体与特效全站补齐](tasks/2026-08-01-official-typography-effects.md)
 - [官方界面字号与密度优化](tasks/2026-08-01-official-ui-scale-polish.md)
+- [设置字体规范化与中文审计](tasks/2026-08-01-settings-typography-localization.md)

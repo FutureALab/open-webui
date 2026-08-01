@@ -848,7 +848,7 @@
 	};
 
 	const tabButtonClass = (active: boolean) =>
-		`flex items-center gap-2 h-8 px-2.5 md:w-full shrink-0 rounded-lg text-sm text-left transition-colors duration-75 ${
+		`flex items-center gap-2 h-8 px-2.5 md:w-full shrink-0 rounded-lg text-[15px] leading-5 text-left transition-colors duration-75 ${
 			active
 				? 'font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-white/[0.04]'
 				: 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
@@ -897,7 +897,7 @@
 		class="shrink-0 min-w-0 md:min-h-0 flex md:flex-col border-b md:border-b-0 md:border-r border-gray-100/30 dark:border-white/[0.02] md:w-[15rem]"
 	>
 		<button
-			class="flex items-center gap-2 h-8 px-2.5 m-1 md:mb-0 md:w-[calc(100%-0.5rem)] shrink-0 rounded-lg text-sm text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-75"
+			class="flex items-center gap-2 h-8 px-2.5 m-1 md:mb-0 md:w-[calc(100%-0.5rem)] shrink-0 rounded-lg text-[15px] leading-5 text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-75"
 			type="button"
 			on:click={() => {
 				show = false;
@@ -908,7 +908,7 @@
 		</button>
 
 		<div
-			class="hidden md:flex items-center gap-2 h-9 px-2.5 mx-1 mt-1 mb-1 shrink-0 rounded-xl text-sm bg-gray-50/70 dark:bg-white/[0.03]"
+			class="hidden md:flex items-center gap-2 h-9 px-2.5 mx-1 mt-1 mb-1 shrink-0 rounded-xl text-[15px] leading-5 bg-gray-50/70 dark:bg-white/[0.03]"
 		>
 			<div class="self-center rounded-l-xl bg-transparent">
 				<Search className="size-3.5" strokeWidth="1.5" />
@@ -916,7 +916,7 @@
 			<label class="sr-only" for="search-input-settings-modal">{$i18n.t('Search')}</label>
 			<input
 				data-settings-search
-				class="w-full text-sm bg-transparent py-1 outline-hidden dark:text-gray-300"
+				class="w-full text-[15px] leading-5 bg-transparent py-1 outline-hidden dark:text-gray-300"
 				bind:value={search}
 				id="search-input-settings-modal"
 				on:input={searchDebounceHandler}
@@ -928,7 +928,7 @@
 			class="tabs scrollbar-none flex min-w-0 flex-1 min-h-0 overflow-x-auto md:overflow-x-hidden md:overflow-y-auto md:flex-col p-1 pl-0 md:pl-1 gap-px"
 		>
 			<span
-				class="hidden md:block text-[0.625rem] text-gray-400 dark:text-gray-600 px-2 mt-1.5 mb-0.5"
+				class="hidden md:block text-xs leading-4 text-gray-400 dark:text-gray-600 px-2 mt-1.5 mb-0.5"
 			>
 				{$i18n.t('Personal')}
 			</span>
@@ -1161,7 +1161,7 @@
 		</div>
 	</nav>
 
-	<div class="flex-1 min-w-0 min-h-0 p-4 md:px-5 flex flex-col">
+	<div class="settings-panel-typography flex-1 min-w-0 min-h-0 p-4 md:px-5 flex flex-col">
 		<div class="flex-1 min-h-0 overflow-hidden">
 			{#if selectedTab === 'general'}
 				<General
@@ -1284,3 +1284,33 @@
 		</div>
 	</div>
 </Modal>
+
+<style>
+	:global(.settings-panel-typography) {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	:global(.settings-panel-typography h2.text-sm) {
+		font-size: 1rem;
+		line-height: 1.5rem;
+	}
+
+	:global(.settings-panel-typography .text-xs) {
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+	}
+
+	:global(.settings-panel-typography .text-\[0\.6875rem\]) {
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+	}
+
+	:global(.settings-panel-typography .text-\[0\.6875rem\].text-gray-400) {
+		color: rgb(107, 114, 128);
+	}
+
+	:global(.dark .settings-panel-typography .text-\[0\.6875rem\].text-gray-400) {
+		color: rgb(156, 163, 175);
+	}
+</style>

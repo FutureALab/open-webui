@@ -112,7 +112,10 @@
 	<slot />
 
 	<div slot="content">
-		<DropdownMenu className="{className} font-sans text-sm text-gray-900 dark:text-gray-100">
+		<DropdownMenu
+			compact={false}
+			className="{className} font-sans text-[15px] text-gray-900 dark:text-gray-100"
+		>
 			{#if $user}
 				<div>
 					<button
@@ -172,7 +175,7 @@
 				{#if $user?.status_emoji || $user?.status_message}
 					<div class="user-menu-status">
 						<button
-							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-sm leading-5 flex items-center text-left"
+							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-[15px] leading-5 flex items-center text-left"
 							type="button"
 							on:click={() => {
 								show = false;
@@ -224,7 +227,7 @@
 				{:else}
 					<div class="user-menu-status">
 						<button
-							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-sm leading-5 flex items-center text-left"
+							class="w-full h-9 gap-2.5 rounded-xl px-3 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none text-[15px] leading-5 flex items-center text-left"
 							type="button"
 							on:click={() => {
 								show = false;
@@ -249,7 +252,7 @@
 					<a
 						href="/workspace"
 						draggable="false"
-						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -293,7 +296,7 @@
 					<a
 						href="/notes"
 						draggable="false"
-						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -337,7 +340,7 @@
 					<a
 						href="/calendar"
 						draggable="false"
-						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -381,7 +384,7 @@
 					<a
 						href="/automations"
 						draggable="false"
-						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -425,7 +428,7 @@
 					<a
 						href="/playground"
 						draggable="false"
-						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+						class="flex flex-1 h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -470,7 +473,7 @@
 				<!-- {$i18n.t('Help')} -->
 
 				<button
-					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 					type="button"
 					id="chat-share-button"
 					on:click={async () => {
@@ -496,7 +499,7 @@
 				<a
 					href="/admin"
 					draggable="false"
-					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 					on:click={async (e) => {
 						if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
 							return;
@@ -518,7 +521,7 @@
 			{/if}
 
 			<button
-				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					show = false;
@@ -538,7 +541,7 @@
 			</button>
 
 			<button
-				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-sm leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					const res = await userSignOut();

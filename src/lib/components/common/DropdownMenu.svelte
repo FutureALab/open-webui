@@ -1,10 +1,15 @@
 <script lang="ts">
 	export let className = '';
 	export let style = '';
+	export let compact = true;
 </script>
 
 <div
-	class={`rounded-xl! p-0.5! border border-gray-100 dark:border-gray-800 z-50 bg-white text-gray-900 dark:bg-gray-850 dark:text-white shadow-lg ${className} [&_button:hover]:bg-gray-50/40! dark:[&_button:hover]:bg-gray-800/40! [&_a:hover]:bg-gray-50/40! dark:[&_a:hover]:bg-gray-800/40! [&_button:hover]:text-gray-900 dark:[&_button:hover]:text-gray-100 [&_a:hover]:text-gray-900 dark:[&_a:hover]:text-gray-100 [&>button]:flex [&>button]:w-full [&>button]:h-[1.6875rem]! [&>button]:items-center [&>button]:gap-2! [&>button]:rounded-xl! [&>button]:bg-transparent [&>button]:px-2! [&>button]:text-[13px]! [&>button]:font-normal! [&>a]:flex [&>a]:w-full [&>a]:h-[1.6875rem]! [&>a]:items-center [&>a]:gap-2! [&>a]:rounded-xl! [&>a]:bg-transparent [&>a]:px-2! [&>a]:text-[13px]! [&>a]:font-normal! [&_button_svg]:size-3.5! [&_a_svg]:size-3.5! [&>hr]:my-0.5 [&>hr]:mx-1`}
+	class={`rounded-xl! p-0.5! border border-gray-100 dark:border-gray-800 z-50 bg-white text-gray-900 dark:bg-gray-850 dark:text-white shadow-lg ${className} [&_button:hover]:bg-gray-50/40! dark:[&_button:hover]:bg-gray-800/40! [&_a:hover]:bg-gray-50/40! dark:[&_a:hover]:bg-gray-800/40! [&_button:hover]:text-gray-900 dark:[&_button:hover]:text-gray-100 [&_a:hover]:text-gray-900 dark:[&_a:hover]:text-gray-100 [&>button]:flex [&>button]:w-full [&>button]:items-center [&>button]:rounded-xl! [&>button]:bg-transparent [&>button]:font-normal! [&>a]:flex [&>a]:w-full [&>a]:items-center [&>a]:rounded-xl! [&>a]:bg-transparent [&>a]:font-normal! ${
+		compact
+			? '[&>button]:h-[1.6875rem]! [&>button]:gap-2! [&>button]:px-2! [&>button]:text-[13px]! [&>a]:h-[1.6875rem]! [&>a]:gap-2! [&>a]:px-2! [&>a]:text-[13px]!'
+			: '[&>button]:h-9! [&>button]:gap-2.5! [&>button]:px-3! [&>button]:text-[15px]! [&>a]:h-9! [&>a]:gap-2.5! [&>a]:px-3! [&>a]:text-[15px]!'
+	} [&_button_svg]:size-3.5! [&_a_svg]:size-3.5! [&>hr]:my-0.5 [&>hr]:mx-1`}
 	{style}
 >
 	<slot />

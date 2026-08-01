@@ -168,7 +168,7 @@
 			<AdminSettingSection title={$i18n.t('Tools')} first>
 				<div>
 					<div class="mb-2 flex items-center justify-between">
-						<div class="text-xs text-gray-600 dark:text-gray-400">
+						<div class="text-sm font-medium leading-5 text-gray-700 dark:text-gray-300">
 							{$i18n.t('External Tool Servers')}
 						</div>
 
@@ -215,7 +215,9 @@
 			<AdminSettingSection title={$i18n.t('Terminal')}>
 				<div>
 					<div class="mb-2 flex items-center justify-between">
-						<div class="text-xs text-gray-600 dark:text-gray-400">{$i18n.t('Open Terminal')}</div>
+						<div class="text-sm font-medium leading-5 text-gray-700 dark:text-gray-300">
+							{$i18n.t('Open Terminal')}
+						</div>
 
 						<Tooltip content={$i18n.t('Add Connection')}>
 							<button
