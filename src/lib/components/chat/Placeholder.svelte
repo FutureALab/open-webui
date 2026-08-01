@@ -132,7 +132,7 @@
 									>
 										<img
 											src={`${WEBUI_API_BASE_URL}/models/model/profile/image?id=${model?.id}&lang=${$i18n.language}`}
-											class=" size-10 @sm:size-11 rounded-2xl"
+											class=" size-12 rounded-2xl"
 											aria-hidden="true"
 											draggable="false"
 											on:error={(e) => {

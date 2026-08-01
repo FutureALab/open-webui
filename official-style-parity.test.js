@@ -22,7 +22,7 @@ describe('official visual style parity', () => {
 		expect(sidebar).toContain('font-medium text-gray-850 dark:text-white font-primary');
 		expect(sidebar).toContain('text-[15px] leading-5 font-primary');
 		expect(sidebar).toContain('class="flex flex-col font-primary"');
-		expect(sidebar.match(/sidebar-new-chat-icon size-6 rounded-full/g)).toHaveLength(2);
+		expect(sidebar.match(/sidebar-new-chat-icon size-7 rounded-full/g)).toHaveLength(2);
 		expect(sidebarStore).toContain('sidebarWidth = writable(260)');
 		expect(chatItem).toContain('text-[15px] leading-5');
 	});
@@ -60,7 +60,7 @@ describe('official visual style parity', () => {
 		expect(userMenu).toContain('size-11 rounded-full object-cover');
 		expect(userMenu).toContain('h-9 items-center gap-2.5');
 		expect(placeholder).toContain('text-[1.75rem] leading-9');
-		expect(placeholder).toContain('size-10 @sm:size-11 rounded-2xl');
+		expect(placeholder).toContain('size-12 rounded-2xl');
 		expect(suggestions).toContain('text-base font-medium');
 	});
 });
