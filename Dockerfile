@@ -195,6 +195,16 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     rm -rf /var/lib/apt/lists/*; \
     fi
 
+# 安装 Node.js 20.x（使用 NodeSource 官方二进制仓库）
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+# 验证 Node.js 和 npm 版本（可选）
+RUN node --version && npm --version
+
+# 全局安装 Claude Code CLI
+RUN npm install -g @anthropic-ai/claude-code@latest
+
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx

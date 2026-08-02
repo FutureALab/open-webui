@@ -96,9 +96,9 @@ WEBUI_SECRET_KEY=$(cat backend/.webui_secret_key) \
 
 # 交叉编译
 docker buildx build --platform linux/amd64 -t open-webui:feature_20260730_dev-fa5b87280 -t open-webui:latest-amd64 --load --network host \
-  --build-arg HTTP_PROXY=http://192.168.239.170:7890 \
-  --build-arg HTTPS_PROXY=http://192.168.239.170:7890 \
+  --build-arg HTTP_PROXY=http://192.168.2.234:7890 \
+  --build-arg HTTPS_PROXY=http://192.168.2.234:7890 \
   --build-arg NO_PROXY="localhost,127.0.0.1,*.aliyun.com,mirrors.aliyun.com"  -f /Users/hanxuelei/python_project/open-webui/Dockerfile /Users/hanxuelei/python_project/open-webui 2>&1
 
 
-docker run --platform linux/amd64 -d -p 3000:8080 -e OPENAI_API_KEY=xxx -e OPENAI_API_BASE_URL=https://api.deepseek.com -v open-webui:/app/backend/data --name open-webui --restart always open-webui:latest-amd64
+docker run --platform linux/amd64 -d -p 3000:8080 -e OPENAI_API_KEY=sk-33e0546f0f8c4b1aa1b9b8bcdce47ef6 -e OPENAI_API_BASE_URL=https://api.deepseek.com -v open-webui:/app/backend/data --name open-webui --restart always open-webui:latest-amd64
