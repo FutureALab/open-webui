@@ -1,5 +1,13 @@
 # 当前任务
 
+## 2026-08-04 PostgreSQL 17 本地开发启动
+
+状态：已完成。远程分支已是最新；PostgreSQL 17 Alpine 由 Docker 单独运行，本地后端通过 `localhost:5432` 连接，本地前端通过 `localhost:5173` 访问后端 `localhost:8080`。Windows 启动脚本已切换为 Selector 事件循环，避免 psycopg 异步连接与 ProactorEventLoop 不兼容。
+
+验证：Compose 配置有效；PostgreSQL 17.10 健康，Alembic 为 `f0bd01a18a3d`，public schema 共 43 张表；`backend/start_windows.bat` 启动后 `/health` 返回 200；Vite 首页及 `/api/config` 均返回 200；验证后 5173、8080、5432 均已停止监听。
+
+启动顺序：`docker compose up -d postgres`，激活 `.venv` 后运行 `backend\start_windows.bat`，最后运行 `npm run dev`。详见 [[tasks/2026-08-04-postgresql17-local-development]]。
+
 状态：远程交叉编译提交的 merge 冲突已按用户决策解决：Chrome 108/109 PostCSS 文件保留本地版本，Pyodide 准备脚本采用跨平台缓存、可选环境代理和 PyPI lock 恢复方案；标准库同时打包等内容的通用 `.data` 静态别名，两个浏览器运行入口均显式使用该别名。定向测试、资源准备、生产构建、后端启动和浏览器 Python 实跑均通过。
 
 范围：
