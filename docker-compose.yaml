@@ -1,13 +1,13 @@
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:15-alpine
     container_name: open-webui-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB-open-webui}
       POSTGRES_USER: ${POSTGRES_USER-open-webui}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-open-webui}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres15:/var/lib/postgresql/data
     ports:
       - ${POSTGRES_PORT-5432}:5432
     healthcheck:
@@ -57,4 +57,4 @@ services:
 volumes:
   ollama: {}
   open-webui: {}
-  postgres: {}
+  postgres15: {}
