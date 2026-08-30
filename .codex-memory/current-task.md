@@ -1,11 +1,12 @@
 # 当前任务
 
-## 2026-08-31 汇合远程 feature 独有提交
+## 2026-08-31 汇合并推送远程 feature
 
-- 状态：远程 `feature_20260730_dev` 的 7 个独有提交已合并到本地并通过定向验证，等待创建 merge commit 和推送。
+- 状态：已完成。远程 `feature_20260730_dev` 的 7 个独有提交已合并到本地，merge commit `0a67db76a` 已通过普通非强制 push 推送到同名远程分支。
 - 范围：Claude Pipe、PostgreSQL 本地开发、S3 路径、Qdrant 本地代理绕过、Chrome 108 悬浮预览边框和测试交接文档。
 - 冲突：3 个项目记忆文件保留双方条目；Windows 启动脚本同时保留安全密钥生成、Selector 事件循环和 WebSocket 压缩开关。
 - 验证：Python 语法通过，私有化 Vitest 12/12 通过，Docker Compose 配置有效，Markdown 和 Git 差异检查通过。
+- 远程确认：`origin/feature_20260730_dev` 从 `e5f8b42ed` 前进到 `0a67db76a`，未使用 force push。
 - 回退点：合并前本地提交 `9e186e59744a755c0f4760a525fcc5f325fae718`。
 
 ## 2026-08-30 上游提交与 iframe 鉴权文档

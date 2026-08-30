@@ -6,6 +6,7 @@
 - 使用普通 merge 保留远程 Claude Pipe、PostgreSQL、S3/Qdrant、Chrome 108 和测试文档改动。
 - Windows 启动脚本合并为 Selector 事件循环启动方式，并继续支持 `UVICORN_WS_PER_MESSAGE_DEFLATE` 与现有随机密钥生成逻辑。
 - Python 语法、私有化 Vitest 12/12、Docker Compose 配置、Markdown 格式和 Git 差异检查均通过。
+- merge commit `0a67db76a` 已通过普通非强制 push 推送到 `origin/feature_20260730_dev`。
 
 ## 2026-08-30 上游提交与 iframe 鉴权文档
 

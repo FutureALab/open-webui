@@ -4,7 +4,7 @@ Tags: #task #merge #verification
 
 Date: 2026-08-31
 Scope: global
-Status: active
+Status: completed
 
 ## Goal
 
@@ -35,7 +35,9 @@ Status: active
 - Vitest：4 个私有化测试文件共 12 项全部通过。
 - Docker Compose：`docker compose config --quiet` 通过。
 - Markdown 与 Git 差异检查：通过。
+- Merge：`0a67db76a merge: preserve remote feature updates after upstream sync`。
+- Push：远程 feature 从 `e5f8b42ed` 前进到 `0a67db76a`，普通非强制推送成功。
 
 ## Next Steps
 
-- 完成验证、提交 merge，并普通 push 到 `origin/feature_20260730_dev`。
+- 后续开发继续从已汇合的 `feature_20260730_dev` 开始；不需要再补推本轮提交。
