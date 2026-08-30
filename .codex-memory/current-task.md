@@ -1,5 +1,15 @@
 # 当前任务
 
+## 2026-08-30 上游 main 同步
+
+- 状态：integration 分支已完成冲突解决与定向验证，等待创建合并提交并快进 feature 分支。
+- 目标：将 `open-webui/open-webui` 的 `main@d3e8bf3405e848cfba377814d0aa7ba7290e414d` 合并到 `feature_20260730_dev`，保持 AIOps 白标、字体/图标、Chrome 108 回退、中文设置与 Pyodide 0.28.x 行为。
+- 回退点：分支与标签 `backup/feature-before-main-sync-20260830` 均指向同步前提交 `33aaa43df163b3f0da08d750a9af179bc317f027`。
+- 验证：自定义 Vitest 11/11、后端 `py_compile`、资源哈希一致、无冲突标记；生产构建编译 672 个模块后因未安装上游新增 `docx-preview` 停止。
+- 环境阻塞：npm 镜像和官方 registry 均无法稳定连接，无法刷新 `node_modules`；锁文件已从上游与 feature 的既有锁图结构化合并。
+
+## 历史上下文
+
 状态：远程交叉编译提交的 merge 冲突已按用户决策解决：Chrome 108/109 PostCSS 文件保留本地版本，Pyodide 准备脚本采用跨平台缓存、可选环境代理和 PyPI lock 恢复方案；标准库同时打包等内容的通用 `.data` 静态别名，两个浏览器运行入口均显式使用该别名。定向测试、资源准备、生产构建、后端启动和浏览器 Python 实跑均通过。
 
 范围：
@@ -30,4 +40,4 @@
 - 公共运行时使用通用 `python_stdlib.data` 静态别名，不包含特定下载管理器配置；原始 zip 仍保留，别名由跨平台准备脚本生成。
 - 删除未被当前入口引用的更新公告组件及其前端状态/API，并放大侧栏品牌图标和聊天首页模型头像。
 
-下一步：用户确认本地界面代码解释器执行正常后，将已验证的提交推送到远程分支。
+下一步：创建合并提交，将 `feature_20260730_dev` 快进到已验证的 integration 提交；联网恢复后执行 `npm install` 并复跑 `npm run check` 与 `npm run build`。

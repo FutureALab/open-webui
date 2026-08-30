@@ -85,3 +85,12 @@
 - 定向 Vitest 3 个文件、9 项全部通过；资源准备命中 Pyodide 0.28.3 本地缓存，zip 与 data 的 SHA-256 完全一致。
 - 默认 Node 堆下构建因约 4 GB 内存上限退出，改用 8 GB Node 堆后生产构建成功；属于构建环境内存限制，不是代码错误。
 - 本地服务在 `127.0.0.1:8080` 启动并通过 `/health`；真实浏览器中 Python 输出 `hello`，`/pyodide/python_stdlib.data` 返回 200，控制台错误为 0，未请求 `python_stdlib.zip`。
+
+## 2026-08-30 同步原始仓库 main
+
+- 确认 Fork 的 `origin/main` 停留在 `01f4282f1ffe0d6212f58d3afbeae21fffd0c4be`；新增 `upstream` 并以原始仓库最新 `d3e8bf3405e848cfba377814d0aa7ba7290e414d` 为合并目标，共引入 460 个上游提交。
+- 在同步前提交 `33aaa43df163b3f0da08d750a9af179bc317f027` 创建同名备份分支与标签 `backup/feature-before-main-sync-20260830`，在 `integration/main-d3e8bf3-20260830` 处理合并。
+- 冲突以上游新结构为基线，重新应用 AIOps 名称、私有 Logo/字体资源、15px 侧栏与账户菜单、绿色开关、Chrome 108 PostCSS、中文设置、移除 Changelog 前端入口及社区/文档推广入口等 feature 语义。
+- 保留上游新增默认界面设置等功能，并保持 Pyodide `^0.28.2`、实际缓存 0.28.3 和 `python_stdlib.data` 别名流程。
+- 自定义 Vitest 4 文件 11 项全部通过；`env.py`/`main.py` 语法通过；20 项 Logo、PWA、启动图和 Archivo 字体哈希均与备份 feature 一致；无未解决冲突或冲突标记。
+- `npm run build` 编译 672 个模块后仅因当前 `node_modules` 缺少上游新增 `docx-preview` 停止；npm 镜像与官方 registry 均连接失败，完整依赖刷新留待网络恢复。

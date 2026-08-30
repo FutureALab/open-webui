@@ -24,6 +24,7 @@
 	import ModelDeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import SettingsSelect from '$lib/components/common/SettingsSelect.svelte';
+	import ExperimentalBadge from '$lib/components/common/ExperimentalBadge.svelte';
 
 	let modelUploadInputElement: HTMLInputElement;
 	let showModelDeleteConfirm = false;
@@ -766,7 +767,7 @@
 										<div class="flex flex-row justify-between space-x-4 pr-2">
 											<div class=" flex-1">
 												<div
-													class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
+													class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
 													style="width: {Math.max(
 														15,
 														$MODEL_DOWNLOAD_POOL[model].pullProgress ?? 0
@@ -919,7 +920,7 @@
 								<div class="flex flex-row justify-between space-x-4 pr-2">
 									<div class=" flex-1">
 										<div
-											class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
+											class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
 											style="width: {Math.max(15, createModelPullProgress ?? 0)}%"
 										>
 											{createModelPullProgress ?? 0}%
@@ -938,7 +939,7 @@
 
 				<div class="pt-1">
 					<div class="flex justify-between items-center text-xs">
-						<div class=" text-sm font-medium">{$i18n.t('Experimental')}</div>
+						<div class="text-sm font-medium"><ExperimentalBadge /></div>
 						<button
 							class=" text-xs font-medium text-gray-500"
 							type="button"
@@ -1103,7 +1104,7 @@
 
 								<div class="w-full rounded-full dark:bg-gray-800">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
+										class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
 										style="width: 100%"
 									>
 										{uploadMessage}
@@ -1119,7 +1120,7 @@
 
 								<div class="w-full rounded-full dark:bg-gray-800">
 									<div
-										class="dark:bg-gray-600 bg-gray-500 text-xs font-medium text-gray-100 text-center p-0.5 leading-none rounded-full"
+										class="dark:bg-gray-600 bg-gray-500 text-xs font-normal text-gray-100 text-center p-0.5 leading-none rounded-full"
 										style="width: {Math.max(15, uploadProgress ?? 0)}%"
 									>
 										{uploadProgress ?? 0}%

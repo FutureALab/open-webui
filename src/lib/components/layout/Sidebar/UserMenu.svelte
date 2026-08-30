@@ -40,7 +40,7 @@
 	export let profile = false;
 	export let help = false;
 
-	export let className = 'w-[240px]';
+	export let className = 'w-[15rem]';
 	export let align = 'end';
 
 	export let showActiveUsers = true;
@@ -155,7 +155,7 @@
 									: $i18n.t('Active Users')}
 							>
 								<div
-									class="ml-auto flex shrink-0 items-center justify-end gap-1 rounded-full px-1.5 py-0.5 text-[11px] leading-none text-gray-500 dark:text-gray-400"
+									class="ml-auto flex shrink-0 items-center justify-end gap-1 rounded-full px-1.5 py-0.5 text-[0.6875rem] leading-none text-gray-500 dark:text-gray-400"
 									on:mouseenter={() => {
 										if ($config?.features?.enable_public_active_users_count || role === 'admin') {
 											getUsageInfo();
