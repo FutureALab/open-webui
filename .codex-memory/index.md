@@ -15,3 +15,4 @@
 - [设置字体规范化与中文审计](tasks/2026-08-01-settings-typography-localization.md)
 - [Pyodide IDM 拦截修复与界面收尾](tasks/2026-08-01-pyodide-idm-ui-polish.md)
 - [同步原始仓库 main d3e8bf3](tasks/2026-08-30-upstream-main-sync.md)
+- [上游提交与 iframe 鉴权文档](tasks/2026-08-30-upstream-and-iframe-docs.md)

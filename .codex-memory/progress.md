@@ -1,5 +1,11 @@
 # 进度
 
+## 2026-08-30 上游提交与 iframe 鉴权文档
+
+- 新增 `docs/UPSTREAM_MAIN_SYNC_2026-08-30.md`，记录 460 个上游提交、合并/依赖提交、主要模块变化、私有化语义保留、验证和回退点。
+- 新增 `docs/IFRAME_AUTH_AND_RESOURCE_ACCESS.md`，记录 iframe 中 Bearer/Cookie 差异、已确认受影响的资源接口、同源/同站 Nginx部署、Cookie配置、sessionId 交换要求和上线验证。
+- 文档结论以当前 Git 历史和代码实现为准，不包含真实 Token、Cookie、账号或证书路径。
+
 ## 2026-07-31
 
 - 完成项目架构梳理与启动文档。
