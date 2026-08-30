@@ -33,9 +33,12 @@ Status: completed
 - `python -m py_compile backend/open_webui/env.py backend/open_webui/main.py`：通过。
 - 自定义品牌资源与备份 feature 的 Git blob 哈希：20/20 一致。
 - `git diff --cached --check`、冲突标记与未合并文件检查：通过。
-- `npm run build`：编译 672 个模块后因旧 `node_modules` 缺少 `docx-preview` 停止；需联网安装上游依赖后复跑。
+- `npm install --engine-strict=false`：成功，补齐 `docx-preview@0.4.0` 并规范化 PostCSS 锁图；该参数仅用于本机 Node 24 超出项目 22.x 上限的情况。
+- 刷新依赖后定向 Vitest：11/11 通过；后端 `py_compile`：通过。
+- `npm run check`：未通过，报告仓库既有的 7747 个错误与 201 个警告，主要为 JS 隐式 `any` 和 Svelte `i18n` 类型推断。
+- 8 GB Node 堆下 Vite 生产构建：成功，转换 6346 个浏览器模块并写入 `build`；默认约 4 GB 堆会在 chunks 阶段内存不足。
 
 ## Next Steps
 
-- 网络恢复后执行 `npm install`、`npm run check` 和 `npm run build`。
 - 推送 feature 分支前核对远程目标；本次不自动推送。
+- 正式开发或 CI 优先使用项目支持的 Node 22；本机 Node 24 仅作为已验证可构建的临时环境。

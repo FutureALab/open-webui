@@ -2,11 +2,11 @@
 
 ## 2026-08-30 上游 main 同步
 
-- 状态：integration 分支已完成冲突解决与定向验证，等待创建合并提交并快进 feature 分支。
+- 状态：已完成。`feature_20260730_dev` 已生成合并提交 `37e1365c9784dc403fefb5539e2363de15debcb6`，依赖已刷新并完成生产构建验证；尚未推送。
 - 目标：将 `open-webui/open-webui` 的 `main@d3e8bf3405e848cfba377814d0aa7ba7290e414d` 合并到 `feature_20260730_dev`，保持 AIOps 白标、字体/图标、Chrome 108 回退、中文设置与 Pyodide 0.28.x 行为。
 - 回退点：分支与标签 `backup/feature-before-main-sync-20260830` 均指向同步前提交 `33aaa43df163b3f0da08d750a9af179bc317f027`。
-- 验证：自定义 Vitest 11/11、后端 `py_compile`、资源哈希一致、无冲突标记；生产构建编译 672 个模块后因未安装上游新增 `docx-preview` 停止。
-- 环境阻塞：npm 镜像和官方 registry 均无法稳定连接，无法刷新 `node_modules`；锁文件已从上游与 feature 的既有锁图结构化合并。
+- 验证：自定义 Vitest 11/11、后端 `py_compile`、资源哈希一致、无冲突标记；联网刷新依赖后，Vite 在 8 GB Node 堆下成功构建 6346 个浏览器模块并写入 `build`。
+- 环境说明：本机 Node 24.13.0 超出项目声明的最高 22.x；安装使用单次 `--engine-strict=false`，生产构建实际通过。全量 `svelte-check` 仍有仓库既有的 7747 个错误和 201 个警告。
 
 ## 历史上下文
 
@@ -40,4 +40,4 @@
 - 公共运行时使用通用 `python_stdlib.data` 静态别名，不包含特定下载管理器配置；原始 zip 仍保留，别名由跨平台准备脚本生成。
 - 删除未被当前入口引用的更新公告组件及其前端状态/API，并放大侧栏品牌图标和聊天首页模型头像。
 
-下一步：创建合并提交，将 `feature_20260730_dev` 快进到已验证的 integration 提交；联网恢复后执行 `npm install` 并复跑 `npm run check` 与 `npm run build`。
+下一步：推送前核对 `origin` 目标；如需严格复现官方支持环境，使用 Node 22 重新执行安装与构建。

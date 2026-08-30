@@ -94,3 +94,11 @@
 - 保留上游新增默认界面设置等功能，并保持 Pyodide `^0.28.2`、实际缓存 0.28.3 和 `python_stdlib.data` 别名流程。
 - 自定义 Vitest 4 文件 11 项全部通过；`env.py`/`main.py` 语法通过；20 项 Logo、PWA、启动图和 Archivo 字体哈希均与备份 feature 一致；无未解决冲突或冲突标记。
 - `npm run build` 编译 672 个模块后仅因当前 `node_modules` 缺少上游新增 `docx-preview` 停止；npm 镜像与官方 registry 均连接失败，完整依赖刷新留待网络恢复。
+
+## 2026-08-30 依赖刷新与最终构建验证
+
+- 网络恢复后执行 `npm install --engine-strict=false`，补齐上游新增的 `docx-preview@0.4.0`，并由 npm 将手工合并的 PostCSS 锁图规范化为完整依赖关系。
+- 本机仅有 Node 24.13.0，而项目 engines 上限为 22.x；未修改系统配置或持久 npm 配置，仅对本次安装绕过 engine 检查。
+- 私有化定向 Vitest 4 文件 11 项全部通过，后端 `env.py` 与 `main.py` 语法检查通过。
+- 全量 `npm run check` 报告 7747 个错误、201 个警告，仍集中于仓库既有的 JS 隐式 `any` 与 Svelte `i18n` 类型推断，数量与依赖刷新前基本一致。
+- 默认约 4 GB Node 堆在 chunks 生成阶段内存不足；直接以 8 GB 堆运行 Vite 后成功转换 6346 个浏览器模块，静态产物写入 `build`。
