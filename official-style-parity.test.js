@@ -27,6 +27,14 @@ describe('official visual style parity', () => {
 		expect(chatItem).toContain('text-[15px] leading-5');
 	});
 
+	it('keeps the chat hover preview border visible in Chrome 108', () => {
+		const chatHoverPreview = read('./src/lib/components/layout/Sidebar/ChatHoverPreview.svelte');
+
+		expect(chatHoverPreview).toContain('border border-gray-200');
+		expect(chatHoverPreview).toContain('dark:border-gray-700');
+		expect(chatHoverPreview).not.toContain('ring-black/5');
+	});
+
 	it('uses the official settings scale, emphasis and switch treatment', () => {
 		const settingsModal = read('./src/lib/components/chat/SettingsModal.svelte');
 		const userSettingRow = read('./src/lib/components/chat/Settings/UserSettingRow.svelte');

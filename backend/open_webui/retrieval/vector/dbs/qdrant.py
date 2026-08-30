@@ -56,6 +56,7 @@ class QdrantClient(VectorDBBase):
         parsed = urlparse(self.QDRANT_URI)
         host = parsed.hostname or self.QDRANT_URI
         http_port = parsed.port or 6333  # default REST port
+        client_options = {'trust_env': False} if host.lower() in {'localhost', '127.0.0.1', '::1'} else {}
 
         if self.PREFER_GRPC:
             self.client = Qclient(
@@ -65,12 +66,14 @@ class QdrantClient(VectorDBBase):
                 prefer_grpc=self.PREFER_GRPC,
                 api_key=self.QDRANT_API_KEY,
                 timeout=self.QDRANT_TIMEOUT,
+                **client_options,
             )
         else:
             self.client = Qclient(
                 url=self.QDRANT_URI,
                 api_key=self.QDRANT_API_KEY,
                 timeout=QDRANT_TIMEOUT,
+                **client_options,
             )
 
     def _result_to_get_result(self, points) -> GetResult:

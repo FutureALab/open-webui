@@ -24,7 +24,7 @@ IF NOT "%WEBUI_SECRET_KEY_FILE%" == "" (
 
 IF "%PORT%"=="" SET PORT=8080
 IF "%HOST%"=="" SET HOST=0.0.0.0
-IF "%FORWARDED_ALLOW_IPS%"=="" SET "FORWARDED_ALLOW_IPS='*'"
+IF "%FORWARDED_ALLOW_IPS%"=="" SET "FORWARDED_ALLOW_IPS=*"
 SET "WEBUI_SECRET_KEY=%WEBUI_SECRET_KEY%"
 SET "WEBUI_JWT_SECRET_KEY=%WEBUI_JWT_SECRET_KEY%"
 IF "%WEBUI_SECRET_KEY_LENGTH%" == "" (
@@ -56,5 +56,5 @@ IF "%WEBUI_SECRET_KEY% %WEBUI_JWT_SECRET_KEY%" == " " (
 SET "WEBUI_SECRET_KEY=%WEBUI_SECRET_KEY%"
 IF "%UVICORN_WORKERS%"=="" SET UVICORN_WORKERS=1
 if "%UVICORN_WS_PER_MESSAGE_DEFLATE%" == "" set "UVICORN_WS_PER_MESSAGE_DEFLATE=true"
-uvicorn open_webui.main:app --host "%HOST%" --port "%PORT%" --forwarded-allow-ips %FORWARDED_ALLOW_IPS% --workers %UVICORN_WORKERS% --ws auto --ws-per-message-deflate %UVICORN_WS_PER_MESSAGE_DEFLATE%
+python -c "import asyncio, os, uvicorn; asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()); uvicorn.run('open_webui.main:app', host=os.environ['HOST'], port=int(os.environ['PORT']), forwarded_allow_ips=os.environ['FORWARDED_ALLOW_IPS'], workers=int(os.environ['UVICORN_WORKERS']), ws='auto', ws_per_message_deflate=os.environ['UVICORN_WS_PER_MESSAGE_DEFLATE'].lower() == 'true', loop='none')"
 :: For ssl user uvicorn open_webui.main:app --host "%HOST%" --port "%PORT%" --forwarded-allow-ips '*' --ssl-keyfile "key.pem" --ssl-certfile "cert.pem" --ws auto

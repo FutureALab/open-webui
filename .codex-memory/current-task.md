@@ -1,5 +1,13 @@
 # 当前任务
 
+## 2026-08-31 汇合远程 feature 独有提交
+
+- 状态：远程 `feature_20260730_dev` 的 7 个独有提交已合并到本地并通过定向验证，等待创建 merge commit 和推送。
+- 范围：Claude Pipe、PostgreSQL 本地开发、S3 路径、Qdrant 本地代理绕过、Chrome 108 悬浮预览边框和测试交接文档。
+- 冲突：3 个项目记忆文件保留双方条目；Windows 启动脚本同时保留安全密钥生成、Selector 事件循环和 WebSocket 压缩开关。
+- 验证：Python 语法通过，私有化 Vitest 12/12 通过，Docker Compose 配置有效，Markdown 和 Git 差异检查通过。
+- 回退点：合并前本地提交 `9e186e59744a755c0f4760a525fcc5f325fae718`。
+
 ## 2026-08-30 上游提交与 iframe 鉴权文档
 
 - 状态：已完成。新增上游 main 同步提交说明和 iframe 受保护资源鉴权方案文档。
@@ -14,6 +22,14 @@
 - 回退点：分支与标签 `backup/feature-before-main-sync-20260830` 均指向同步前提交 `33aaa43df163b3f0da08d750a9af179bc317f027`。
 - 验证：自定义 Vitest 11/11、后端 `py_compile`、资源哈希一致、无冲突标记；联网刷新依赖后，Vite 在 8 GB Node 堆下成功构建 6346 个浏览器模块并写入 `build`。
 - 环境说明：本机 Node 24.13.0 超出项目声明的最高 22.x；安装使用单次 `--engine-strict=false`，生产构建实际通过。全量 `svelte-check` 仍有仓库既有的 7747 个错误和 201 个警告。
+
+## 2026-08-04 PostgreSQL 17 本地开发启动
+
+状态：已完成。远程分支已是最新；PostgreSQL 17 Alpine 由 Docker 单独运行，本地后端通过 `localhost:5432` 连接，本地前端通过 `localhost:5173` 访问后端 `localhost:8080`。Windows 启动脚本已切换为 Selector 事件循环，避免 psycopg 异步连接与 ProactorEventLoop 不兼容。
+
+验证：Compose 配置有效；PostgreSQL 17.10 健康，Alembic 为 `f0bd01a18a3d`，public schema 共 43 张表；`backend/start_windows.bat` 启动后 `/health` 返回 200；Vite 首页及 `/api/config` 均返回 200；验证后 5173、8080、5432 均已停止监听。
+
+启动顺序：`docker compose up -d postgres`，激活 `.venv` 后运行 `backend\start_windows.bat`，最后运行 `npm run dev`。详见 [[tasks/2026-08-04-postgresql17-local-development]]。
 
 ## 历史上下文
 

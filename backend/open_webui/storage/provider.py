@@ -1,5 +1,6 @@
 import logging
 import os
+import posixpath
 import re
 import shutil
 from abc import ABC, abstractmethod
@@ -141,7 +142,8 @@ class S3StorageProvider(StorageProvider):
     def upload_file(self, file: BinaryIO, filename: str, tags: Dict[str, str]) -> Tuple[bytes, str]:
         """Handles uploading of the file to S3 storage."""
         contents, file_path = LocalStorageProvider.upload_file(file, filename, tags)
-        s3_key = os.path.join(self.key_prefix, filename)
+        # S3 object keys always use POSIX separators, including on Windows.
+        s3_key = posixpath.join(self.key_prefix, filename)
         try:
             self.s3_client.upload_file(file_path, self.bucket_name, s3_key)
             if S3_ENABLE_TAGGING and tags:

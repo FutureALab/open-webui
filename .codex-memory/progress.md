@@ -1,5 +1,12 @@
 # 进度
 
+## 2026-08-31 汇合远程 feature 独有提交
+
+- 获取远程分支后确认其相对共同基线 `33aaa43df` 有 7 个独有提交，本地不能直接 fast-forward push。
+- 使用普通 merge 保留远程 Claude Pipe、PostgreSQL、S3/Qdrant、Chrome 108 和测试文档改动。
+- Windows 启动脚本合并为 Selector 事件循环启动方式，并继续支持 `UVICORN_WS_PER_MESSAGE_DEFLATE` 与现有随机密钥生成逻辑。
+- Python 语法、私有化 Vitest 12/12、Docker Compose 配置、Markdown 格式和 Git 差异检查均通过。
+
 ## 2026-08-30 上游提交与 iframe 鉴权文档
 
 - 新增 `docs/UPSTREAM_MAIN_SYNC_2026-08-30.md`，记录 460 个上游提交、合并/依赖提交、主要模块变化、私有化语义保留、验证和回退点。
@@ -91,6 +98,15 @@
 - 定向 Vitest 3 个文件、9 项全部通过；资源准备命中 Pyodide 0.28.3 本地缓存，zip 与 data 的 SHA-256 完全一致。
 - 默认 Node 堆下构建因约 4 GB 内存上限退出，改用 8 GB Node 堆后生产构建成功；属于构建环境内存限制，不是代码错误。
 - 本地服务在 `127.0.0.1:8080` 启动并通过 `/health`；真实浏览器中 Python 输出 `hello`，`/pyodide/python_stdlib.data` 返回 200，控制台错误为 0，未请求 `python_stdlib.zip`。
+
+## 2026-08-04 PostgreSQL 17 本地开发启动
+
+- 拉取 `origin/feature_20260730_dev`，远程与本地均无新增提交。
+- `docker-compose.yaml` 新增本地已有的 `postgres:17-alpine` 服务、持久化卷、健康检查和 `5432` 端口映射；Open WebUI 容器配置也指向该服务。
+- 根目录 `.env` 在本机指向 `localhost:5432`；`.env.example` 补充 PostgreSQL Docker 与本地后端示例变量。
+- 修复 Windows 原生启动时 psycopg 异步连接不支持 ProactorEventLoop 的问题，`start_windows.bat` 在 Uvicorn 建立事件循环前设置 Selector 策略。
+- PostgreSQL 17.10、Alembic `f0bd01a18a3d`、43 张 public 表验证通过；本地前端、后端及跨端 API 均返回 200。
+- 验证完成后停止前端、后端和 PostgreSQL，5173、8080、5432 无测试监听器。
 
 ## 2026-08-30 同步原始仓库 main
 
