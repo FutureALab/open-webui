@@ -125,3 +125,10 @@
 - 私有化定向 Vitest 4 文件 11 项全部通过，后端 `env.py` 与 `main.py` 语法检查通过。
 - 全量 `npm run check` 报告 7747 个错误、201 个警告，仍集中于仓库既有的 JS 隐式 `any` 与 Svelte `i18n` 类型推断，数量与依赖刷新前基本一致。
 - 默认约 4 GB Node 堆在 chunks 生成阶段内存不足；直接以 8 GB 堆运行 Vite 后成功转换 6346 个浏览器模块，静态产物写入 `build`。
+
+## 2026-09-08 Office 导出 Action 配置
+
+- 新增 `scripts/open-webui-functions/office_export_action.py`，提供 Word、Excel、PPT 三个回答底部 Action。
+- 在 `localhost:8080` 注册为全局启用功能，并校验、启用本机 Open Terminal 连接。
+- 实际生成 DOCX、XLSX、PPTX 各一份，均保存至 `/home/user/exports` 且文件大小非零。
+- Open Terminal API 密钥只保存在本机 WebUI 的加密配置中，未进入 Git 或项目记忆。

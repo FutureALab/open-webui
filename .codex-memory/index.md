@@ -18,3 +18,4 @@
 - [上游提交与 iframe 鉴权文档](tasks/2026-08-30-upstream-and-iframe-docs.md)
 - [PostgreSQL 17 本地开发启动](tasks/2026-08-04-postgresql17-local-development.md)
 - [汇合远程 feature 独有提交](tasks/2026-08-31-remote-feature-consolidation.md)
+- [Open WebUI Office 导出按钮](tasks/2026-09-08-office-export-actions.md)
