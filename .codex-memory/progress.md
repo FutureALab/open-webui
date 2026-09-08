@@ -1,5 +1,12 @@
 # 进度
 
+## 2026-09-09 函数导入版本号修复
+
+- 浏览器点击“保存并创建”时，`compareVersion` 因前端当前版本为 `undefined` 抛出 `localeCompare` 异常，函数创建请求未发出。
+- `vite.config.ts` 改为从 `package.json` 直接读取版本，避免直接运行 Vite（例如使用 8 GB Node 堆构建）时缺失 `npm_package_version`。
+- 12 项现有私有化回归测试通过；显式移除 npm 版本环境变量后加载 Vite 配置，确认注入 `0.11.1` 且通过插件最低 `0.10.2` 的检查。
+- 8 GB Node 堆直接运行 Vite，生产构建通过并写入 `build`；当前服务返回新入口 `app.CeVOK_Pr.js`。浏览器缓存曾继续加载旧入口，使用带构建参数的新页面重新验证保存。
+
 ## 2026-08-31 汇合远程 feature 独有提交
 
 - 获取远程分支后确认其相对共同基线 `33aaa43df` 有 7 个独有提交，本地不能直接 fast-forward push。
