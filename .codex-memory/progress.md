@@ -7,6 +7,13 @@
 - 12 项现有私有化回归测试通过；显式移除 npm 版本环境变量后加载 Vite 配置，确认注入 `0.11.1` 且通过插件最低 `0.10.2` 的检查。
 - 8 GB Node 堆直接运行 Vite，生产构建通过并写入 `build`；当前服务返回新入口 `app.CeVOK_Pr.js`。浏览器缓存曾继续加载旧入口，使用带构建参数的新页面重新验证保存。
 
+## 2026-09-09 安装三个社区扩展
+
+- 按用户要求从指定社区页面安装：`export_to_word_enhanced` v0.5.3（Action）、`sub_agent` v0.5.10（Tool）、`openwebui_skills_manager_tool` v0.3.3（Tool）。均通过 WebUI 正常创建流程入库。
+- Word 首次保存还受 `.venv` 缺少 pip 阻塞；使用 `ensurepip` 补齐 pip，并安装源码 requirements 中的 python-docx、Pygments、latex2mathml、mathml2omml 后保存成功。
+- Word Action 已启用且设为全局；两个 Tool 保持当前账号默认访问范围，聊天时按需选择。Sub Agent 使用模型的原生函数调用模式。
+- 验证：数据库中三个 ID 均存在，Word `is_active=1`、`is_global=1`，两个工具已在工作空间工具列表显示。没有发起模型推理或验证三个扩展的全部业务功能。
+
 ## 2026-08-31 汇合远程 feature 独有提交
 
 - 获取远程分支后确认其相对共同基线 `33aaa43df` 有 7 个独有提交，本地不能直接 fast-forward push。
