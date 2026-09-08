@@ -132,3 +132,9 @@
 - 在 `localhost:8080` 注册为全局启用功能，并校验、启用本机 Open Terminal 连接。
 - 实际生成 DOCX、XLSX、PPTX 各一份，均保存至 `/home/user/exports` 且文件大小非零。
 - Open Terminal API 密钥只保存在本机 WebUI 的加密配置中，未进入 Git 或项目记忆。
+
+## 2026-09-08 撤销 Office 导出 Action
+
+- 确认本地 WebUI 数据库中昨日新增的 Action 只有 `office_export_buttons`。
+- 因 `localhost:8080` 当时未运行，直接从本地数据库精确删除该 Action，并确认剩余记录为 0。
+- 删除仓库中的 Action 源码；保留 Open Terminal 服务、连接配置和已生成测试文件。

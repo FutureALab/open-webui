@@ -2,10 +2,10 @@
 
 ## 2026-09-08 Open WebUI Office 导出按钮
 
-- 状态：已完成。`office_export_buttons` 已在本机 WebUI 全局启用，回答底部直接显示 Word、Excel、PPT 三个导出按钮。
+- 状态：已撤销。`office_export_buttons` 已按用户要求从本机 WebUI 数据库删除，仓库源码同步移除。
 - 运行方式：通过已启用并验证的本机 Open Terminal 连接生成文件，输出目录为 `/home/user/exports`。
 - 验证：三个格式均已从现有回答实际生成，文件存在且大小非零；认证密钥未写入仓库或项目记忆。
-- 源码：`scripts/open-webui-functions/office_export_action.py`。
+- 保留项：Open Terminal 服务、连接配置及既有测试文件未删除，等待用户决定是否继续保留。
 
 ## 2026-08-31 汇合并推送远程 feature
 

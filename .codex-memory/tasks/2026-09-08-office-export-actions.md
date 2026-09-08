@@ -2,7 +2,7 @@
 
 ## 状态
 
-已完成。`http://localhost:8080/` 已注册并全局启用 `office_export_buttons` Action，回答底部显示“生成 Word”“生成 Excel”“生成 PPT”三个按钮。
+已撤销。`office_export_buttons` 曾于 2026-09-07 注册并全局启用，后按用户要求于 2026-09-08 从本地 WebUI 数据库删除，仓库中的 Action 源码也已移除。
 
 ## 实现
 
@@ -18,6 +18,11 @@
 - 在现有对话中分别点击三个按钮，DOCX、XLSX、PPTX 均生成成功且文件大小非零。
 - 测试文件位于 Open Terminal 的 `/home/user/exports`。
 
+## 撤销记录
+
+- 2026-09-08：确认数据库中昨日创建的 Action 仅有 `office_export_buttons` 一个，并已精确删除。
+- Open Terminal 服务及既有测试文件未删除；它们不属于 Action 本身。
+
 ## 使用
 
-打开任意已有回答或新回答，在回答底部点击 W、X、P 图标即可生成相应 Office 文件。
+本功能当前不再可用。如需恢复，可从提交历史取回 Action 源码并重新导入。
