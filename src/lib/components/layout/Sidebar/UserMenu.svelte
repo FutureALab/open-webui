@@ -5,7 +5,7 @@
 	import { fade, slide } from 'svelte/transition';
 
 	import { getUsage } from '$lib/apis';
-	import { getSessionUser, userSignOut } from '$lib/apis/auths';
+	import { getLogoutRedirectUrl, getSessionUser, userSignOut } from '$lib/apis/auths';
 
 	import { showSettings, mobile, showSidebar, user, config, settings } from '$lib/stores';
 
@@ -472,7 +472,42 @@
 
 				<!-- {$i18n.t('Help')} -->
 
-				<button
+				{#if $user?.role === 'admin'}
+					<a
+						href="https://docs.openwebui.com"
+						target="_blank"
+						draggable="false"
+						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer select-none"
+						id="chat-share-button"
+						on:click={() => {
+							show = false;
+						}}
+					>
+						<div class="self-center">
+							<HelpCircleIcon className="size-3.5" />
+						</div>
+						<div class=" self-center truncate">{$i18n.t('Documentation')}</div>
+					</a>
+
+					<!-- Releases -->
+					<a
+						href="https://github.com/open-webui/open-webui/releases"
+						target="_blank"
+						draggable="false"
+						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-100 dark:hover:bg-gray-900 transition cursor-pointer select-none"
+						id="chat-share-button"
+						on:click={() => {
+							show = false;
+						}}
+					>
+						<div class="self-center">
+							<MapIcon className="size-3.5" />
+						</div>
+						<div class=" self-center truncate">{$i18n.t('Releases')}</div>
+					</a>
+				{/if}
+
+                    <button
 					class="flex h-9 items-center gap-2.5 rounded-xl px-3 text-[15px] leading-5 w-full hover:bg-gray-50/40 dark:hover:bg-gray-800/40 transition cursor-pointer select-none"
 					type="button"
 					id="chat-share-button"
@@ -545,10 +580,9 @@
 				type="button"
 				on:click={async () => {
 					const res = await userSignOut();
-					user.set(null);
 					localStorage.removeItem('token');
 
-					location.href = res?.redirect_url ?? '/auth';
+					location.href = getLogoutRedirectUrl(res?.redirect_url);
 					show = false;
 				}}
 			>
