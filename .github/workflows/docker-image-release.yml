@@ -1,0 +1,459 @@
+name: Build Docker Image and Attach tar to Release
+
+# 触发方式：
+#   1. push 形如 v1.0.0 的 tag   -> release tag / 镜像 tag 都用该 tag 名
+#   2. Actions 页面手动触发      -> 用页面选择的分支，或 ref 输入指定的任意分支/tag
+#
+# 流程：用目标 ref 的 Dockerfile 构建镜像 -> docker save -o 导出 tar（可选 gzip、按需分卷）
+#       -> 创建/更新 Release 并把 tar（+ sha256）作为附件上传
+#
+# 说明：
+#   - docker save 只能保存"单一平台"镜像，所以一次只构建一个 platform。
+#   - GitHub Release 单个附件上限 2048 MB，超过按 split_mb 自动分卷，并在 Release 说明里
+#     生成可直接照抄的重组命令。
+#   - 完整镜像（USE_SLIM=false）会预下载 embedding / whisper 模型，tar 通常数 GB；
+#     只想要小 tar 就把 slim 打开。
+#   - workflow_dispatch 需要该文件存在于默认分支，Actions 页面才会出现 Run workflow 按钮。
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: '要构建的分支或 tag（留空 = 使用触发本 workflow 时页面上选择的分支）'
+        required: false
+        default: ''
+        type: string
+      release_tag:
+        description: 'Release tag（留空则：tag 构建用 tag 名，分支构建用 image-<分支>-<short_sha>）'
+        required: false
+        default: ''
+        type: string
+      image_name:
+        description: '镜像名（不含 tag）'
+        required: false
+        default: 'open-webui'
+        type: string
+      platform:
+        description: '目标平台（docker save 只能保存单一平台）'
+        required: true
+        default: 'linux/amd64'
+        type: choice
+        options:
+          - linux/amd64
+          - linux/arm64
+      slim:
+        description: '精简镜像（USE_SLIM=true：跳过 embedding/whisper 模型预下载，tar 小很多）'
+        required: true
+        default: false
+        type: boolean
+      cuda:
+        description: 'CUDA 镜像（USE_CUDA=true，仅 linux/amd64；体积大、构建慢）'
+        required: true
+        default: false
+        type: boolean
+      ollama:
+        description: '内置 Ollama（USE_OLLAMA=true）'
+        required: true
+        default: false
+        type: boolean
+      compress:
+        description: 'docker save 后额外 gzip 压缩'
+        required: true
+        default: true
+        type: boolean
+      split_mb:
+        description: '单个附件上限 MB（超过则分卷，2048 是 GitHub Release 上限）'
+        required: true
+        default: 1900
+        type: number
+      draft:
+        description: '创建为草稿 Release'
+        required: true
+        default: false
+        type: boolean
+      prerelease:
+        description: '标记为 pre-release'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write # 创建 Release / 上传附件需要写权限
+
+concurrency:
+  group: docker-image-release-${{ github.ref }}-${{ inputs.ref || '' }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-release:
+    name: Build ${{ inputs.ref || github.ref_name }} -> Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+
+    env:
+      # 原始输入。push tag 触发时 inputs.* 全为空，统一在第一步里兜底成 IN_*。
+      # 走 env 而不是直接拼进脚本，避免自由文本导致的引号/注入问题。
+      RAW_REF: ${{ inputs.ref }}
+      RAW_RELEASE_TAG: ${{ inputs.release_tag }}
+      RAW_IMAGE_NAME: ${{ inputs.image_name }}
+      RAW_PLATFORM: ${{ inputs.platform }}
+      RAW_SLIM: ${{ inputs.slim }}
+      RAW_CUDA: ${{ inputs.cuda }}
+      RAW_OLLAMA: ${{ inputs.ollama }}
+      RAW_COMPRESS: ${{ inputs.compress }}
+      RAW_SPLIT_MB: ${{ inputs.split_mb }}
+      RAW_DRAFT: ${{ inputs.draft }}
+      RAW_PRERELEASE: ${{ inputs.prerelease }}
+      EVENT_NAME: ${{ github.event_name }}
+      CTX_REF: ${{ github.ref }}
+      CTX_REF_NAME: ${{ github.ref_name }}
+
+    steps:
+      - name: Resolve and validate inputs
+        run: |
+          set -euo pipefail
+
+          EFF_REF="${RAW_REF:-}"
+          EFF_RELEASE_TAG="${RAW_RELEASE_TAG:-}"
+          EFF_IMAGE_NAME="${RAW_IMAGE_NAME:-open-webui}"
+          EFF_PLATFORM="${RAW_PLATFORM:-linux/amd64}"
+          EFF_SLIM="${RAW_SLIM:-false}"
+          EFF_CUDA="${RAW_CUDA:-false}"
+          EFF_OLLAMA="${RAW_OLLAMA:-false}"
+          EFF_COMPRESS="${RAW_COMPRESS:-true}"
+          EFF_SPLIT_MB="${RAW_SPLIT_MB:-1900}"
+          EFF_DRAFT="${RAW_DRAFT:-false}"
+
+          # push tag 时没有输入：tag 名带 -rc/-alpha/-beta/-pre 就自动当 pre-release
+          EFF_PRERELEASE="${RAW_PRERELEASE:-}"
+          if [ -z "$EFF_PRERELEASE" ]; then
+            if [ "$EVENT_NAME" = "push" ] && [[ "$CTX_REF_NAME" =~ -(rc|alpha|beta|pre) ]]; then
+              EFF_PRERELEASE="true"
+            else
+              EFF_PRERELEASE="false"
+            fi
+          fi
+
+          case "$EFF_PLATFORM" in
+            linux/amd64|linux/arm64) ;;
+            *) echo "::error::platform 必须是 linux/amd64 或 linux/arm64（docker save 不支持多平台镜像）"; exit 1 ;;
+          esac
+          if [ "$EFF_CUDA" = "true" ] && [ "$EFF_PLATFORM" != "linux/amd64" ]; then
+            echo "::error::USE_CUDA=true 目前只支持 linux/amd64"
+            exit 1
+          fi
+          if ! [[ "$EFF_SPLIT_MB" =~ ^[0-9]+$ ]] || [ "$EFF_SPLIT_MB" -lt 1 ] || [ "$EFF_SPLIT_MB" -gt 2048 ]; then
+            echo "::error::split_mb 必须是 1..2048 的整数（GitHub Release 单附件上限 2048MB）"
+            exit 1
+          fi
+          # 镜像名会用于 docker tag / 文件名，按 Docker 仓库名规则限定
+          if ! [[ "$EFF_IMAGE_NAME" =~ ^[a-z0-9]+([._/-][a-z0-9]+)*$ ]]; then
+            echo "::error::image_name 只允许小写字母、数字和分隔符 . _ - /（例如 open-webui、ghcr.io/foo/bar）"
+            exit 1
+          fi
+          # release_tag 会作为 gh 命令参数，不允许前导 - 和特殊字符
+          if [ -n "$EFF_RELEASE_TAG" ] && ! [[ "$EFF_RELEASE_TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]]; then
+            echo "::error::release_tag 只允许字母、数字和 . _ - /，且不能以 - 开头"
+            exit 1
+          fi
+
+          # 后续步骤统一用 IN_*（与 RAW_* 不重名，避免覆盖歧义）
+          {
+            echo "IN_REF=$EFF_REF"
+            echo "IN_RELEASE_TAG=$EFF_RELEASE_TAG"
+            echo "IN_IMAGE_NAME=$EFF_IMAGE_NAME"
+            echo "IN_PLATFORM=$EFF_PLATFORM"
+            echo "IN_SLIM=$EFF_SLIM"
+            echo "IN_CUDA=$EFF_CUDA"
+            echo "IN_OLLAMA=$EFF_OLLAMA"
+            echo "IN_COMPRESS=$EFF_COMPRESS"
+            echo "IN_SPLIT_MB=$EFF_SPLIT_MB"
+            echo "IN_DRAFT=$EFF_DRAFT"
+            echo "IN_PRERELEASE=$EFF_PRERELEASE"
+          } >> "$GITHUB_ENV"
+
+          echo "触发=$EVENT_NAME 镜像=$EFF_IMAGE_NAME 平台=$EFF_PLATFORM slim=$EFF_SLIM cuda=$EFF_CUDA ollama=$EFF_OLLAMA compress=$EFF_COMPRESS split=${EFF_SPLIT_MB}MB draft=$EFF_DRAFT prerelease=$EFF_PRERELEASE"
+
+      - name: Checkout target ref
+        uses: actions/checkout@v5
+        with:
+          # 手动触发且未填 ref 时用页面上选择的分支；push tag 时用该 tag
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Resolve build metadata
+        id: meta
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse HEAD)"
+          SHORT_SHA="$(git rev-parse --short=8 HEAD)"
+
+          # ref 名字：显式输入优先，否则用触发时的 ref（CTX_REF_NAME 来自 github.ref_name）
+          if [ -n "$IN_REF" ]; then
+            REF_NAME="${IN_REF#refs/heads/}"
+            REF_NAME="${REF_NAME#refs/tags/}"
+          else
+            REF_NAME="${CTX_REF_NAME:-$SHORT_SHA}"
+          fi
+          REF_SLUG="$(printf '%s' "$REF_NAME" | sed -E 's/[^A-Za-z0-9._-]+/-/g; s/^[.-]+//; s/[.-]+$//' | cut -c1-60)"
+          [ -n "$REF_SLUG" ] || REF_SLUG="detached"
+
+          # 判断这次构建的目标是不是 tag：push tag，或输入的是已存在的 tag
+          IS_TAG=false
+          TAG_NAME=""
+          if [ "$EVENT_NAME" = "push" ] && [[ "$CTX_REF" == refs/tags/* ]]; then
+            IS_TAG=true; TAG_NAME="$CTX_REF_NAME"
+          elif [ -n "$IN_REF" ] && [[ "$IN_REF" == refs/tags/* ]]; then
+            IS_TAG=true; TAG_NAME="${IN_REF#refs/tags/}"
+          elif [ -n "$IN_REF" ] && git rev-parse -q --verify "refs/tags/$IN_REF" >/dev/null 2>&1; then
+            IS_TAG=true; TAG_NAME="$IN_REF"
+          fi
+
+          if [ "$IS_TAG" = "true" ]; then
+            # docker tag 只允许 [A-Za-z0-9._-]
+            IMAGE_TAG="$(printf '%s' "$TAG_NAME" | sed -E 's/[^A-Za-z0-9._-]+/-/g' | cut -c1-100)"
+          else
+            IMAGE_TAG="${REF_SLUG}-${SHORT_SHA}"
+          fi
+
+          if [ -n "$IN_RELEASE_TAG" ]; then
+            RELEASE_TAG="$IN_RELEASE_TAG"
+          elif [ "$IS_TAG" = "true" ]; then
+            RELEASE_TAG="$TAG_NAME"
+          else
+            RELEASE_TAG="image-${REF_SLUG}-${SHORT_SHA}"
+          fi
+          ASSET_BASE="${IN_IMAGE_NAME//\//_}-${IMAGE_TAG}"
+
+          {
+            echo "sha=$SHA"
+            echo "short_sha=$SHORT_SHA"
+            echo "ref_name=$REF_NAME"
+            echo "is_tag=$IS_TAG"
+            echo "image_tag=$IMAGE_TAG"
+            echo "image_ref=${IN_IMAGE_NAME}:${IMAGE_TAG}"
+            echo "release_tag=$RELEASE_TAG"
+            echo "asset_base=$ASSET_BASE"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### 构建目标"
+            echo ""
+            echo "| 项 | 值 |"
+            echo "|---|---|"
+            echo "| 触发 | \`$EVENT_NAME\` |"
+            echo "| ref | \`$REF_NAME\` |"
+            echo "| commit | \`$SHA\` |"
+            echo "| 镜像 | \`${IN_IMAGE_NAME}:${IMAGE_TAG}\` |"
+            echo "| 平台 | \`$IN_PLATFORM\` |"
+            echo "| slim / cuda / ollama | $IN_SLIM / $IN_CUDA / $IN_OLLAMA |"
+            echo "| Release tag | \`$RELEASE_TAG\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # 这个 Dockerfile 会在镜像里装 torch、构建前端、可选预下载模型，runner 默认磁盘不够
+      - name: Free disk space on runner
+        run: |
+          set -euo pipefail
+          df -h / | tail -1
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost \
+                      /usr/share/swift /opt/az /usr/local/.ghcup || true
+          sudo apt-get clean || true
+          docker image prune -af || true
+          df -h / | tail -1
+
+      - name: Set up QEMU
+        if: ${{ (inputs.platform || 'linux/amd64') == 'linux/arm64' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image from the target Dockerfile
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: ${{ inputs.platform || 'linux/amd64' }}
+          # load: 把构建结果放回本地 docker daemon，后面才能 docker save
+          load: true
+          # provenance/sbom 会往 index 里塞额外 manifest，docker save 可能报错，这里关掉
+          provenance: false
+          sbom: false
+          tags: ${{ steps.meta.outputs.image_ref }}
+          build-args: |
+            BUILD_HASH=${{ steps.meta.outputs.sha }}
+            USE_SLIM=${{ inputs.slim || 'false' }}
+            USE_CUDA=${{ inputs.cuda || 'false' }}
+            USE_OLLAMA=${{ inputs.ollama || 'false' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: docker save to tar
+        id: save
+        run: |
+          set -euo pipefail
+          # 镜像名/tag 只在 shell 里用变量拼接，避免把输入直接写进脚本
+          IMAGE_REF="${IN_IMAGE_NAME}:${{ steps.meta.outputs.image_tag }}"
+          ASSET_BASE="${IN_IMAGE_NAME//\//_}-${{ steps.meta.outputs.image_tag }}"
+
+          docker image inspect "$IMAGE_REF" >/dev/null
+          mkdir -p dist
+
+          docker save -o "dist/${ASSET_BASE}.tar" "$IMAGE_REF"
+          ARTIFACT="dist/${ASSET_BASE}.tar"
+
+          if [ "$IN_COMPRESS" = "true" ]; then
+            echo "gzip 压缩中..."
+            gzip -1 "$ARTIFACT"
+            ARTIFACT="${ARTIFACT}.gz"
+          fi
+
+          # 完整性检查：把条目完整读出来再匹配。
+          # 不能写 `tar -tf | grep -q`：grep 提前退出会让 tar 收到 SIGPIPE，配合 pipefail 会误判失败。
+          tar -tf "$ARTIFACT" > dist/.entries.txt
+          if ! grep -qx 'manifest.json' dist/.entries.txt; then
+            echo "::error::docker save 产物里没有 manifest.json，归档可能损坏"
+            exit 1
+          fi
+          rm -f dist/.entries.txt
+
+          # 校验文件写成 "<hash>  <归档文件名>"，下载重组后可直接 sha256sum -c
+          HASH="$(sha256sum "$ARTIFACT" | awk '{print $1}')"
+          printf '%s  %s\n' "$HASH" "$(basename "$ARTIFACT")" > "dist/${ASSET_BASE}.sha256"
+
+          ls -lh "$ARTIFACT" "dist/${ASSET_BASE}.sha256"
+          echo "artifact=$ARTIFACT" >> "$GITHUB_OUTPUT"
+          du -sh dist
+
+      # GitHub Release 单个附件上限 2048MB，超过就分卷并生成重组说明
+      - name: Split artifact if it exceeds the release asset limit
+        id: split
+        env:
+          IMAGE_REF: ${{ steps.meta.outputs.image_ref }}
+          REF_NAME: ${{ steps.meta.outputs.ref_name }}
+          SHA: ${{ steps.meta.outputs.sha }}
+          SHORT_SHA: ${{ steps.meta.outputs.short_sha }}
+        run: |
+          set -euo pipefail
+          ARTIFACT='${{ steps.save.outputs.artifact }}' # dist/<base>.tar 或 dist/<base>.tar.gz
+          ASSET_BASE="${IN_IMAGE_NAME//\//_}-${{ steps.meta.outputs.image_tag }}"
+          LIMIT_BYTES=$(( IN_SPLIT_MB * 1024 * 1024 ))
+          EXT="${ARTIFACT##*.tar}"                     # "" 或 ".gz"
+          ARCHIVE_NAME="${ASSET_BASE}.tar${EXT}"
+          SPLIT=false
+
+          if [ ! -f "$ARTIFACT" ]; then
+            echo "::error::找不到 docker save 产物：$ARTIFACT"
+            exit 1
+          fi
+
+          if [ "$(wc -c < "$ARTIFACT")" -gt "$LIMIT_BYTES" ]; then
+            SPLIT=true
+            echo "产物超过 ${IN_SPLIT_MB}MB，开始分卷..."
+            split -b "${IN_SPLIT_MB}M" -d -a 3 "$ARTIFACT" "${ARTIFACT}.part-"
+            rm -f "$ARTIFACT"
+          fi
+          echo "split=$SPLIT" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## 镜像 tar 说明"
+            echo ""
+            echo "- 分支/ref: \`$REF_NAME\`"
+            echo "- commit: \`$SHA\`"
+            echo "- 镜像: \`$IMAGE_REF\`（platform: \`$IN_PLATFORM\`）"
+            echo "- build args: \`BUILD_HASH=$SHORT_SHA USE_SLIM=$IN_SLIM USE_CUDA=$IN_CUDA USE_OLLAMA=$IN_OLLAMA\`"
+            echo ""
+            if [ "$SPLIT" = "true" ]; then
+              echo "产物超过 ${IN_SPLIT_MB}MB，已按 ${IN_SPLIT_MB}MB 分卷上传：\`${ARCHIVE_NAME}.part-000\`、\`${ARCHIVE_NAME}.part-001\` …"
+              echo ""
+              echo '```bash'
+              echo "# 1) 下载全部分卷到同一目录，按文件名顺序拼接"
+              echo "cat ${ARCHIVE_NAME}.part-* > ${ARCHIVE_NAME}"
+              echo "# 2) 校验（用 .sha256 附件）"
+              echo "sha256sum -c ${ASSET_BASE}.sha256"
+              echo "# 3) 载入镜像"
+              if [ -n "$EXT" ]; then
+                echo "gunzip -c ${ARCHIVE_NAME} | docker load"
+              else
+                echo "docker load -i ${ARCHIVE_NAME}"
+              fi
+              echo '```'
+            else
+              echo '```bash'
+              if [ -n "$EXT" ]; then
+                echo "gunzip -c ${ARCHIVE_NAME} | docker load"
+              else
+                echo "docker load -i ${ARCHIVE_NAME}"
+              fi
+              echo '```'
+            fi
+          } > RELEASE_NOTES.md
+
+          echo "--- dist ---"; ls -lh dist
+
+      - name: Publish to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.meta.outputs.release_tag }}
+          SHA: ${{ steps.meta.outputs.sha }}
+          ASSET_BASE: ${{ steps.meta.outputs.asset_base }}
+        run: |
+          set -euo pipefail
+
+          if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG 不存在，创建中..."
+            args=(--title "Docker image: $RELEASE_TAG" --notes-file RELEASE_NOTES.md)
+            # tag 已存在（tag 触发，或手动构建已有 tag）时不能再指定 --target
+            if git rev-parse -q --verify "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+              echo "tag $RELEASE_TAG 已存在，跳过 --target"
+            else
+              args+=(--target "$SHA")
+            fi
+            if [ "$IN_DRAFT" = "true" ]; then args+=(--draft); fi
+            if [ "$IN_PRERELEASE" = "true" ]; then args+=(--prerelease); fi
+            gh release create "$RELEASE_TAG" "${args[@]}"
+          else
+            echo "Release $RELEASE_TAG 已存在：更新说明、覆盖同名附件"
+            gh release edit "$RELEASE_TAG" --notes-file RELEASE_NOTES.md
+          fi
+
+          # 删掉本次同名旧附件（尤其是上次分卷数量更多时残留的尾部分卷）
+          existing="$(gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' || true)"
+          if [ -n "$existing" ]; then
+            while IFS= read -r name; do
+              [ -z "$name" ] && continue
+              case "$name" in
+                "${ASSET_BASE}"*) gh release delete-asset "$RELEASE_TAG" "$name" -y || true ;;
+              esac
+            done <<< "$existing"
+          fi
+
+          gh release upload "$RELEASE_TAG" dist/* --clobber
+          echo "--- release assets ---"
+          gh release view "$RELEASE_TAG" --json assets --jq '.assets[] | "\(.name)\t\(.size) bytes"'
+
+      - name: Job summary
+        if: always()
+        env:
+          RELEASE_TAG: ${{ steps.meta.outputs.release_tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          {
+            echo ""
+            echo "### 产物"
+            echo ""
+            if [ -d dist ]; then
+              echo '```'
+              ls -lh dist || true
+              echo '```'
+            fi
+            echo ""
+            echo "Release: [$RELEASE_TAG](https://github.com/$REPO/releases/tag/$RELEASE_TAG)"
+          } >> "$GITHUB_STEP_SUMMARY"
