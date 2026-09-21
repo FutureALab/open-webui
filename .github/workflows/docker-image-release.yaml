@@ -58,6 +58,11 @@ on:
         required: true
         default: false
         type: boolean
+      node_heap_mb:
+        description: '前端构建阶段 Node 堆上限 MB（vite build OOM 时调大，别超过 runner 物理内存）'
+        required: true
+        default: 8192
+        type: number
       compress:
         description: 'docker save 后额外 gzip 压缩'
         required: true
@@ -106,6 +111,7 @@ jobs:
       RAW_SLIM: ${{ inputs.slim }}
       RAW_CUDA: ${{ inputs.cuda }}
       RAW_OLLAMA: ${{ inputs.ollama }}
+      RAW_NODE_HEAP_MB: ${{ inputs.node_heap_mb }}
       RAW_COMPRESS: ${{ inputs.compress }}
       RAW_SPLIT_MB: ${{ inputs.split_mb }}
       RAW_DRAFT: ${{ inputs.draft }}
@@ -126,6 +132,7 @@ jobs:
           EFF_SLIM="${RAW_SLIM:-false}"
           EFF_CUDA="${RAW_CUDA:-false}"
           EFF_OLLAMA="${RAW_OLLAMA:-false}"
+          EFF_NODE_HEAP_MB="${RAW_NODE_HEAP_MB:-8192}"
           EFF_COMPRESS="${RAW_COMPRESS:-true}"
           EFF_SPLIT_MB="${RAW_SPLIT_MB:-1900}"
           EFF_DRAFT="${RAW_DRAFT:-false}"
@@ -152,6 +159,11 @@ jobs:
             echo "::error::split_mb 必须是 1..2048 的整数（GitHub Release 单附件上限 2048MB）"
             exit 1
           fi
+          # 前端构建的 Node 堆上限：默认 4GB 会在 vite build 渲染 chunk 时 OOM
+          if ! [[ "$EFF_NODE_HEAP_MB" =~ ^[0-9]+$ ]] || [ "$EFF_NODE_HEAP_MB" -lt 2048 ] || [ "$EFF_NODE_HEAP_MB" -gt 16384 ]; then
+            echo "::error::node_heap_mb 必须是 2048..16384 的整数（单位 MB；ubuntu-latest 只有 16GB 内存，别设太大）"
+            exit 1
+          fi
           # 镜像名会用于 docker tag / 文件名，按 Docker 仓库名规则限定
           if ! [[ "$EFF_IMAGE_NAME" =~ ^[a-z0-9]+([._/-][a-z0-9]+)*$ ]]; then
             echo "::error::image_name 只允许小写字母、数字和分隔符 . _ - /（例如 open-webui、ghcr.io/foo/bar）"
@@ -172,13 +184,14 @@ jobs:
             echo "IN_SLIM=$EFF_SLIM"
             echo "IN_CUDA=$EFF_CUDA"
             echo "IN_OLLAMA=$EFF_OLLAMA"
+            echo "IN_NODE_HEAP_MB=$EFF_NODE_HEAP_MB"
             echo "IN_COMPRESS=$EFF_COMPRESS"
             echo "IN_SPLIT_MB=$EFF_SPLIT_MB"
             echo "IN_DRAFT=$EFF_DRAFT"
             echo "IN_PRERELEASE=$EFF_PRERELEASE"
           } >> "$GITHUB_ENV"
 
-          echo "触发=$EVENT_NAME 镜像=$EFF_IMAGE_NAME 平台=$EFF_PLATFORM slim=$EFF_SLIM cuda=$EFF_CUDA ollama=$EFF_OLLAMA compress=$EFF_COMPRESS split=${EFF_SPLIT_MB}MB draft=$EFF_DRAFT prerelease=$EFF_PRERELEASE"
+          echo "触发=$EVENT_NAME 镜像=$EFF_IMAGE_NAME 平台=$EFF_PLATFORM slim=$EFF_SLIM cuda=$EFF_CUDA ollama=$EFF_OLLAMA node_heap=${EFF_NODE_HEAP_MB}MB compress=$EFF_COMPRESS split=${EFF_SPLIT_MB}MB draft=$EFF_DRAFT prerelease=$EFF_PRERELEASE"
 
       - name: Checkout target ref
         uses: actions/checkout@v5
@@ -292,6 +305,7 @@ jobs:
             USE_SLIM=${{ inputs.slim || 'false' }}
             USE_CUDA=${{ inputs.cuda || 'false' }}
             USE_OLLAMA=${{ inputs.ollama || 'false' }}
+            NODE_MAX_OLD_SPACE_SIZE=${{ inputs.node_heap_mb || 8192 }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -368,7 +382,7 @@ jobs:
             echo "- 分支/ref: \`$REF_NAME\`"
             echo "- commit: \`$SHA\`"
             echo "- 镜像: \`$IMAGE_REF\`（platform: \`$IN_PLATFORM\`）"
-            echo "- build args: \`BUILD_HASH=$SHORT_SHA USE_SLIM=$IN_SLIM USE_CUDA=$IN_CUDA USE_OLLAMA=$IN_OLLAMA\`"
+            echo "- build args: \`BUILD_HASH=$SHORT_SHA USE_SLIM=$IN_SLIM USE_CUDA=$IN_CUDA USE_OLLAMA=$IN_OLLAMA NODE_MAX_OLD_SPACE_SIZE=$IN_NODE_HEAP_MB\`"
             echo ""
             if [ "$SPLIT" = "true" ]; then
               echo "产物超过 ${IN_SPLIT_MB}MB，已按 ${IN_SPLIT_MB}MB 分卷上传：\`${ARCHIVE_NAME}.part-000\`、\`${ARCHIVE_NAME}.part-001\` …"
