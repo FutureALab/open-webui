@@ -28,7 +28,11 @@ FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
 
 # Set Node.js options (heap limit Allocation failed - JavaScript heap out of memory)
-# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Vite/Rollup 渲染大 bundle 时 node 默认堆上限（约 4GB）会打出：
+#   FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+# 这里放开上限，并允许通过 --build-arg NODE_MAX_OLD_SPACE_SIZE=... 调整（不要超过构建机物理内存）。
+ARG NODE_MAX_OLD_SPACE_SIZE=8192
+ENV NODE_OPTIONS="--max-old-space-size=${NODE_MAX_OLD_SPACE_SIZE}"
 
 WORKDIR /app
 
