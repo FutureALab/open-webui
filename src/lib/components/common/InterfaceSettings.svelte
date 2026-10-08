@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { canUseTemporaryChats, isSettingsAdmin } from '$lib/utils/settings-access';
 	import { config, settings, user } from '$lib/stores';
 	import { onMount, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -456,12 +457,14 @@
 />
 
 <div class="flex flex-col gap-2.5">
-	<h3 class={firstSectionHeadingClass}>{$i18n.t('UI')}</h3>
+	<h3 class={firstSectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.ui.title')}
+	</h3>
 
 	<div>
 		<div class={settingRowClass}>
 			<label id="ui-scale-label" class={settingLabelClass} for="ui-scale-slider">
-				{$i18n.t('UI Scale')}
+				{$i18n.t('settings.personal.interface.uiScale.label')}
 			</label>
 
 			<div class={settingControlClass}>
@@ -502,7 +505,7 @@
 						setTextScaleHandler(textScale);
 					}}
 					aria-labelledby="ui-scale-label"
-					aria-label={$i18n.t('Decrease UI Scale')}
+					aria-label={$i18n.t('settings.personal.interface.decreaseUiScale.label')}
 				>
 					<Minus className="h-3.5 w-3.5" />
 				</button>
@@ -535,7 +538,7 @@
 						setTextScaleHandler(textScale);
 					}}
 					aria-labelledby="ui-scale-label"
-					aria-label={$i18n.t('Increase UI Scale')}
+					aria-label={$i18n.t('settings.personal.interface.increaseUiScale.label')}
 				>
 					<Plus className="h-3.5 w-3.5" />
 				</button>
@@ -549,7 +552,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<label id="font-family-label" class={settingLabelClass} for="font-family-input">
-				{$i18n.t('Font Family')}
+				{$i18n.t('settings.personal.interface.fontFamily.label')}
 			</label>
 
 			<div class={settingControlClass}>
@@ -582,14 +585,14 @@
 			</div>
 		{/if}
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Use a local font family for the app interface.')}
+			{$i18n.t('settings.personal.interface.fontFamily.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="accessibility-mode-label" class={settingLabelClass}>
-				{$i18n.t('Accessibility Mode')}
+				{$i18n.t('settings.personal.interface.accessibilityMode.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -605,14 +608,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Enable accessibility-focused visual enhancements.')}
+			{$i18n.t('settings.personal.interface.accessibilityMode.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="use-chat-title-as-tab-title-label" class={settingLabelClass}>
-				{$i18n.t('Display Chat Title in Tab')}
+				{$i18n.t('settings.personal.interface.displayChatTitleInTab.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -628,13 +631,15 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Use the active chat title as the browser tab title.')}
+			{$i18n.t('settings.personal.interface.displayChatTitleInTab.description')}
 		</p>
 	</div>
 
 	<div>
 		<div id="allow-user-location-label" class={settingRowClass}>
-			<div class={settingLabelClass}>{$i18n.t('Allow User Location')}</div>
+			<div class={settingLabelClass}>
+				{$i18n.t('settings.personal.interface.allowUserLocation.label')}
+			</div>
 
 			<div class={settingControlClass}>
 				<Switch
@@ -649,14 +654,16 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Share your current location with features that can use it.')}
+			{$i18n.t('settings.personal.interface.allowUserLocation.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="haptic-feedback-label" class={settingLabelClass}>
-				{$i18n.t('Haptic Feedback')} ({$i18n.t('Android')})
+				{$i18n.t('settings.personal.interface.hapticFeedback.label')} ({$i18n.t(
+					'settings.personal.interface.android.label'
+				)})
 			</div>
 
 			<div class={settingControlClass}>
@@ -679,7 +686,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<div id="copy-formatted-label" class={settingLabelClass}>
-				{$i18n.t('Copy Formatted Text')}
+				{$i18n.t('settings.personal.interface.copyFormattedText.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -695,15 +702,15 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Copy rich formatted content instead of plain text.')}
+			{$i18n.t('settings.personal.interface.copyFormattedText.description')}
 		</p>
 	</div>
 
-	{#if $user?.role === 'admin'}
+	{#if isSettingsAdmin({ user: $user, config: $config })}
 		<div>
 			<div class={settingRowClass}>
 				<div id="toast-notifications-label" class={settingLabelClass}>
-					{$i18n.t('Toast Notifications for New Updates')}
+					{$i18n.t('settings.personal.interface.toastNotificationsForNewUpdates.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -719,17 +726,19 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Show update toasts to admins when new versions are available.')}
+				{$i18n.t('settings.personal.interface.toastNotificationsForNewUpdates.description')}
 			</p>
 		</div>
 	{/if}
 
-	<div class={sectionHeadingClass}>{$i18n.t('Chat')}</div>
+	<div class={sectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.chat.title')}
+	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="enable-message-queue-label" class={settingLabelClass}>
-				{$i18n.t('Enable Message Queue')}
+				{$i18n.t('settings.personal.interface.enableMessageQueue.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -745,14 +754,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Queue outgoing messages instead of interrupting active responses.')}
+			{$i18n.t('settings.personal.interface.enableMessageQueue.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="chat-direction-label" class={settingLabelClass}>
-				{$i18n.t('Chat Direction')}
+				{$i18n.t('settings.personal.interface.chatDirection.label')}
 			</div>
 
 			<button
@@ -771,14 +780,14 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Choose automatic, left-to-right, or right-to-left text flow.')}
+			{$i18n.t('settings.personal.interface.chatDirection.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="landing-page-mode-label" class={settingLabelClass}>
-				{$i18n.t('Landing Page Mode')}
+				{$i18n.t('settings.personal.interface.landingPageMode.label')}
 			</div>
 
 			<button
@@ -790,19 +799,21 @@
 				type="button"
 			>
 				<span id="notification-sound-state"
-					>{landingPageMode === '' ? $i18n.t('Default') : $i18n.t('Chat')}</span
+					>{landingPageMode === ''
+						? $i18n.t('Default')
+						: $i18n.t('settings.personal.interface.sections.chat.title')}</span
 				>
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Choose whether the app opens to the default home or chat view.')}
+			{$i18n.t('settings.personal.interface.landingPageMode.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="chat-background-label" class={settingLabelClass}>
-				{$i18n.t('Chat Background Image')}
+				{$i18n.t('settings.personal.interface.chatBackgroundImage.label')}
 			</div>
 
 			<button
@@ -824,14 +835,14 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Upload or reset the image shown behind chat content.')}
+			{$i18n.t('settings.personal.interface.chatBackgroundImage.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="chat-bubble-ui-label" class={settingLabelClass}>
-				{$i18n.t('Chat Bubble UI')}
+				{$i18n.t('settings.personal.interface.chatBubbleUi.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -847,7 +858,7 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Render messages in compact bubble containers.')}
+			{$i18n.t('settings.personal.interface.chatBubbleUi.description')}
 		</p>
 	</div>
 
@@ -855,7 +866,7 @@
 		<div>
 			<div class={settingRowClass}>
 				<div id="chat-bubble-username-label" class={settingLabelClass}>
-					{$i18n.t('Display the Username Instead of You in the Chat')}
+					{$i18n.t('settings.personal.interface.displayTheUsernameInsteadOfYouInTheChat.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -871,7 +882,7 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Show your username label instead of You in chat bubbles.')}
+				{$i18n.t('settings.personal.interface.displayTheUsernameInsteadOfYouInTheChat.description')}
 			</p>
 		</div>
 	{/if}
@@ -879,7 +890,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<div id="widescreen-mode-label" class={settingLabelClass}>
-				{$i18n.t('Widescreen Mode')}
+				{$i18n.t('settings.personal.interface.widescreenMode.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -895,15 +906,15 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Use a wider chat layout on large displays.')}
+			{$i18n.t('settings.personal.interface.widescreenMode.description')}
 		</p>
 	</div>
 
-	{#if $user?.role === 'admin' || $user?.permissions?.chat?.temporary}
+	{#if canUseTemporaryChats({ user: $user, config: $config })}
 		<div>
 			<div class={settingRowClass}>
 				<div id="temp-chat-default-label" class={settingLabelClass}>
-					{$i18n.t('Temporary Chat by Default')}
+					{$i18n.t('settings.personal.interface.temporaryChatByDefault.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -919,7 +930,7 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Start new chats as temporary unless changed.')}
+				{$i18n.t('settings.personal.interface.temporaryChatByDefault.description')}
 			</p>
 		</div>
 	{/if}
@@ -927,7 +938,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<div id="fade-streaming-label" class={settingLabelClass}>
-				{$i18n.t('Fade Effect for Streaming Text')}
+				{$i18n.t('settings.personal.interface.fadeEffectForStreamingText.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -943,14 +954,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Fade streaming text as it arrives.')}
+			{$i18n.t('settings.personal.interface.fadeEffectForStreamingText.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="render-markdown-user-label" class={settingLabelClass}>
-				{$i18n.t('Render Markdown in User Messages')}
+				{$i18n.t('settings.personal.interface.renderMarkdownInUserMessages.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -966,14 +977,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Format Markdown syntax in your own messages.')}
+			{$i18n.t('settings.personal.interface.renderMarkdownInUserMessages.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="render-markdown-assistant-label" class={settingLabelClass}>
-				{$i18n.t('Render Markdown in Assistant Messages')}
+				{$i18n.t('settings.personal.interface.renderMarkdownInAssistantMessages.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -989,14 +1000,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Format Markdown syntax in assistant responses.')}
+			{$i18n.t('settings.personal.interface.renderMarkdownInAssistantMessages.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="render-markdown-in-previews-label" class={settingLabelClass}>
-				{$i18n.t('Render Markdown in Previews')}
+				{$i18n.t('settings.personal.interface.renderMarkdownInPreviews.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1012,14 +1023,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Format Markdown in previews and compact content surfaces.')}
+			{$i18n.t('settings.personal.interface.renderMarkdownInPreviews.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="auto-generation-label" class={settingLabelClass}>
-				{$i18n.t('Title Auto-Generation')}
+				{$i18n.t('settings.personal.interface.titleAutoGeneration.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1035,14 +1046,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Generate chat titles automatically from conversation content.')}
+			{$i18n.t('settings.personal.interface.titleAutoGeneration.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div class={settingLabelClass} id="follow-up-auto-generation-label">
-				{$i18n.t('Follow-Up Auto-Generation')}
+				{$i18n.t('settings.personal.interface.followUpAutoGeneration.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1058,14 +1069,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Generate suggested follow-up prompts after responses.')}
+			{$i18n.t('settings.personal.interface.followUpAutoGeneration.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="chat-tags-label" class={settingLabelClass}>
-				{$i18n.t('Chat Tags Auto-Generation')}
+				{$i18n.t('settings.personal.interface.chatTagsAutoGeneration.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1081,14 +1092,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Generate tags for chats automatically.')}
+			{$i18n.t('settings.personal.interface.chatTagsAutoGeneration.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="auto-copy-label" class={settingLabelClass}>
-				{$i18n.t('Auto-Copy Response to Clipboard')}
+				{$i18n.t('settings.personal.interface.autoCopyResponseToClipboard.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1104,14 +1115,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Copy the latest assistant response when it completes.')}
+			{$i18n.t('settings.personal.interface.autoCopyResponseToClipboard.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="response-auto-scroll-label" class={settingLabelClass}>
-				{$i18n.t('Response Auto-Scroll')}
+				{$i18n.t('settings.personal.interface.responseAutoScroll.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1127,14 +1138,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Follow assistant responses as they are generated.')}
+			{$i18n.t('settings.personal.interface.responseAutoScroll.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="scroll-on-branch-change-label" class={settingLabelClass}>
-				{$i18n.t('Scroll On Branch Change')}
+				{$i18n.t('settings.personal.interface.scrollOnBranchChange.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1150,14 +1161,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Scroll to the active branch when switching response branches.')}
+			{$i18n.t('settings.personal.interface.scrollOnBranchChange.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="insert-suggestion-prompt-label" class={settingLabelClass}>
-				{$i18n.t('Insert Suggestion Prompt to Input')}
+				{$i18n.t('settings.personal.interface.insertSuggestionPromptToInput.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1173,14 +1184,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Place selected suggestion text into the composer.')}
+			{$i18n.t('settings.personal.interface.insertSuggestionPromptToInput.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="keep-follow-up-prompts-label" class={settingLabelClass}>
-				{$i18n.t('Keep Follow-Up Prompts in Chat')}
+				{$i18n.t('settings.personal.interface.keepFollowUpPromptsInChat.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1196,14 +1207,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Keep generated follow-up prompts visible in the chat.')}
+			{$i18n.t('settings.personal.interface.keepFollowUpPromptsInChat.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="insert-follow-up-prompt-label" class={settingLabelClass}>
-				{$i18n.t('Insert Follow-Up Prompt to Input')}
+				{$i18n.t('settings.personal.interface.insertFollowUpPromptToInput.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1219,14 +1230,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Insert selected follow-up prompts directly into the composer.')}
+			{$i18n.t('settings.personal.interface.insertFollowUpPromptToInput.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="regenerate-menu-label" class={settingLabelClass}>
-				{$i18n.t('Regenerate Menu')}
+				{$i18n.t('settings.personal.interface.regenerateMenu.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1242,14 +1253,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Show the regenerate action menu for assistant responses.')}
+			{$i18n.t('settings.personal.interface.regenerateMenu.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="always-collapse-label" class={settingLabelClass}>
-				{$i18n.t('Always Collapse Code Blocks')}
+				{$i18n.t('settings.personal.interface.alwaysCollapseCodeBlocks.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1265,14 +1276,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Collapse code blocks by default.')}
+			{$i18n.t('settings.personal.interface.alwaysCollapseCodeBlocks.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="always-expand-label" class={settingLabelClass}>
-				{$i18n.t('Always Expand Details')}
+				{$i18n.t('settings.personal.interface.alwaysExpandDetails.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1288,14 +1299,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Open detail blocks by default.')}
+			{$i18n.t('settings.personal.interface.alwaysExpandDetails.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="chat-hover-preview-label" class={settingLabelClass}>
-				{$i18n.t('Chat Hover Previews')}
+				{$i18n.t('settings.personal.interface.chatHoverPreviews.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1311,14 +1322,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Show a floating preview of recent messages when hovering a chat in the sidebar.')}
+			{$i18n.t('settings.personal.interface.chatHoverPreviews.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="keep-followup-prompts-label" class={settingLabelClass}>
-				{$i18n.t('Display Multi-model Responses in Tabs')}
+				{$i18n.t('settings.personal.interface.displayMultiModelResponsesInTabs.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1334,14 +1345,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Group multi-model responses into tabs.')}
+			{$i18n.t('settings.personal.interface.displayMultiModelResponsesInTabs.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="terminal-file-display-label" class={settingLabelClass}>
-				{$i18n.t('Terminal File Display')}
+				{$i18n.t('settings.personal.interface.terminalFileDisplay.label')}
 			</div>
 
 			<button
@@ -1359,14 +1370,14 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Choose where terminal display_file results appear by default.')}
+			{$i18n.t('settings.personal.interface.terminalFileDisplay.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="show-files-on-terminal-select-label" class={settingLabelClass}>
-				{$i18n.t('Show Files on Terminal Select')}
+				{$i18n.t('settings.personal.interface.showFilesOnTerminalSelect.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1382,14 +1393,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Open the file browser after selecting a terminal.')}
+			{$i18n.t('settings.personal.interface.showFilesOnTerminalSelect.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="terminal-preview-allow-same-origin-label" class={settingLabelClass}>
-				{$i18n.t('Terminal Preview Allow Same Origin')}
+				{$i18n.t('settings.personal.interface.terminalPreviewAllowSameOrigin.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1405,14 +1416,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Allow terminal previews to access same-origin browser APIs.')}
+			{$i18n.t('settings.personal.interface.terminalPreviewAllowSameOrigin.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="stylized-pdf-export-label" class={settingLabelClass}>
-				{$i18n.t('Stylized PDF Export')}
+				{$i18n.t('settings.personal.interface.stylizedPdfExport.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1428,14 +1439,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Use styled formatting when exporting chats to PDF.')}
+			{$i18n.t('settings.personal.interface.stylizedPdfExport.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="floating-action-buttons-label" class={settingLabelClass}>
-				{$i18n.t('Floating Quick Actions')}
+				{$i18n.t('settings.personal.interface.floatingQuickActions.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1443,7 +1454,9 @@
 					<button
 						class={actionButtonClass}
 						type="button"
-						aria-label={$i18n.t('Open Modal To Manage Floating Quick Actions')}
+						aria-label={$i18n.t(
+							'settings.personal.interface.openModalToManageFloatingQuickActions.label'
+						)}
 						on:click={() => {
 							showManageFloatingActionButtonsModal = true;
 						}}
@@ -1471,7 +1484,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<div id="web-search-in-chat-label" class={settingLabelClass}>
-				{$i18n.t('Web Search in Chat')}
+				{$i18n.t('settings.personal.interface.webSearchInChat.label')}
 			</div>
 
 			<button
@@ -1488,16 +1501,18 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Set web search availability for new chats.')}
+			{$i18n.t('settings.personal.interface.webSearchInChat.description')}
 		</p>
 	</div>
 
-	<div class={sectionHeadingClass}>{$i18n.t('Input')}</div>
+	<div class={sectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.input.title')}
+	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="enter-key-behavior-label ctrl-enter-to-send-state" class={settingLabelClass}>
-				{$i18n.t('Enter Key Behavior')}
+				{$i18n.t('settings.personal.interface.enterKeyBehavior.label')}
 			</div>
 
 			<button
@@ -1516,14 +1531,14 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Choose whether Enter sends immediately or uses Ctrl+Enter.')}
+			{$i18n.t('settings.personal.interface.enterKeyBehavior.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="rich-input-label" class={settingLabelClass}>
-				{$i18n.t('Rich Text Input for Chat')}
+				{$i18n.t('settings.personal.interface.richTextInputForChat.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1539,7 +1554,7 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Use the rich composer instead of a plain textarea.')}
+			{$i18n.t('settings.personal.interface.richTextInputForChat.description')}
 		</p>
 	</div>
 
@@ -1547,7 +1562,7 @@
 		<div>
 			<div class={settingRowClass}>
 				<div id="prompt-autocompletion-label" class={settingLabelClass}>
-					{$i18n.t('Prompt Autocompletion')}
+					{$i18n.t('settings.personal.interface.promptAutocompletion.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -1563,7 +1578,7 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Suggest completions while composing prompts.')}
+				{$i18n.t('settings.personal.interface.promptAutocompletion.description')}
 			</p>
 		</div>
 	{/if}
@@ -1572,7 +1587,7 @@
 		<div>
 			<div class={settingRowClass}>
 				<div id="show-formatting-toolbar-label" class={settingLabelClass}>
-					{$i18n.t('Show Formatting Toolbar')}
+					{$i18n.t('settings.personal.interface.showFormattingToolbar.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -1588,14 +1603,14 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Show formatting controls in the rich text composer.')}
+				{$i18n.t('settings.personal.interface.showFormattingToolbar.description')}
 			</p>
 		</div>
 
 		<div>
 			<div class={settingRowClass}>
 				<div id="insert-prompt-as-rich-text-label" class={settingLabelClass}>
-					{$i18n.t('Insert Prompt as Rich Text')}
+					{$i18n.t('settings.personal.interface.insertPromptAsRichText.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -1611,7 +1626,7 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Paste inserted prompts as rich text when possible.')}
+				{$i18n.t('settings.personal.interface.insertPromptAsRichText.description')}
 			</p>
 		</div>
 	{/if}
@@ -1619,7 +1634,7 @@
 	<div>
 		<div class={settingRowClass}>
 			<div id="paste-large-label" class={settingLabelClass}>
-				{$i18n.t('Paste Large Text as File')}
+				{$i18n.t('settings.personal.interface.pasteLargeTextAsFile.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1635,16 +1650,18 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Convert long pasted text into a file attachment.')}
+			{$i18n.t('settings.personal.interface.pasteLargeTextAsFile.description')}
 		</p>
 	</div>
 
-	<div class={sectionHeadingClass}>{$i18n.t('Artifacts')}</div>
+	<div class={sectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.artifacts.title')}
+	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="detect-artifacts-label" class={settingLabelClass}>
-				{$i18n.t('Detect Artifacts Automatically')}
+				{$i18n.t('settings.personal.interface.detectArtifactsAutomatically.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1660,14 +1677,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Detect generated artifacts and show them in the artifact workspace.')}
+			{$i18n.t('settings.personal.interface.detectArtifactsAutomatically.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="iframe-sandbox-allow-scripts-label" class={settingLabelClass}>
-				{$i18n.t('iframe Sandbox Allow Scripts')}
+				{$i18n.t('settings.personal.interface.iframeSandboxAllowScripts.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1683,14 +1700,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Allow scripts inside sandboxed iframes.')}
+			{$i18n.t('settings.personal.interface.iframeSandboxAllowScripts.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="iframe-sandbox-allow-same-origin-label" class={settingLabelClass}>
-				{$i18n.t('iframe Sandbox Allow Same Origin')}
+				{$i18n.t('settings.personal.interface.iframeSandboxAllowSameOrigin.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1706,14 +1723,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Allow artifacts to access same-origin browser APIs inside the sandbox.')}
+			{$i18n.t('settings.personal.interface.iframeSandboxAllowSameOrigin.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="iframe-sandbox-allow-forms-label" class={settingLabelClass}>
-				{$i18n.t('iframe Sandbox Allow Forms')}
+				{$i18n.t('settings.personal.interface.iframeSandboxAllowForms.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1729,14 +1746,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Allow forms inside sandboxed artifact iframes.')}
+			{$i18n.t('settings.personal.interface.iframeSandboxAllowForms.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="iframe-sandbox-allow-downloads-label" class={settingLabelClass}>
-				{$i18n.t('iframe Sandbox Allow Downloads')}
+				{$i18n.t('settings.personal.interface.iframeSandboxAllowDownloads.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1752,16 +1769,18 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Allow downloads inside sandboxed iframes.')}
+			{$i18n.t('settings.personal.interface.iframeSandboxAllowDownloads.description')}
 		</p>
 	</div>
 
-	<div class={sectionHeadingClass}>{$i18n.t('Voice')}</div>
+	<div class={sectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.voice.title')}
+	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div class={settingLabelClass} id="allow-voice-interruption-in-call-label">
-				{$i18n.t('Allow Voice Interruption in Call')}
+				{$i18n.t('settings.personal.interface.allowVoiceInterruptionInCall.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1777,14 +1796,14 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Let speech interrupt the assistant during a voice call.')}
+			{$i18n.t('settings.personal.interface.allowVoiceInterruptionInCall.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="display-emoji-label" class={settingLabelClass}>
-				{$i18n.t('Display Emoji in Call')}
+				{$i18n.t('settings.personal.interface.displayEmojiInCall.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1800,16 +1819,18 @@
 			</div>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Show emoji feedback in the call interface.')}
+			{$i18n.t('settings.personal.interface.displayEmojiInCall.description')}
 		</p>
 	</div>
 
-	<div class={sectionHeadingClass}>{$i18n.t('File')}</div>
+	<div class={sectionHeadingClass}>
+		{$i18n.t('settings.personal.interface.sections.file.title')}
+	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="default-upload-mode-label" class={settingLabelClass}>
-				{$i18n.t('Default Upload Mode')}
+				{$i18n.t('settings.personal.interface.defaultUploadMode.label')}
 			</div>
 
 			<button
@@ -1829,14 +1850,14 @@
 			</button>
 		</div>
 		<p class={settingDescriptionClass}>
-			{$i18n.t('Attach files with full content or focused retrieval by default.')}
+			{$i18n.t('settings.personal.interface.defaultUploadMode.description')}
 		</p>
 	</div>
 
 	<div>
 		<div class={settingRowClass}>
 			<div id="image-compression-label" class={settingLabelClass}>
-				{$i18n.t('Image Compression')}
+				{$i18n.t('settings.personal.interface.imageCompression.label')}
 			</div>
 
 			<div class={settingControlClass}>
@@ -1844,7 +1865,9 @@
 					<button
 						class={actionButtonClass}
 						type="button"
-						aria-label={$i18n.t('Open Modal To Manage Image Compression')}
+						aria-label={$i18n.t(
+							'settings.personal.interface.openModalToManageImageCompression.label'
+						)}
 						on:click={() => {
 							showManageImageCompressionModal = true;
 						}}
@@ -1873,7 +1896,7 @@
 		<div>
 			<div class={settingRowClass}>
 				<div id="image-compression-in-channels-label" class={settingLabelClass}>
-					{$i18n.t('Compress Images in Channels')}
+					{$i18n.t('settings.personal.interface.compressImagesInChannels.label')}
 				</div>
 
 				<div class={settingControlClass}>
@@ -1889,7 +1912,7 @@
 				</div>
 			</div>
 			<p class={settingDescriptionClass}>
-				{$i18n.t('Apply image compression to channel uploads too.')}
+				{$i18n.t('settings.personal.interface.compressImagesInChannels.description')}
 			</p>
 		</div>
 	{/if}
