@@ -759,7 +759,7 @@
 										Do not alter, remove, obscure, or replace it except as LICENSE permits:
 										https://docs.openwebui.com/license. -->
 									{$i18n.t(
-										'External vectors must be generated with the same embedding model configured in AIOps.'
+										'External vectors must be generated with the same embedding model configured in Open WebUI.'
 									)}
 								</div>
 							</div>
@@ -775,11 +775,11 @@
 							shareUsers={true}
 						/>
 
-						<div class="flex justify-between items-center pt-3 text-sm font-medium">
+						<div class="flex justify-between items-center pt-3 text-sm font-normal">
 							<div></div>
 
 							<button
-								class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+								class="px-3.5 py-1.5 text-sm font-normal bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 								type="submit"
 								disabled={creating || !sourceFormIsValid() || !testResult?.documents?.length}
 							>
@@ -796,14 +796,12 @@
 
 <div class="flex w-full flex-col justify-between text-xs">
 	<div class="mb-2 flex items-center justify-between">
-		<div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-			<div class="text-sm font-medium leading-5 text-gray-700 dark:text-gray-300">
-				{$i18n.t('External Knowledge Sources')}
-			</div>
+		<div class="flex items-center gap-2 leading-none text-gray-600 dark:text-gray-400">
+			<div>{$i18n.t('settings.admin.integrations.externalKnowledge.title')}</div>
 			<ExperimentalBadge />
 		</div>
 
-		<Tooltip content={$i18n.t('Add Connection')}>
+		<Tooltip content={$i18n.t('settings.admin.integrations.externalKnowledge.addConnection.label')}>
 			<button
 				class="flex size-6 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-black/5 hover:text-gray-900 dark:text-gray-600 dark:hover:bg-white/5 dark:hover:text-white"
 				on:click={openCreateSource}

@@ -1,5 +1,14 @@
 # 当前任务
 
+## 2026-10-14 同步上游 main 与 feature
+
+- 状态：进行中；先汇合远程 feature 与本地 4 个独有提交，再同步 main 并合并到 feature。
+- 分支用途：`main` 用于同步 `open-webui/open-webui:main`；`feature_20260730_dev` 用于 AIOps 自定义改造。
+- 上游目标：`f8ae8a6c328946dc62cd0712961a0632574581bf`，远程 main 原为 `4f167730e`，远程 feature 原为 `463659459`。
+- 备份：`backup/feature-before-sync-20261014` 保存本地原 feature；`backup/main-before-sync-20261014` 保存远程原 main。
+- 保留范围：AIOps 白标、Chrome 108、中文设置、Pyodide 0.28.x 与 `.data` 标准库、Claude Pipe、S3/Qdrant、本地 PostgreSQL/Windows 启动和构建流水线。
+- 下一步：检查合并差异、同步 main、完成定向测试和构建；普通 push 两个分支并本地启动。
+
 ## 2026-09-08 Open WebUI Office 导出按钮
 
 - 状态：已撤销。`office_export_buttons` 已按用户要求从本机 WebUI 数据库删除，仓库源码同步移除。

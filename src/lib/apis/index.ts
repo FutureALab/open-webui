@@ -1,5 +1,5 @@
 import { WEBUI_BASE_URL } from '$lib/constants';
-import { convertOpenApiToToolPayload } from '$lib/utils';
+import { convertOpenApiToToolPayload, resolveSchema } from '$lib/utils';
 import { normalizeTags } from '$lib/utils/tags';
 import { getOpenAIModelsDirect } from './openai';
 
@@ -598,10 +598,12 @@ export const executeToolServer = async (
 		const pathParams: Record<string, any> = {};
 		const queryParams: Record<string, any> = {};
 		let bodyParams: any = {};
+		const declaredParamNames = new Set<string>();
 
 		for (const param of mergedParams.values()) {
 			const paramName = param?.name;
 			if (!paramName) continue;
+			declaredParamNames.add(paramName);
 			const paramIn = param?.in;
 			if (params.hasOwnProperty(paramName)) {
 				if (paramIn === 'path') {
@@ -631,7 +633,24 @@ export const executeToolServer = async (
 		if (operation.requestBody && operation.requestBody.content) {
 			const contentType = Object.keys(operation.requestBody.content)[0];
 			if (params !== undefined) {
-				bodyParams = params;
+				const jsonSchema = operation.requestBody.content['application/json']?.schema;
+				const resolvedBodySchema = resolveSchema(jsonSchema, serverData.openapi.components);
+				const isComposedSchema = ['allOf', 'anyOf', 'oneOf'].some(
+					(keyword) => keyword in resolvedBodySchema
+				);
+				const bodyProperties = isComposedSchema ? {} : (resolvedBodySchema.properties ?? {});
+				// Strict servers reject declared parameters in the body, unless the body schema declares them too.
+				if (Object.keys(bodyProperties).length > 0) {
+					bodyParams = Object.fromEntries(
+						Object.entries(params).filter(
+							([key]) =>
+								Object.prototype.hasOwnProperty.call(bodyProperties, key) ||
+								!declaredParamNames.has(key)
+						)
+					);
+				} else {
+					bodyParams = params;
+				}
 			} else {
 				// Optional: Fallback or explicit error if body is expected but not provided
 				throw new Error(`Request body expected for operation '${name}' but none found.`);
@@ -1500,6 +1519,32 @@ export const getBackendConfig = async () => {
 	return res;
 };
 
+export const getChangelog = async () => {
+	let error = null;
+
+	const res = await fetch(`${WEBUI_BASE_URL}/api/changelog`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			console.error(err);
+			error = err;
+			return null;
+		});
+
+	if (error) {
+		throw error;
+	}
+
+	return res;
+};
+
 export const getVersion = async (token: string) => {
 	let error = null;
 
@@ -1733,9 +1778,11 @@ export interface ModelConfig {
 export interface ModelMeta {
 	toolIds: never[];
 	description?: string;
+	i18n?: Record<string, Record<string, any>>;
 	hidden?: boolean;
 	capabilities?: object;
 	profile_image_url?: string;
+	background_image_url?: string | null;
 }
 
 export interface ModelParams {}

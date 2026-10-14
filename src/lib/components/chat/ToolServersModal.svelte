@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolveLocalizedResource } from '$lib/utils/localizedContent';
 	import { getContext } from 'svelte';
 	import { toolServers, tools } from '$lib/stores';
 
@@ -49,7 +50,7 @@
 		{#if selectedTools.length > 0}
 			{#if $toolServers.length > 0}
 				<div class=" flex justify-between dark:text-gray-300 px-5 pb-1">
-					<div class=" text-base font-medium self-center">{$i18n.t('Tools')}</div>
+					<div class=" text-base font-normal self-center">{$i18n.t('Tools')}</div>
 				</div>
 			{/if}
 
@@ -65,8 +66,8 @@
 						>
 							<div class="min-w-0 flex-1">
 								<div class="flex items-center gap-1 min-w-0">
-									<div class="text-sm font-medium dark:text-gray-100 text-gray-800 truncate">
-										{tool?.name}
+									<div class="text-sm font-normal dark:text-gray-100 text-gray-800 truncate">
+										{resolveLocalizedResource(tool, $i18n.language)}
 									</div>
 									{#if status}
 										<span class="text-[0.6875rem] {status.pill} shrink-0">{status.label}</span>
@@ -83,9 +84,9 @@
 									{/if}
 								</div>
 
-								{#if tool?.meta?.description}
+								{#if resolveLocalizedResource(tool, $i18n.language, 'description')}
 									<div class="text-xs text-gray-500 truncate">
-										{tool?.meta?.description}
+										{resolveLocalizedResource(tool, $i18n.language, 'description')}
 									</div>
 								{/if}
 							</div>
@@ -107,18 +108,25 @@
 
 		{#if $toolServers.length > 0}
 			<div class=" flex justify-between dark:text-gray-300 px-5 pb-0.5">
-				<div class=" text-base font-medium self-center">{$i18n.t('Tool Servers')}</div>
+				<div class=" text-base font-normal self-center">{$i18n.t('Tool Servers')}</div>
 			</div>
 
 			<div class="px-5 pb-5 w-full flex flex-col justify-center">
 				<div class=" text-xs text-gray-600 dark:text-gray-300 mb-2">
-					{$i18n.t('AIOps can use tools provided by any OpenAPI server.')}
+					<!-- LICENSE covers this Open WebUI wordmark.
+					Do not alter, remove, obscure, or replace it except as LICENSE permits:
+					https://docs.openwebui.com/license. -->
+					{$i18n.t('Open WebUI can use tools provided by any OpenAPI server.')} <br /><a
+						class="underline"
+						href="https://github.com/open-webui/openapi-servers"
+						target="_blank">{$i18n.t('Learn more about OpenAPI tool servers.')}</a
+					>
 				</div>
 				<div class=" text-sm dark:text-gray-300 mb-1">
 					{#each $toolServers as toolServer}
 						<Collapsible buttonClassName="w-full" chevron>
 							<div>
-								<div class="text-sm font-medium dark:text-gray-100 text-gray-800">
+								<div class="text-sm font-normal dark:text-gray-100 text-gray-800">
 									{toolServer?.openapi?.info?.title} - v{toolServer?.openapi?.info?.version}
 								</div>
 
@@ -134,7 +142,7 @@
 							<div slot="content">
 								{#each toolServer?.specs ?? [] as tool_spec}
 									<div class="my-1">
-										<div class="font-medium text-gray-800 dark:text-gray-100">
+										<div class="font-normal text-gray-800 dark:text-gray-100">
 											{tool_spec?.name}
 										</div>
 

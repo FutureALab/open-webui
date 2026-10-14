@@ -26,9 +26,16 @@ ARG GID=0
 ######## WebUI frontend ########
 FROM --platform=$BUILDPLATFORM node:22-alpine3.20 AS build
 ARG BUILD_HASH
+ARG USE_SLIM
+ARG UID
+ARG GID
 
 # Set Node.js options (heap limit Allocation failed - JavaScript heap out of memory)
-# ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Vite/Rollup 渲染大 bundle 时 node 默认堆上限（约 4GB）会打出：
+#   FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+# 这里放开上限，并允许通过 --build-arg NODE_MAX_OLD_SPACE_SIZE=... 调整（不要超过构建机物理内存）。
+ARG NODE_MAX_OLD_SPACE_SIZE=8192
+ENV NODE_OPTIONS="--max-old-space-size=${NODE_MAX_OLD_SPACE_SIZE}"
 
 WORKDIR /app
 
@@ -40,7 +47,14 @@ RUN npm ci --force
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
-RUN npm run build
+RUN npm run build && \
+    if [ "$USE_SLIM" = "true" ]; then find build -type f -name '*.map' -delete; fi
+
+# Prepare backend ownership before the final copy so static assets occupy one layer.
+# Group 0 write access lets arbitrary OpenShift UIDs update these assets at startup.
+RUN chown -R $UID:$GID /app/backend && \
+    chgrp -R 0 /app/backend/open_webui/static && \
+    chmod -R g=u /app/backend/open_webui/static
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base
@@ -56,21 +70,9 @@ ARG USE_RERANKING_MODEL
 ARG USE_AUXILIARY_EMBEDDING_MODEL
 ARG UID
 ARG GID
-# 添加代理构建参数
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-ARG NO_PROXY
 
 # Python settings
 ENV PYTHONUNBUFFERED=1
-
-# 设置环境变量，同时写大小写（有的工具只认小写）
-ENV HTTP_PROXY=${HTTP_PROXY} \
-    HTTPS_PROXY=${HTTPS_PROXY} \
-    NO_PROXY=${NO_PROXY} \
-    http_proxy=${HTTP_PROXY} \
-    https_proxy=${HTTPS_PROXY} \
-    no_proxy=${NO_PROXY}
 
 ## Basis ##
 ENV ENV=prod \
@@ -82,8 +84,6 @@ ENV ENV=prod \
     USE_CUDA_DOCKER_VER=${USE_CUDA_VER} \
     USE_EMBEDDING_MODEL_DOCKER=${USE_EMBEDDING_MODEL} \
     USE_RERANKING_MODEL_DOCKER=${USE_RERANKING_MODEL} \
-    PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/ \
-    PIP_TRUSTED_HOST=mirrors.aliyun.com \
     USE_AUXILIARY_EMBEDDING_MODEL_DOCKER=${USE_AUXILIARY_EMBEDDING_MODEL}
 
 ## Basis URL Config ##
@@ -137,51 +137,49 @@ RUN echo -n 00000000-0000-0000-0000-000000000000 > $HOME/.cache/chroma/telemetry
 # Make sure the user has access to the app and root directory
 RUN chown -R $UID:$GID /app $HOME
 
-# 设置 Debian 源为阿里云镜像（加速 apt-get）
-# 完全替换为阿里云 Debian 12 源
-RUN rm -f /etc/apt/sources.list.d/*.sources && \
-    echo "deb http://mirrors.aliyun.com/debian bookworm main contrib non-free non-free-firmware" > /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security bookworm-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian bookworm-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list
+# Slim cannot bundle a local model server or GPU runtime.
+RUN if [ "$USE_SLIM" = "true" ] && { [ "$USE_CUDA" = "true" ] || [ "$USE_OLLAMA" = "true" ]; }; then \
+    echo "USE_SLIM cannot be combined with USE_CUDA or USE_OLLAMA" >&2; exit 1; fi
 
-# 安装基础系统依赖
+# Keep the slim runtime free of local document/audio processing tools.
+# Git-based tool requirements require the standard image.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    git build-essential pandoc gcc curl jq ca-certificates \
-    libmariadb-dev \
-    python3-dev \
-    ffmpeg libsm6 libxext6 zstd \
-    && rm -rf /var/lib/apt/lists/*
+    curl jq ca-certificates \
+    && if [ "$USE_SLIM" != "true" ]; then \
+    apt-get install -y --no-install-recommends \
+    git build-essential pandoc gcc libmariadb-dev ffmpeg libsm6 libxext6; \
+    fi && if [ "$USE_OLLAMA" = "true" ]; then \
+    apt-get install -y --no-install-recommends zstd; \
+    fi && rm -rf /var/lib/apt/lists/*
 
 # install python dependencies
-COPY --chown=$UID:$GID ./backend/requirements.txt ./requirements.txt
+COPY --chown=$UID:$GID ./backend/requirements*.txt ./
 
 # Set UV_LINK_MODE to copy to prevent 0-byte file corruption in QEMU arm64 cross-builds
 ENV UV_LINK_MODE=copy
-ENV UV_INDEX_URL=https://mirrors.aliyun.com/pypi/simple/
 
-RUN set -e; \
-    pip3 install --no-cache-dir uv; \
-    if [ "$USE_CUDA" = "true" ]; then \
+RUN --mount=from=ghcr.io/astral-sh/uv:0.12.10,source=/uv,target=/bin/uv \
+    set -e; \
+    if [ "$USE_SLIM" = "true" ]; then \
+    uv pip install --system -r requirements-slim.txt --no-cache-dir; \
+    elif [ "$USE_CUDA" = "true" ]; then \
     # If you use CUDA the whisper and embedding model will be downloaded on first use
     # fix: pin torch<=2.9.1 - torch 2.10.0 aarch64 wheels cause SIGILL on ARM devices (RPi 4 Cortex-A72) #21349
-    pip3 install 'torch<=2.9.1' torchvision torchaudio --index-url https://download.pytorch.org/whl/$USE_CUDA_DOCKER_VER --no-cache-dir --timeout 1000; \
-    uv pip install --system -r requirements.txt --index-url https://mirrors.aliyun.com/pypi/simple/ \
-        --no-cache-dir; \
+    pip3 install 'torch<=2.9.1' torchvision torchaudio --index-url https://download.pytorch.org/whl/$USE_CUDA_DOCKER_VER --no-cache-dir; \
+    uv pip install --system -r requirements.txt --no-cache-dir; \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')"; \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ.get('AUXILIARY_EMBEDDING_MODEL', 'TaylorAI/bge-micro-v2'), device='cpu')"; \
     python -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ['WHISPER_MODEL'], device='cpu', compute_type='int8', download_root=os.environ['WHISPER_MODEL_DIR'])"; \
     python -c "import os; import tiktoken; tiktoken.get_encoding(os.environ['TIKTOKEN_ENCODING_NAME'])"; \
-    python -c "import nltk; nltk.download('punkt_tab', download_dir='/usr/local/share/nltk_data')"; \
     else \
-    pip3 install 'torch<=2.9.1' torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache-dir --timeout 1000; \
-    uv pip install --system -r requirements.txt --index-url https://mirrors.aliyun.com/pypi/simple/ --no-cache-dir; \
+    pip3 install 'torch<=2.9.1' torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu --no-cache-dir; \
+    uv pip install --system -r requirements.txt --no-cache-dir; \
     if [ "$USE_SLIM" != "true" ]; then \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')"; \
     python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ.get('AUXILIARY_EMBEDDING_MODEL', 'TaylorAI/bge-micro-v2'), device='cpu')"; \
     python -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ['WHISPER_MODEL'], device='cpu', compute_type='int8', download_root=os.environ['WHISPER_MODEL_DIR'])"; \
     python -c "import os; import tiktoken; tiktoken.get_encoding(os.environ['TIKTOKEN_ENCODING_NAME'])"; \
-    python -c "import nltk; nltk.download('punkt_tab', download_dir='/usr/local/share/nltk_data')"; \
     fi; \
     fi; \
     mkdir -p /app/backend/data; chown -R $UID:$GID /app/backend/data/; \
@@ -201,16 +199,6 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     rm -rf /var/lib/apt/lists/*; \
     fi
 
-# 安装 Node.js 20.x（使用 NodeSource 官方二进制仓库）
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
-
-# 验证 Node.js 和 npm 版本（可选）
-RUN node --version && npm --version
-
-# 全局安装 Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code@latest
-
 # copy embedding weight from build
 # RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 # COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
@@ -220,19 +208,8 @@ COPY --chown=$UID:$GID --from=build /app/build /app/build
 COPY --chown=$UID:$GID --from=build /app/CHANGELOG.md /app/CHANGELOG.md
 COPY --chown=$UID:$GID --from=build /app/package.json /app/package.json
 
-# copy backend files
-COPY --chown=$UID:$GID ./backend .
-
-# The backend rewrites its bundled static assets (favicons, splash, manifest,
-# loader.js, ...) under open_webui/static at startup. Make that directory
-# writable by an arbitrary UID -- which under OpenShift's restricted SCC is
-# always a member of GID 0 -- so those writes don't fail with EACCES and crash
-# the boot log with "[Errno 13] Permission denied". `chmod -R g=u` mirrors the
-# owner bits onto the group (the Red Hat arbitrary-UID idiom). This is applied
-# unconditionally because it targets a directory the app writes on every start;
-# the broader, opt-in USE_PERMISSION_HARDENING below covers the rest of /app.
-RUN chgrp -R 0 /app/backend/open_webui/static && \
-    chmod -R g=u /app/backend/open_webui/static
+# copy backend files with the ownership and static permissions prepared above
+COPY --from=build /app/backend .
 
 EXPOSE 8080
 

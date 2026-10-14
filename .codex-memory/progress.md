@@ -152,3 +152,8 @@
 - 确认本地 WebUI 数据库中昨日新增的 Action 只有 `office_export_buttons`。
 - 因 `localhost:8080` 当时未运行，直接从本地数据库精确删除该 Action，并确认剩余记录为 0。
 - 删除仓库中的 Action 源码；保留 Open Terminal 服务、连接配置和已生成测试文件。
+## 2026-10-14 同步开始
+
+- 获取最新 origin/upstream，确认远程 feature 有 448 个本地尚未包含的提交，本地有 4 个远程尚未包含的提交。
+- 创建同步前备份分支；远程 feature 已无冲突合并，保留双方历史。
+- 分支策略固定为上游 → main → feature；禁止 force push 覆盖既有改造。
