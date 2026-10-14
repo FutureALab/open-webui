@@ -1,5 +1,7 @@
 # AIOps 项目记忆
 
+- 2026-10-15：[[tasks/2026-10-15-skill-upload-qa]]；四个复杂 skill 上传与逐文件完整性验证，修复导入弹窗关闭/重开。
+
 - 2026-10-14：[[tasks/2026-10-14-upstream-main-feature-sync]]；后续按 `docs/UPSTREAM_SYNC.md` 从官方 main 同步到 main，再合并到 `feature_20260730_dev`。
 
 - [项目简介](project-brief.md)

@@ -105,12 +105,13 @@
 			modalElement.removeEventListener('focusin', handleModalFocusIn);
 		}
 		window.removeEventListener('keydown', handleKeyDown);
-		document.body.removeChild(modalElement);
+		if (modalElement.parentNode === document.body) {
+			document.body.removeChild(modalElement);
+		}
 		document.body.style.overflow = 'unset';
 	}
 
 	onDestroy(() => {
-		show = false;
 		if (focusTrap) {
 			focusTrap.deactivate();
 		}
