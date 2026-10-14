@@ -47,3 +47,5 @@ git push --atomic origin main feature_20260730_dev
 - 新版文件对比组件补齐 Chrome 108 颜色回退；保留上游新增的 MFA、群组层级、模型/插件历史和构建渠道信息。
 - 现有 SQLite 数据库迁移前备份到 `backend/data/webui.db.backup-20261014-before-upstream-sync`；密钥与账户配置未写入 Git。
 - 本地生产页面：`http://localhost:8080`，沿用现有账户登录。
+- feature 适配合并提交：`1c40046fb`；main 与 feature 已用普通原子 push 更新到 origin。
+- 验证：13 项回归测试、最终生产构建、pnpm 冻结锁文件、23 个品牌资源哈希、Pyodide 运行与 Excel 生成通过；最终 CSS 不兼容颜色声明为 0。

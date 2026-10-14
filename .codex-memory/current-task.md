@@ -2,12 +2,16 @@
 
 ## 2026-10-14 同步上游 main 与 feature
 
-- 状态：进行中；先汇合远程 feature 与本地 4 个独有提交，再同步 main 并合并到 feature。
+- 状态：已完成；main 与 feature 已通过普通原子 push 同步到 origin，本地生产页面保持运行。
 - 分支用途：`main` 用于同步 `open-webui/open-webui:main`；`feature_20260730_dev` 用于 AIOps 自定义改造。
 - 上游目标：`f8ae8a6c328946dc62cd0712961a0632574581bf`，远程 main 原为 `4f167730e`，远程 feature 原为 `463659459`。
 - 备份：`backup/feature-before-sync-20261014` 保存本地原 feature；`backup/main-before-sync-20261014` 保存远程原 main。
 - 保留范围：AIOps 白标、Chrome 108、中文设置、Pyodide 0.28.x 与 `.data` 标准库、Claude Pipe、S3/Qdrant、本地 PostgreSQL/Windows 启动和构建流水线。
-- 下一步：检查合并差异、同步 main、完成定向测试和构建；普通 push 两个分支并本地启动。
+- 结果：main 同步提交 `ce56d8e0c`；feature 合并/适配提交 `1c40046fb`，已保留本地和远程双方历史。
+- 验证：Vitest 13/13、最终生产构建、23 个品牌资源哈希、Pyodide 标准库别名和实际 Excel 生成均通过；CSS 不兼容颜色声明为 0。
+- 本地：`http://localhost:8080` 显示 AIOps 0.12.0，健康检查 200；Codex 浏览器登录页已保留，控制台错误为 0，使用原有账号登录。
+- 数据：SQLite 已备份并迁移到 `b8f2c6d91a04`；既有 Open Terminal 配置的 8000 端口外部服务未运行。
+- 下一步：后续按 `docs/UPSTREAM_SYNC.md` 同步；业务改造继续在 `feature_20260730_dev`。
 
 ## 2026-09-08 Open WebUI Office 导出按钮
 

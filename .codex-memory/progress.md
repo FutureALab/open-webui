@@ -157,3 +157,12 @@
 - 获取最新 origin/upstream，确认远程 feature 有 448 个本地尚未包含的提交，本地有 4 个远程尚未包含的提交。
 - 创建同步前备份分支；远程 feature 已无冲突合并，保留双方历史。
 - 分支策略固定为上游 → main → feature；禁止 force push 覆盖既有改造。
+
+## 2026-10-14 同步完成与本地启动
+
+- main `ce56d8e0c` 包含最新官方 `f8ae8a6c3`；feature `1c40046fb` 包含 main 和原本双方 feature 提交。
+- 普通原子 push 已将 main/feature 更新到 Fork；没有 force push。
+- 定向测试 13/13、生产构建、pnpm 冻结锁、23 项品牌哈希、Pyodide Office 导入/Excel 生成和 zip/data 别名检查均通过。
+- 修复新文件对比组件的 Chrome 108 颜色回退，最终 CSS 不兼容颜色声明为 0。
+- 本地 AIOps 0.12.0 在 8080 运行；原数据库先备份再迁移，登录页面已打开、控制台无错误。
+- 分支用途及后续命令见 `docs/UPSTREAM_SYNC.md`；完整记录见 [[tasks/2026-10-14-upstream-main-feature-sync]]。
