@@ -75,6 +75,15 @@ describe('Simplified Chinese settings localization', () => {
 		readFileSync(projectPath('./src/lib/i18n/locales/zh-CN/translation.json'), 'utf8')
 	);
 
+	it('has no empty translations and preserves interpolation variables', () => {
+		for (const [key, value] of Object.entries(translations)) {
+			expect(value.trim(), key).not.toBe('');
+			expect(value.match(/\{\{.*?\}\}/g)?.sort() ?? [], key).toEqual(
+				key.match(/\{\{.*?\}\}/g)?.sort() ?? []
+			);
+		}
+	});
+
 	it('has a non-empty translation for every literal settings key', () => {
 		const keys = new Set(
 			settingsFiles.flatMap((file) =>

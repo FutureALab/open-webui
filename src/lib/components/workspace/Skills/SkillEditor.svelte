@@ -100,7 +100,7 @@
 					: await getSkillVersion(localStorage.token, id, currentVersionId!));
 		} catch (error) {
 			historyError = true;
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		} finally {
 			historyLoading = false;
 		}
@@ -119,7 +119,7 @@
 			await loadHistory();
 			toast.success($i18n.t('Version deleted'));
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		} finally {
 			loading = false;
 		}
@@ -139,7 +139,7 @@
 			if (versionId === fromId && currentVersionId === toId)
 				historyDiff = { ...result, fromId, toId };
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		} finally {
 			comparing = false;
 		}
@@ -156,7 +156,7 @@
 			remember();
 			historyDiff = null;
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const reload = async () => {
@@ -166,7 +166,7 @@
 			await selectVersion(latest.version_id);
 			conflict = false;
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const setProductionVersion = async () => {
@@ -187,7 +187,7 @@
 			toast.success($i18n.t('Production version updated'));
 		} catch (error) {
 			if ((error as any)?.code === 'version_conflict') conflict = true;
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		} finally {
 			loading = false;
 		}
@@ -199,7 +199,7 @@
 				`${id}-${versionId?.slice(0, 7)}.${format}`
 			);
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const saveCopy = async () => {
@@ -217,7 +217,7 @@
 			await goto(`/workspace/skills/edit?id=${result.id}`);
 			window.location.reload();
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 
@@ -272,7 +272,7 @@
 			}
 		} catch (error) {
 			if ((error as any)?.code === 'version_conflict') conflict = true;
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		} finally {
 			loading = false;
 		}
@@ -300,7 +300,7 @@
 
 <ConfirmDialog
 	bind:show={discard}
-	title="Discard unsaved changes?"
+	title={$i18n.t('Discard unsaved changes?')}
 	on:confirm={() => {
 		remember();
 		discardAction();
@@ -424,12 +424,12 @@
 				role="alert"
 				class="flex flex-wrap gap-3 bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950 dark:text-amber-100"
 			>
-				<span>This skill has a newer version. Your draft is preserved.</span><button
+				<span>{$i18n.t('This skill has a newer version. Your draft is preserved.')}</span><button
 					type="button"
-					on:click={() => confirmDiscard(reload)}>Reload latest</button
-				><button type="button" on:click={saveCopy}>Save draft as copy</button><button
+					on:click={() => confirmDiscard(reload)}>{$i18n.t('Reload latest')}</button
+				><button type="button" on:click={saveCopy}>{$i18n.t('Save draft as copy')}</button><button
 					type="button"
-					on:click={() => (conflict = false)}>Keep editing</button
+					on:click={() => (conflict = false)}>{$i18n.t('Keep editing')}</button
 				>
 			</div>{/if}
 		<div
@@ -448,7 +448,7 @@
 								)
 							).json();
 						} catch (error) {
-							throw new Error(skillError(error));
+							throw new Error(skillError(error, $i18n.t));
 						}
 					}}
 				/>
@@ -482,7 +482,7 @@
 								>
 									<button
 										type="button"
-										aria-label="Select version"
+										aria-label={$i18n.t('Select version')}
 										class="flex h-7 max-w-full items-center gap-2 rounded-lg bg-transparent px-2 text-xs text-gray-500 transition hover:text-gray-900 dark:hover:text-gray-100"
 									>
 										<span class="truncate"
@@ -605,8 +605,8 @@
 			<div class="flex shrink-0 justify-end gap-3 py-2">
 				<input
 					class="min-w-0 flex-1 bg-transparent px-2 text-xs outline-hidden"
-					placeholder="Describe this change"
-					aria-label="Commit message"
+					placeholder={$i18n.t('Describe this change')}
+					aria-label={$i18n.t('Commit message')}
 					bind:value={commitMessage}
 				/>
 				<button

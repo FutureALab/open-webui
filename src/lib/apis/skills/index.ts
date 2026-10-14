@@ -423,12 +423,39 @@ export const loadSkillByUrl = async (token: string, url: string) =>
 			body: JSON.stringify({ url })
 		})
 	).json();
-export const skillError = (error: unknown): string =>
-	error instanceof Error
-		? error.message
-		: typeof error === 'string'
-			? error
-			: JSON.stringify(error);
+export const skillError = (
+	error: unknown,
+	translate?: (key: string, options?: Record<string, unknown>) => string
+): string => {
+	const message =
+		error instanceof Error
+			? error.message
+			: typeof error === 'string'
+				? error
+				: JSON.stringify(error);
+	if (!translate) return message;
+	const pathErrors = {
+		'File exceeds 10 MiB': 'File exceeds 10 MiB: {{path}}',
+		'Duplicate file': 'Duplicate file: {{path}}',
+		'Duplicate archive path': 'Duplicate archive path: {{path}}',
+		'A file is also used as a directory': 'A file is also used as a directory: {{path}}',
+		'File or directory not found': 'File or directory not found: {{path}}'
+	};
+	const separator = message.indexOf(': ');
+	const key = pathErrors[message.slice(0, separator) as keyof typeof pathErrors];
+	if (separator >= 0 && key) return translate(key, { path: message.slice(separator + 2) });
+	const limit = /^A skill may contain at most (\d+) files$/.exec(message);
+	if (limit)
+		return translate('A skill may contain at most {{count}} files', { count: Number(limit[1]) });
+	if (
+		typeof error === 'object' &&
+		error !== null &&
+		'code' in error &&
+		error.code === 'version_conflict'
+	)
+		return translate('This skill has a newer version. Your draft is preserved.');
+	return translate(message);
+};
 
 export const downloadSkillBlob = (blob: Blob, filename: string) => {
 	const url = URL.createObjectURL(blob);

@@ -25,7 +25,7 @@ describe('official visual style parity', () => {
 		expect(sidebar).toContain('font-medium text-gray-850 dark:text-white font-primary');
 		expect(sidebar).toContain('text-[15px] leading-5 font-primary');
 		expect(sidebar).toContain('class="flex flex-col font-primary"');
-		expect(sidebar.match(/sidebar-new-chat-icon size-7 rounded-full/g)).toHaveLength(2);
+		expect(sidebar.match(/sidebar-new-chat-icon size-9 rounded-full/g)).toHaveLength(2);
 		expect(sidebarStore).toContain('sidebarWidth = writable(260)');
 		expect(chatItem).toContain('text-[15px] leading-5');
 	});

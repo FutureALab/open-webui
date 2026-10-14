@@ -966,20 +966,20 @@
 						placement="right"
 					>
 						<button
-							class="flex size-8.5 items-center justify-center transition group {isWindows
+							class="flex size-10 items-center justify-center transition group {isWindows
 								? 'cursor-pointer'
 								: 'cursor-[e-resize]'}"
 							aria-label={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}
 						>
 							<div
-								class="self-center flex size-[calc(30px*var(--app-text-scale,1))] items-center justify-center rounded-lg transition group-hover:bg-gray-100 dark:group-hover:bg-gray-900"
+								class="self-center flex size-[calc(38px*var(--app-text-scale,1))] items-center justify-center rounded-lg transition group-hover:bg-gray-100 dark:group-hover:bg-gray-900"
 							>
 								<!-- LICENSE covers this Open WebUI sidebar logo.
 							Do not alter, remove, obscure, or replace it except as LICENSE permits:
 							https://docs.openwebui.com/license. -->
 								<img
 									src="{WEBUI_BASE_URL}/static/favicon.png"
-									class="sidebar-new-chat-icon size-7 rounded-full group-hover:hidden"
+									class="sidebar-new-chat-icon size-9 rounded-full group-hover:hidden"
 									alt=""
 								/>
 
@@ -1155,7 +1155,7 @@
 					class="sidebar px-1 pt-1.5 pb-1 flex justify-between space-x-1 text-gray-600 dark:text-gray-400 sticky top-0 z-10 -mb-2"
 				>
 					<a
-						class="flex items-center rounded-xl size-8.5 h-full justify-center hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
+						class="flex items-center rounded-xl size-10 justify-center hover:bg-gray-100 dark:hover:bg-gray-900 transition no-drag-region"
 						href="/"
 						draggable="false"
 						on:click={newChatHandler}
@@ -1166,7 +1166,7 @@
 						<img
 							crossorigin="anonymous"
 							src="{WEBUI_BASE_URL}/static/favicon.png"
-							class="sidebar-new-chat-icon size-7 rounded-full"
+							class="sidebar-new-chat-icon size-9 rounded-full"
 							alt=""
 						/>
 					</a>
@@ -1177,7 +1177,7 @@
 					https://docs.openwebui.com/license. -->
 						<div
 							id="sidebar-webui-name"
-							class=" self-center text-[15px] leading-5 font-medium text-gray-850 dark:text-white font-primary"
+							class=" self-center text-[18px] leading-6 font-medium text-gray-850 dark:text-white font-primary"
 						>
 							{$WEBUI_NAME}
 						</div>

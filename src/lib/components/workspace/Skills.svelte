@@ -71,7 +71,7 @@
 					throw new Error('Community skill JSON exceeds 15 MiB');
 				tab.postMessage(data, 'https://openwebui.com');
 			} catch (error) {
-				toast.error(skillError(error));
+				toast.error(skillError(error, $i18n.t));
 			}
 		};
 		window.addEventListener('message', receiveLoaded);
@@ -135,18 +135,18 @@
 			},
 			{
 				id: 'skills-import-folder',
-				label: 'Import folder',
+				label: $i18n.t('Import folder'),
 				onClick: () => folderImportInput?.click(),
 				visible: $user?.role === 'admin' || $user?.permissions?.workspace?.skills_import
 			},
 			{
 				id: 'skills-export-zip',
-				label: 'Export ZIP',
+				label: $i18n.t('Export ZIP'),
 				onClick: async () => {
 					try {
 						saveAs(await exportSkillBundle(localStorage.token, 'zip'), 'skills.zip');
 					} catch (error) {
-						toast.error(skillError(error));
+						toast.error(skillError(error, $i18n.t));
 					}
 				},
 				visible: $user?.role === 'admin' || $user?.permissions?.workspace?.skills_export
@@ -260,7 +260,7 @@
 			);
 			await goto(`/workspace/skills/edit?id=${result.id}`);
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 
@@ -271,7 +271,7 @@
 				`${skill.id}.${format}`
 			);
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 
@@ -343,7 +343,13 @@
 {#if loaded}
 	<ImportModal
 		bind:show={showImportFromLink}
-		loadUrlHandler={(url) => loadSkillByUrl(localStorage.token, url)}
+		loadUrlHandler={async (url) => {
+			try {
+				return await loadSkillByUrl(localStorage.token, url);
+			} catch (error) {
+				throw skillError(error, $i18n.t);
+			}
+		}}
 		transformResult={(packages) => packages}
 		successMessage={$i18n.t('Skills loaded for preview')}
 		onImport={(packages) => {

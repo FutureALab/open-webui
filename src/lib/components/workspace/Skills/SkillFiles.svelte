@@ -126,7 +126,7 @@
 				open(path);
 			}
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const clearUrls = () => {
@@ -260,7 +260,7 @@
 				loadedPath = path;
 			}
 		} catch (error) {
-			loadError = skillError(error);
+			loadError = skillError(error, $i18n.t);
 		} finally {
 			if (request === requestId) loading = false;
 		}
@@ -295,7 +295,7 @@
 			selectedPaths = new Set();
 			await open(files.some((f) => f.path === initialPath) ? initialPath : 'SKILL.md', false);
 		} catch (error) {
-			loadError = skillError(error);
+			loadError = skillError(error, $i18n.t);
 			loading = false;
 		}
 	};
@@ -378,7 +378,7 @@
 			}
 			dirty = true;
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const remove = (path: string) => {
@@ -421,7 +421,7 @@
 			files = [...files, ...drafts];
 			dirty = true;
 		} catch (error) {
-			toast.error(skillError(error));
+			toast.error(skillError(error, $i18n.t));
 		}
 	};
 	const download = async (path: string) => {
@@ -431,7 +431,7 @@
 			try {
 				saveAs(await blobFor(file), path.split('/').pop() || 'file');
 			} catch (error) {
-				toast.error(skillError(error));
+				toast.error(skillError(error, $i18n.t));
 			}
 	};
 	const encoded = async (file: Draft): Promise<SkillFile> => {
@@ -569,12 +569,12 @@
 					on:click={async () => {
 						preview = !preview;
 						if (preview) await renderPreview();
-					}}>{preview ? 'Edit' : 'Preview'}</button
+					}}>{preview ? $i18n.t('Edit') : $i18n.t('Preview')}</button
 				>{/if}
 			<button
 				type="button"
 				class="rounded-lg px-1.5 py-0.5 text-gray-500 transition hover:text-gray-900 dark:hover:text-gray-100"
-				on:click={() => download(selected)}>Download</button
+				on:click={() => download(selected)}>{$i18n.t('Download')}</button
 			>
 		</div>
 		{#if loadError}<p role="alert" class="p-3 text-red-500">{loadError}</p>
@@ -591,7 +591,7 @@
 					sandbox=""
 					class="min-h-0 flex-1"
 				></iframe>
-			{:else}<p class="p-3 text-xs text-gray-500">Binary file. Download to open.</p>{/if}
+			{:else}<p class="p-3 text-xs text-gray-500">{$i18n.t('Binary file. Download to open.')}</p>{/if}
 		{:else if preview}
 			<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
 			<div
@@ -602,7 +602,7 @@
 						event.preventDefault();
 						const path = link.dataset.skillPath!;
 						if (files.some((f) => f.path === path)) open(path);
-						else toast.error('File not found');
+						else toast.error($i18n.t('File not found'));
 					}
 				}}
 			>
@@ -694,7 +694,7 @@
 									type="button"
 									class="select-none flex h-[1.6875rem] w-full cursor-pointer items-center gap-2 rounded-xl bg-transparent px-2 text-xs hover:text-gray-900 dark:hover:text-gray-100"
 									on:click={() => startCreate('directory')}
-									><Folder className="size-3.5" />{$i18n.t('New Folder')}</button
+									><Folder className="size-3.5" />{$i18n.t('New folder')}</button
 								>
 								<button
 									type="button"
@@ -747,10 +747,10 @@
 				type="button"
 				class="px-2 text-xs"
 				on:click={() =>
-					ask('Delete selected files?', false, () => {
+					ask($i18n.t('Delete selected files?'), false, () => {
 						selectedPaths.forEach(remove);
 						selectedPaths = new Set();
-					})}>Delete selected</button
+					})}>{$i18n.t('Delete selected')}</button
 			>{/if}
 		{#if !currentPath}{@render createInput()}{/if}
 		<ul>
@@ -777,7 +777,7 @@
 					onToggleExpand={toggleFolder}
 					onRename={(path, name) => rename(path, path.slice(0, path.lastIndexOf('/') + 1) + name)}
 					onDelete={(path) =>
-						ask('Delete this file or folder?', false, () => remove(path.replace(/\/$/, '')))}
+						ask($i18n.t('Delete this file or folder?'), false, () => remove(path.replace(/\/$/, '')))}
 					onMove={(paths, destination) =>
 						paths.forEach((path) => {
 							path = path.replace(/\/$/, '');
@@ -791,7 +791,7 @@
 			{/each}
 		</ul>
 		{#if !rows.length}<p class="p-3 text-xs text-gray-500">
-				Empty folders are saved when they contain files.
+				{$i18n.t('Empty folders are saved when they contain files.')}
 			</p>{/if}
 	</div>
 {/snippet}
