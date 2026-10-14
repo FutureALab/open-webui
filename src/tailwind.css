@@ -3,11 +3,19 @@
 @config '../tailwind.config.js';
 
 @theme {
+	--animate-cursor-pulse: cursor-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+	@keyframes cursor-pulse {
+		50% {
+			opacity: 0.25;
+		}
+	}
+
 	--font-sans:
 		var(--app-font-family, -apple-system), BlinkMacSystemFont, 'Inter', 'Vazirmatn', ui-sans-serif,
 		system-ui, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', sans-serif, 'Helvetica Neue',
 		Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-	--font-primary: var(--font-sans);
+	--font-primary: var(--app-font-family, 'Archivo'), 'Vazirmatn', sans-serif;
 	--font-secondary: var(--font-sans);
 
 	--color-gray-50: oklch(0.98 0 0);
@@ -101,9 +109,11 @@
 }
 
 @layer utilities {
-	.font-primary,
+	.font-primary {
+		font-family: var(--font-primary);
+	}
 	.font-secondary {
-		font-family: var(--font-sans);
+		font-family: var(--font-secondary);
 	}
 }
 

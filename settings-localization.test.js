@@ -68,6 +68,7 @@ describe('Simplified Chinese settings localization', () => {
 	const settingsFiles = [
 		...collectSvelteFiles('./src/lib/components/admin/Settings'),
 		...collectSvelteFiles('./src/lib/components/chat/Settings'),
+		'./src/lib/components/common/InterfaceSettings.svelte',
 		'./src/lib/components/chat/SettingsModal.svelte'
 	];
 	const translations = JSON.parse(
@@ -81,7 +82,7 @@ describe('Simplified Chinese settings localization', () => {
 			)
 		);
 		const missing = [...keys]
-			.filter((key) => typeof translations[key] !== 'string' || translations[key].trim() === '')
+			.filter((key) => !(translations[key] || translations[`${key}_other`])?.trim())
 			.sort();
 
 		expect(missing).toEqual([]);

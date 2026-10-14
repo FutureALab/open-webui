@@ -6,6 +6,7 @@
 
 	import Tooltip from './Tooltip.svelte';
 	export let state = true;
+	export let disabled = false;
 	export let id = '';
 	export let ariaLabelledbyId = '';
 	export let ariaLabel = '';
@@ -33,10 +34,11 @@
 
 		<Switch.Root
 			bind:checked={state}
+			{disabled}
 			{id}
 			aria-labelledby={ariaLabelledbyId || undefined}
 			aria-label={ariaLabel || undefined}
-			class="focus-ring flex h-[1.125rem] min-h-[1.125rem] w-8 shrink-0 cursor-pointer items-center rounded-full px-1 mx-[0.0625rem] transition disabled:cursor-not-allowed {($settings?.highContrastMode ??
+			class="focus-ring flex h-[1.125rem] min-h-[1.125rem] w-8 shrink-0 cursor-pointer items-center rounded-full px-1 mx-[0.0625rem] transition disabled:cursor-not-allowed disabled:opacity-50 {($settings?.highContrastMode ??
 			false)
 				? 'focus:outline focus:outline-2 focus:outline-gray-800! focus:dark:outline-gray-200!'
 				: 'outline outline-1 outline-gray-100 dark:outline-gray-800'} {state

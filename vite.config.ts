@@ -1,10 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { version } from './package.json';
+import { resolveBuildInfo } from './scripts/build-info.js';
 
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const backendTarget = process.env.WEBUI_BACKEND_URL || 'http://localhost:8080';
+const buildInfo = resolveBuildInfo();
 
 export default defineConfig({
 	resolve: {
@@ -24,7 +26,8 @@ export default defineConfig({
 	],
 	define: {
 		APP_VERSION: JSON.stringify(version),
-		APP_BUILD_HASH: JSON.stringify(process.env.APP_BUILD_HASH || 'dev-build')
+		APP_BUILD_HASH: JSON.stringify(buildInfo.hash),
+		APP_BUILD_CHANNEL: JSON.stringify(buildInfo.channel)
 	},
 	build: {
 		sourcemap: true,

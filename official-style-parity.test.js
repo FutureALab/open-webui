@@ -7,9 +7,12 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 describe('official visual style parity', () => {
 	it('keeps the official primary font and message hierarchy', () => {
 		const appCss = read('./src/app.css');
+		const tailwindCss = read('./src/tailwind.css');
 		const messageInput = read('./src/lib/components/chat/MessageInput.svelte');
 
-		expect(appCss).toContain("font-family: 'Archivo', 'Vazirmatn', sans-serif");
+		expect(appCss).toContain("font-family: 'Archivo'");
+		expect(tailwindCss).toContain("var(--app-font-family, 'Archivo'), 'Vazirmatn', sans-serif");
+		expect(tailwindCss).toContain('font-family: var(--font-primary)');
 		expect(appCss).toContain('prose-headings:font-semibold');
 		expect(messageInput).toContain('<div class="w-full font-primary">');
 	});

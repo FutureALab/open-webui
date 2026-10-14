@@ -1,5 +1,7 @@
 # AIOps 项目记忆
 
+- 2026-10-14：[[tasks/2026-10-14-upstream-main-feature-sync]]；后续按 `docs/UPSTREAM_SYNC.md` 从官方 main 同步到 main，再合并到 `feature_20260730_dev`。
+
 - [项目简介](project-brief.md)
 - [技术栈](tech-stack.md)
 - [架构决策](architecture-decisions.md)

@@ -20,9 +20,7 @@
 	import ClockIcon from './icons/Clock.svelte';
 	import CodeIcon from './icons/Code.svelte';
 	import EmojiFaceIcon from './icons/EmojiFace.svelte';
-	import HelpCircleIcon from './icons/HelpCircle.svelte';
 	import LogOutIcon from './icons/LogOut.svelte';
-	import MapIcon from './icons/Map.svelte';
 	import NotesIcon from './icons/Notes.svelte';
 	import PinIcon from './icons/Pin.svelte';
 	import PinSlashIcon from './icons/PinSlash.svelte';
@@ -101,6 +99,9 @@
 	on:keyup={(e) => {
 		if (e.key === 'Shift') shiftKey = false;
 	}}
+	on:blur={() => {
+		shiftKey = false;
+	}}
 />
 
 <UserStatusModal
@@ -114,11 +115,11 @@
 	<slot />
 
 	<div slot="content">
-		<DropdownMenu className="{className} font-sans text-xs">
+		<DropdownMenu className="{className} font-sans text-[15px]" compact={false}>
 			{#if $user}
 				<div>
 					<button
-						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-xs w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none text-left"
+						class="flex min-h-14 items-center gap-2.5 rounded-xl px-2 text-[15px] leading-5 w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none text-left"
 						type="button"
 						on:click={async () => {
 							show = false;
@@ -130,11 +131,11 @@
 							}
 						}}
 					>
-						<div class="self-center shrink-0 size-4.5 flex items-center justify-center">
+						<div class="self-center shrink-0 size-11 flex items-center justify-center">
 							<img
 								src={`${WEBUI_API_BASE_URL}/users/${$user.id}/profile/image`}
 								alt=""
-								class="size-4.5 rounded-full object-cover"
+								class="size-11 rounded-full object-cover"
 							/>
 						</div>
 						<div class="self-center min-w-0 flex-1 truncate">{$user.name}</div>
@@ -245,7 +246,7 @@
 					<a
 						href="/workspace"
 						draggable="false"
-						class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+						class="flex flex-1 min-w-0 h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -264,7 +265,7 @@
 					</a>
 					{#if shiftKey}
 						<Tooltip
-							content={isPinned('workspace')
+							content={pinnedItems.includes('workspace')
 								? $i18n.t('Unpin from Sidebar')
 								: $i18n.t('Pin to Sidebar')}
 						>
@@ -273,7 +274,7 @@
 								class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
 								on:click|preventDefault|stopPropagation={() => togglePin('workspace')}
 							>
-								{#if isPinned('workspace')}
+								{#if pinnedItems.includes('workspace')}
 									<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
 								{:else}
 									<PinIcon className="size-3.5" strokeWidth="1.5" />
@@ -291,7 +292,7 @@
 					<a
 						href="/notes"
 						draggable="false"
-						class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+						class="flex flex-1 min-w-0 h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -310,7 +311,7 @@
 					</a>
 					{#if shiftKey}
 						<Tooltip
-							content={isPinned('notes')
+							content={pinnedItems.includes('notes')
 								? $i18n.t('Unpin from Sidebar')
 								: $i18n.t('Pin to Sidebar')}
 						>
@@ -319,7 +320,7 @@
 								class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
 								on:click|preventDefault|stopPropagation={() => togglePin('notes')}
 							>
-								{#if isPinned('notes')}
+								{#if pinnedItems.includes('notes')}
 									<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
 								{:else}
 									<PinIcon className="size-3.5" strokeWidth="1.5" />
@@ -337,7 +338,7 @@
 					<a
 						href="/calendar"
 						draggable="false"
-						class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+						class="flex flex-1 min-w-0 h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -356,7 +357,7 @@
 					</a>
 					{#if shiftKey}
 						<Tooltip
-							content={isPinned('calendar')
+							content={pinnedItems.includes('calendar')
 								? $i18n.t('Unpin from Sidebar')
 								: $i18n.t('Pin to Sidebar')}
 						>
@@ -365,7 +366,7 @@
 								class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
 								on:click|preventDefault|stopPropagation={() => togglePin('calendar')}
 							>
-								{#if isPinned('calendar')}
+								{#if pinnedItems.includes('calendar')}
 									<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
 								{:else}
 									<PinIcon className="size-3.5" strokeWidth="1.5" />
@@ -383,7 +384,7 @@
 					<a
 						href="/automations"
 						draggable="false"
-						class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+						class="flex flex-1 min-w-0 h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -402,7 +403,7 @@
 					</a>
 					{#if shiftKey}
 						<Tooltip
-							content={isPinned('automations')
+							content={pinnedItems.includes('automations')
 								? $i18n.t('Unpin from Sidebar')
 								: $i18n.t('Pin to Sidebar')}
 						>
@@ -411,7 +412,7 @@
 								class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
 								on:click|preventDefault|stopPropagation={() => togglePin('automations')}
 							>
-								{#if isPinned('automations')}
+								{#if pinnedItems.includes('automations')}
 									<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
 								{:else}
 									<PinIcon className="size-3.5" strokeWidth="1.5" />
@@ -429,7 +430,7 @@
 					<a
 						href="/playground"
 						draggable="false"
-						class="flex flex-1 min-w-0 h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] cursor-pointer select-none"
+						class="flex flex-1 min-w-0 h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] cursor-pointer select-none"
 						on:click={async (e) => {
 							if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
 							e.preventDefault();
@@ -448,7 +449,7 @@
 					</a>
 					{#if shiftKey}
 						<Tooltip
-							content={isPinned('playground')
+							content={pinnedItems.includes('playground')
 								? $i18n.t('Unpin from Sidebar')
 								: $i18n.t('Pin to Sidebar')}
 						>
@@ -457,7 +458,7 @@
 								class="p-1 mr-1 rounded-lg hover:bg-gray-100/60 dark:hover:bg-gray-700/60 transition"
 								on:click|preventDefault|stopPropagation={() => togglePin('playground')}
 							>
-								{#if isPinned('playground')}
+								{#if pinnedItems.includes('playground')}
 									<PinSlashIcon className="size-3.5" strokeWidth="1.5" />
 								{:else}
 									<PinIcon className="size-3.5" strokeWidth="1.5" />
@@ -473,43 +474,8 @@
 
 				<!-- {$i18n.t('Help')} -->
 
-				{#if $user?.role === 'admin'}
-					<a
-						href="https://docs.openwebui.com"
-						target="_blank"
-						draggable="false"
-						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-					>
-						<div class="self-center">
-							<HelpCircleIcon className="size-3.5" />
-						</div>
-						<div class=" self-center truncate">{$i18n.t('Documentation')}</div>
-					</a>
-
-					<!-- Releases -->
-					<a
-						href="https://github.com/open-webui/open-webui/releases"
-						target="_blank"
-						draggable="false"
-						class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
-						id="chat-share-button"
-						on:click={() => {
-							show = false;
-						}}
-					>
-						<div class="self-center">
-							<MapIcon className="size-3.5" />
-						</div>
-						<div class=" self-center truncate">{$i18n.t('Releases')}</div>
-					</a>
-				{/if}
-
 				<button
-					class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
 					type="button"
 					id="chat-share-button"
 					on:click={async () => {
@@ -535,7 +501,7 @@
 				<a
 					href="/admin"
 					draggable="false"
-					class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
+					class="flex h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
 					on:click={async (e) => {
 						if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
 							return;
@@ -557,7 +523,7 @@
 			{/if}
 
 			<button
-				class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					show = false;
@@ -577,7 +543,7 @@
 			</button>
 
 			<button
-				class="flex h-[1.6875rem] items-center gap-2 rounded-xl px-2 text-[0.8125rem] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
+				class="flex h-9 items-center gap-2.5 rounded-xl px-2 text-[15px] w-full hover:bg-gray-50/60 dark:hover:bg-gray-800/60 transition cursor-pointer select-none"
 				type="button"
 				on:click={async () => {
 					const res = await userSignOut();

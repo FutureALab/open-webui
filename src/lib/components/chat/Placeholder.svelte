@@ -40,6 +40,7 @@
 	export let stopResponse: Function;
 
 	export let autoScroll = false;
+	export let callActive = false;
 
 	export let atSelectedModel: Model | undefined;
 	export let selectedModels: [''];
@@ -162,7 +163,7 @@
 									>
 										<img
 											src={`${WEBUI_API_BASE_URL}/models/model/profile/image?id=${model?.id}&lang=${$i18n.language}`}
-											class=" size-9 @sm:size-10 rounded-2xl"
+											class=" size-12 rounded-2xl"
 											aria-hidden="true"
 											draggable="false"
 											on:error={(e) => {
@@ -179,7 +180,7 @@
 					</div>
 
 					<div
-						class=" text-2xl @sm:text-2xl line-clamp-1 flex items-center"
+						class=" text-[1.75rem] leading-9 line-clamp-1 flex items-center"
 						in:fade={{ duration: 100 }}
 					>
 						{#if selectedModelName}
@@ -241,6 +242,7 @@
 			<div class="text-base font-normal @md:max-w-3xl w-full py-3 {atSelectedModel ? 'mt-2' : ''}">
 				{#if !($selectedFolder && folderReadOnly)}
 					<MessageInput
+						{callActive}
 						bind:this={messageInput}
 						{history}
 						bind:selectedModels

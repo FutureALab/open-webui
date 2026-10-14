@@ -189,7 +189,7 @@
 								strokeWidth={1.4}
 							/>
 							<span class="flex-1 text-left"
-								>{$i18n.t(value === 'unified' ? 'Unified' : 'Split')}</span
+								>{value === 'unified' ? $i18n.t('Unified') : $i18n.t('Split')}</span
 							>
 							{#if mode === value}<Icon name="check" size={12} strokeWidth={1.4} />{/if}
 						</button>
@@ -212,9 +212,9 @@
 		</Dropdown>
 	</div>
 	<div class="grid shrink-0 grid-cols-2 border-b border-black/5 dark:border-white/5">
-		{#each [{ label: 'Original', path: original }, { label: 'Revised', path: revised }] as file}
+		{#each [{ label: $i18n.t('Original'), path: original }, { label: $i18n.t('Revised'), path: revised }] as file}
 			<div class="min-w-0 px-3 py-2" title={file.path}>
-				<div class="text-[0.916667em] text-gray-400 dark:text-gray-500">{$i18n.t(file.label)}</div>
+				<div class="text-[0.916667em] text-gray-400 dark:text-gray-500">{file.label}</div>
 				<div class="truncate font-normal text-gray-700 dark:text-gray-300">{name(file.path)}</div>
 			</div>
 		{/each}
@@ -416,12 +416,12 @@
 		box-shadow: inset 0 -0.125rem 0 rgb(185 28 28 / 0.38);
 	}
 	:global(.dark) .added {
-		background-color: color-mix(in oklab, var(--color-green-500) 15%, transparent);
+		background-color: color-mix(in oklab, var(--color-green-500, rgb(0, 198, 90)) 15%, transparent);
 		color: var(--color-green-300);
 		box-shadow: inset 0.1875rem 0 0 #4ade80;
 	}
 	:global(.dark) .removed {
-		background-color: color-mix(in oklab, var(--color-red-500) 15%, transparent);
+		background-color: color-mix(in oklab, var(--color-red-500, rgb(251, 44, 54)) 15%, transparent);
 		color: var(--color-red-300);
 	}
 	:global(.dark) .added .marker {

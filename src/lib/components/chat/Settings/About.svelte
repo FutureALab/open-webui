@@ -1,12 +1,15 @@
 <script lang="ts">
+	// Keep keys in nested template expressions visible to i18next-parser.
+	// $i18n.t("licensed under");
+
 	import { getVersionUpdates } from '$lib/apis';
 	import { getOllamaVersion } from '$lib/apis/ollama';
-	import { WEBUI_BUILD_HASH, WEBUI_VERSION } from '$lib/constants';
-	import { WEBUI_NAME, config, showChangelog } from '$lib/stores';
+	import { WEBUI_BUILD_CHANNEL, WEBUI_VERSION } from '$lib/constants';
+	import { WEBUI_NAME, config } from '$lib/stores';
 	import { compareVersion } from '$lib/utils';
 	import { onMount, getContext } from 'svelte';
 
-	import Tooltip from '$lib/components/common/Tooltip.svelte';
+	import BuildVersion from '$lib/components/common/BuildVersion.svelte';
 	import UserSettingRow from './UserSettingRow.svelte';
 	import UserSettingSection from './UserSettingSection.svelte';
 
@@ -42,7 +45,7 @@
 			return '';
 		});
 
-		if ($config?.features?.enable_version_update_check) {
+		if (WEBUI_BUILD_CHANNEL === 'main' && $config?.features?.enable_version_update_check) {
 			checkForVersionUpdates();
 		}
 	});
@@ -61,14 +64,12 @@
 			title={`${$WEBUI_NAME} ${$i18n.t('settings.personal.about.sections.version.title')}`}
 			first
 		>
-			<UserSettingRow description={$i18n.t('settings.personal.about.seeWhatSNew.description')}>
+			<UserSettingRow>
 				<div slot="label" class="flex flex-col text-xs text-gray-600 dark:text-gray-400">
-					<div class="flex gap-1">
-						<Tooltip content={WEBUI_BUILD_HASH}>
-							v{WEBUI_VERSION}
-						</Tooltip>
+					<div class="flex flex-wrap gap-1">
+						<BuildVersion />
 
-						{#if $config?.features?.enable_version_update_check}
+						{#if WEBUI_BUILD_CHANNEL === 'main' && $config?.features?.enable_version_update_check}
 							{#if version.latest === null}
 								<span>{$i18n.t('Could not check for updates')}</span>
 							{:else}
@@ -85,18 +86,9 @@
 							{/if}
 						{/if}
 					</div>
-
-					<button
-						class="self-start {actionButtonClass}"
-						on:click={() => {
-							showChangelog.set(true);
-						}}
-					>
-						<div>{$i18n.t('settings.personal.about.seeWhatSNew.label')}</div>
-					</button>
 				</div>
 
-				{#if $config?.features?.enable_version_update_check}
+				{#if WEBUI_BUILD_CHANNEL === 'main' && $config?.features?.enable_version_update_check}
 					<button
 						class={actionButtonClass}
 						on:click={() => {
@@ -130,24 +122,6 @@
 					<span class="capitalize">{$config?.license_metadata?.type}</span>
 					{$i18n.t('license purchased by')}
 					<span class="capitalize">{$config?.license_metadata?.organization_name}</span>
-				</div>
-			{:else}
-				<div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400 dark:text-gray-600">
-					<a
-						class="hover:text-gray-700 dark:hover:text-gray-400"
-						href="https://discord.gg/5rJgQTnV4s"
-						target="_blank">Discord</a
-					>
-					<a
-						class="hover:text-gray-700 dark:hover:text-gray-400"
-						href="https://twitter.com/OpenWebUI"
-						target="_blank">X</a
-					>
-					<a
-						class="hover:text-gray-700 dark:hover:text-gray-400"
-						href="https://github.com/open-webui/open-webui"
-						target="_blank">GitHub</a
-					>
 				</div>
 			{/if}
 

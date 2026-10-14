@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 
 import { describe, expect, it } from 'vitest';
 
@@ -19,9 +19,15 @@ describe('Pyodide runtime packaging', () => {
 		expect(prepareScript).toContain('Restore PyPI-only package entries');
 	});
 
-	it('does not ship the retired changelog announcement modal', () => {
-		expect(existsSync(new URL('./src/lib/components/ChangelogModal.svelte', import.meta.url))).toBe(
-			false
-		);
+	it('does not mount or open the retired changelog announcement modal', () => {
+		const layout = read('./src/routes/(app)/+layout.svelte');
+		expect(layout).not.toContain('ChangelogModal');
+		expect(layout).not.toContain('showChangelog.set');
+		for (const path of [
+			'./src/lib/components/admin/Settings/General.svelte',
+			'./src/lib/components/chat/Settings/About.svelte'
+		]) {
+			expect(read(path)).not.toContain('showChangelog');
+		}
 	});
 });
