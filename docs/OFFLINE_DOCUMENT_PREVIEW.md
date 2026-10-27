@@ -12,7 +12,7 @@ PDF 正文、缩略图和引用预览共用本地 PDF.js legacy 运行时及 Wor
 
 资源版本跟随锁文件中的 PDF.js 版本，不使用 CDN。完整分发 `build/` 即可；Docker 构建会按既有流程打包这些文件。开发服务也由相同的 Vite 静态复制插件提供资源。
 
-应用内文件读取使用 `/files/{id}/content?preview=true`，以 `application/octet-stream` 和通用 `preview.data` 文件名传输，避免下载管理器把 PDF/Office 预览拦截成下载。Blob 调用方通过 `X-Original-Content-Type` 恢复原始 MIME 类型；鉴权与原始下载接口保持既有行为。
+应用内文件读取使用 `/files/{id}/content/preview.data`，以 `application/octet-stream` 和通用 `preview.data` 文件名传输，避免下载管理器把 PDF/Office 预览拦截成下载。Blob 调用方通过 `X-Original-Content-Type` 恢复原始 MIME 类型；鉴权与原始下载接口保持既有行为。独立预览路径也避免命中下载管理器对原 `/content` URL 的历史缓存；`/content?preview=true` 保留兼容。
 
 Word、PowerPoint、Excel 使用项目已安装的解析器和文件内嵌资源。文档自身引用的远程图片、网页或在线服务仍需对应地址可达。
 

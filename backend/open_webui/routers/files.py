@@ -810,14 +810,17 @@ async def update_file_data_content_by_id(
 ############################
 
 
+@router.get('/{id}/content/preview.data')
 @router.get('/{id}/content')
 async def get_file_content_by_id(
     id: str,
+    request: Request,
     user=Depends(get_verified_user),
     attachment: bool = Query(False),
     preview: bool = Query(False),
     db: AsyncSession = Depends(get_async_session),
 ):
+    preview = preview or request.url.path.endswith('/content/preview.data')
     file = await Files.get_file_by_id(id, db=db)
 
     if not file:

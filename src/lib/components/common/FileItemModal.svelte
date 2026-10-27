@@ -506,7 +506,7 @@
 						/>
 					{:else if isPDF}
 						<PDFViewer
-							url={`${WEBUI_API_BASE_URL}/files/${item.id}/content?preview=true`}
+							url={`${WEBUI_API_BASE_URL}/files/${item.id}/content/preview.data`}
 							className="w-full h-[70vh] border-0 rounded-lg"
 						/>
 					{:else if isExcel}

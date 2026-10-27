@@ -303,7 +303,7 @@ export const updateFileDataContentById = async (token: string, id: string, conte
 export const getFileContentById = async (id: string) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/files/${id}/content?preview=true`, {
+	const res = await fetch(`${WEBUI_API_BASE_URL}/files/${id}/content/preview.data`, {
 		method: 'GET',
 		headers: {
 			Accept: 'application/json'
@@ -439,7 +439,9 @@ export const getFileBlobById = async (
 ): Promise<Blob> => {
 	const suffix = filename
 		? `/${encodeURIComponent(filename)}`
-		: `?attachment=${attachment}${attachment ? '' : '&preview=true'}`;
+		: attachment
+			? '?attachment=true'
+			: '/preview.data';
 	const response = await fetch(
 		`${WEBUI_API_BASE_URL}/files/${encodeURIComponent(id)}/content${suffix}`,
 		{

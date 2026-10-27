@@ -18,9 +18,7 @@ describe('programmatic file previews', () => {
 		);
 		vi.stubGlobal('fetch', fetch);
 		const blob = await getFileBlobById('token', 'file-id');
-		expect(fetch.mock.calls[0][0]).toBe(
-			'/api/v1/files/file-id/content?attachment=false&preview=true'
-		);
+		expect(fetch.mock.calls[0][0]).toBe('/api/v1/files/file-id/content/preview.data');
 		expect(blob.type).toBe('application/pdf');
 		expect(await blob.text()).toBe('PDF bytes');
 	});
@@ -36,6 +34,6 @@ describe('programmatic file previews', () => {
 		const fetch = vi.fn().mockResolvedValue(new Response('office bytes'));
 		vi.stubGlobal('fetch', fetch);
 		expect(new TextDecoder().decode(await getFileContentById('file-id'))).toBe('office bytes');
-		expect(fetch.mock.calls[0][0]).toBe('/api/v1/files/file-id/content?preview=true');
+		expect(fetch.mock.calls[0][0]).toBe('/api/v1/files/file-id/content/preview.data');
 	});
 });
