@@ -926,6 +926,7 @@
 		color: var(--color-gray-800);
 	}
 	.secondary:hover {
+		background: rgba(235, 235, 235, 0.7);
 		background: color-mix(in oklab, var(--color-gray-100) 70%, transparent);
 	}
 	.primary {
@@ -951,6 +952,7 @@
 		color: white;
 	}
 	:global(.dark) .secondary:hover {
+		background: rgba(38, 38, 38, 0.6);
 		background: color-mix(in oklab, var(--color-gray-850) 60%, transparent);
 	}
 	:global(.dark) .primary {
