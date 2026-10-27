@@ -12,6 +12,8 @@ PDF 正文、缩略图和引用预览共用本地 PDF.js legacy 运行时及 Wor
 
 资源版本跟随锁文件中的 PDF.js 版本，不使用 CDN。完整分发 `build/` 即可；Docker 构建会按既有流程打包这些文件。开发服务也由相同的 Vite 静态复制插件提供资源。
 
+应用内文件读取使用 `/files/{id}/content?preview=true`，以 `application/octet-stream` 和通用 `preview.data` 文件名传输，避免下载管理器把 PDF/Office 预览拦截成下载。Blob 调用方通过 `X-Original-Content-Type` 恢复原始 MIME 类型；鉴权与原始下载接口保持既有行为。
+
 Word、PowerPoint、Excel 使用项目已安装的解析器和文件内嵌资源。文档自身引用的远程图片、网页或在线服务仍需对应地址可达。
 
 联网准备依赖后构建：
@@ -35,3 +37,7 @@ npm run build
 - 导入完成分别提示新增和跳过数量；网络或服务器错误不计作成功或已有用户。
 
 管理员导入通过 `/api/v1/auths/add?skip_existing=true` 请求跳过重复账户，跳过时返回 `null`。普通 `/auths/add` 仍对重复邮箱返回错误。
+
+## 本机 Windows 运行环境
+
+本次已将 `.venv` 的基础解释器切换为独立 CPython 3.11.15，保留已安装的依赖和 PyTorch 2.8.0+cpu。原 Anaconda 3.11.5 会优先加载其目录中的旧版 `MSVCP140.dll`，使 Chroma 向量写入发生原生访问冲突；独立运行时的向量写入、查询和知识库创建已通过验证。

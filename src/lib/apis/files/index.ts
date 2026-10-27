@@ -303,7 +303,7 @@ export const updateFileDataContentById = async (token: string, id: string, conte
 export const getFileContentById = async (id: string) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/files/${id}/content`, {
+	const res = await fetch(`${WEBUI_API_BASE_URL}/files/${id}/content?preview=true`, {
 		method: 'GET',
 		headers: {
 			Accept: 'application/json'
@@ -437,7 +437,9 @@ export const getFileBlobById = async (
 		filename
 	}: { signal?: AbortSignal; attachment?: boolean; filename?: string } = {}
 ): Promise<Blob> => {
-	const suffix = filename ? `/${encodeURIComponent(filename)}` : `?attachment=${attachment}`;
+	const suffix = filename
+		? `/${encodeURIComponent(filename)}`
+		: `?attachment=${attachment}${attachment ? '' : '&preview=true'}`;
 	const response = await fetch(
 		`${WEBUI_API_BASE_URL}/files/${encodeURIComponent(id)}/content${suffix}`,
 		{
@@ -452,7 +454,9 @@ export const getFileBlobById = async (
 			response.status
 		);
 	}
-	return response.blob();
+	const blob = await response.blob();
+	const contentType = response.headers.get('X-Original-Content-Type');
+	return contentType ? blob.slice(0, blob.size, contentType) : blob;
 };
 
 export const getFileIndexedText = async (

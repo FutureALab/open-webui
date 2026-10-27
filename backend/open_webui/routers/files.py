@@ -815,6 +815,7 @@ async def get_file_content_by_id(
     id: str,
     user=Depends(get_verified_user),
     attachment: bool = Query(False),
+    preview: bool = Query(False),
     db: AsyncSession = Depends(get_async_session),
 ):
     file = await Files.get_file_by_id(id, db=db)
@@ -845,6 +846,10 @@ async def get_file_content_by_id(
 
                 if attachment:
                     headers['Content-Disposition'] = f"attachment; filename*=UTF-8''{encoded_filename}"
+                elif preview:
+                    headers['X-Original-Content-Type'] = content_type or 'application/octet-stream'
+                    headers['Content-Disposition'] = 'inline; filename="preview.data"'
+                    content_type = 'application/octet-stream'
                 else:
                     if content_type == 'application/pdf' or filename.lower().endswith('.pdf'):
                         headers['Content-Disposition'] = f"inline; filename*=UTF-8''{encoded_filename}"
