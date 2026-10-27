@@ -1,5 +1,11 @@
 # 进度
 
+## 2026-10-28 main 同步与离线预览
+
+- 已合并 origin/main@770cf9f4a 并推送 feature；CSV 跳过重复、原子创建凭据、离线 PDF.js 资源与 Chrome 108 文本流修复通过最终验收。
+- 29 项前端、4 项后端、26 账户登录、Chrome 108/156 断外网预览与正式 Windows 启动脚本验证通过；详见 [[tasks/2026-10-27-main-csv-offline-preview]]。
+- 将既有 .venv 重定位到独立 CPython 3.11.15，解决 Anaconda 旧 C++ DLL 导致的 Chroma 原生崩溃；保留全部依赖与已有数据库。
+
 ## 2026-09-09 函数导入版本号修复
 
 - 浏览器点击“保存并创建”时，`compareVersion` 因前端当前版本为 `undefined` 抛出 `localeCompare` 异常，函数创建请求未发出。

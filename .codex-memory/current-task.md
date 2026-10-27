@@ -1,5 +1,15 @@
 # 当前任务
 
+## 2026-10-28 main 同步、CSV 与离线预览
+
+- 状态：已完成，代码 `0c6f5204d` 已普通推送到 `origin/feature_20260730_dev`，远程 main `770cf9f4a` 为其祖先。
+- 用户导入：重复邮箱跳过、坏行不中断、pending 导入为 user，用户资料与有效凭据原子写入。
+- 预览：本地 PDF.js 全资源、二进制 preview.data 通道、Chrome 108 文本流兼容；Word/PPT 内嵌内容断外网实测通过。
+- 验证：29 项前端与 4 项后端测试、生产构建、冻结锁文件、197 个资源哈希、26 个新用户逐一登录通过。
+- 本地：独立 CPython 3.11.15 的 `.venv`，已使用现有 Windows 启动脚本运行 AIOps 0.12.4，地址 `http://localhost:8080`；沿用原有账号。
+- 数据：迁移前 SQLite 备份已保留，3 个原有用户及凭据一致；详情见 [[tasks/2026-10-27-main-csv-offline-preview]]。
+
+
 ## 2026-10-14 同步上游 main 与 feature
 
 - 状态：已完成；main 与 feature 已通过普通原子 push 同步到 origin，本地生产页面保持运行。
