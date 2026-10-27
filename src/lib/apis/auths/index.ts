@@ -443,31 +443,35 @@ export const addUser = async (
 	email: string,
 	password: string,
 	role: string = 'pending',
-	profile_image_url: null | string = null
+	profile_image_url: null | string = null,
+	skipExisting = false
 ) => {
 	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/auths/add`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			...(token && { authorization: `Bearer ${token}` })
-		},
-		body: JSON.stringify({
-			name: name,
-			email: email,
-			password: password,
-			role: role,
-			...(profile_image_url && { profile_image_url: profile_image_url })
-		})
-	})
+	const res = await fetch(
+		`${WEBUI_API_BASE_URL}/auths/add${skipExisting ? '?skip_existing=true' : ''}`,
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				...(token && { authorization: `Bearer ${token}` })
+			},
+			body: JSON.stringify({
+				name: name,
+				email: email,
+				password: password,
+				role: role,
+				...(profile_image_url && { profile_image_url: profile_image_url })
+			})
+		}
+	)
 		.then(async (res) => {
 			if (!res.ok) throw await res.json();
 			return res.json();
 		})
 		.catch((err) => {
 			console.error(err);
-			error = err.detail;
+			error = err.detail ?? err;
 			return null;
 		});
 

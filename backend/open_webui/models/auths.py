@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+import time
 import uuid
 from typing import Literal
 
@@ -308,23 +309,31 @@ class AuthsTable:
                 active=True,
                 session_stamp=str(uuid.uuid4()),
             )
-            session.add(credential)
+            try:
+                profile_image_url = validate_image_url(profile_image_url)
+            except ValueError:
+                profile_image_url = '/user.png'
+
+            now = int(time.time())
+            created_user = UserModel(
+                id=new_id,
+                name=name,
+                email=email,
+                profile_image_url=profile_image_url,
+                role=role,
+                oauth=oauth,
+                last_active_at=now,
+                created_at=now,
+                updated_at=now,
+            )
+            session.add_all([credential, User(**created_user.model_dump())])
 
             try:
-                created_user = await Users.insert_new_user(
-                    new_id,
-                    name,
-                    email,
-                    profile_image_url,
-                    role,
-                    oauth=oauth,
-                    db=session,
-                )
                 await session.commit()
-            except IntegrityError:
+            except Exception:
                 await session.rollback()
                 raise
-            return created_user if credential and created_user else None
+            return created_user
 
     async def authenticate_user(
         self,

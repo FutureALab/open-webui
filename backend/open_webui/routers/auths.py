@@ -82,7 +82,7 @@ from open_webui.utils.json_codec import JSONCodec
 from open_webui.utils.mfa import MFA_CONFIG_KEYS, MfaConfigForm, get_mfa_config, limit_account, update_mfa_config
 from open_webui.utils.misc import parse_duration, validate_email_format
 from open_webui.utils.rate_limit import RateLimiter
-from pydantic import BaseModel, StrictStr, field_validator
+from pydantic import BaseModel, Field, StrictStr, field_validator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -128,11 +128,15 @@ ADMIN_CONFIG_KEYS = {
     'AUTOMATION_MIN_INTERVAL': 'automations.min_interval',
     'ENABLE_AUTOMATIONS': 'automations.enable',
     'ENABLE_CHANNELS': 'channels.enable',
+    'ENABLE_ENCRYPTED_CHANNELS': 'channels.encryption.enable',
     'ENABLE_APPS': 'apps.enable',
     'CHANNEL_MODEL_RESPONSE_MODE': 'channels.model_response_mode',
     'ENABLE_CALENDAR': 'calendar.enable',
     'ENABLE_MEMORIES': 'memories.enable',
     'ENABLE_MEMORY_SYSTEM_CONTEXT': 'memories.system_context.enable',
+    'ENABLE_SKILL_LAZY_LOADING': 'skills.lazy_loading.enable',
+    'SKILL_CONTENT_MAX_CHARS': 'skills.content_max_chars',
+    'SKILL_PREVIEW_MAX_CHARS': 'skills.preview_max_chars',
     'ENABLE_NOTES': 'notes.enable',
     'ENABLE_USER_WEBHOOKS': 'ui.enable_user_webhooks',
     'ENABLE_USER_STATUS': 'users.enable_status',
@@ -146,6 +150,7 @@ LDAP_SERVER_CONFIG_KEYS = {
     'host': 'ldap.server.host',
     'port': 'ldap.server.port',
     'attribute_for_mail': 'ldap.server.attribute_for_mail',
+    'default_email_domain': 'ldap.server.default_email_domain',
     'attribute_for_username': 'ldap.server.attribute_for_username',
     'app_dn': 'ldap.server.app_dn',
     'app_dn_password': 'ldap.server.app_password',
@@ -432,6 +437,7 @@ async def ldap_auth(
     LDAP_SERVER_HOST = await Config.get('ldap.server.host')
     LDAP_SERVER_PORT = await Config.get('ldap.server.port')
     LDAP_ATTRIBUTE_FOR_MAIL = await Config.get('ldap.server.attribute_for_mail')
+    LDAP_DEFAULT_EMAIL_DOMAIN = await Config.get('ldap.server.default_email_domain')
     LDAP_ATTRIBUTE_FOR_USERNAME = await Config.get('ldap.server.attribute_for_username')
     LDAP_SEARCH_BASE = await Config.get('ldap.server.users_dn')
     LDAP_SEARCH_FILTERS = await Config.get('ldap.server.search_filter')
@@ -497,6 +503,10 @@ async def ldap_auth(
         entry = connection_app.entries[0]
         entry_username = entry[f'{LDAP_ATTRIBUTE_FOR_USERNAME}'].value
         email = entry[f'{LDAP_ATTRIBUTE_FOR_MAIL}'].value  # retrieve the Attribute value
+        if not email and LDAP_DEFAULT_EMAIL_DOMAIN:
+            default_email = f'{form_data.user}@{LDAP_DEFAULT_EMAIL_DOMAIN}'
+            if validate_email_format(default_email):
+                email = default_email
 
         username_list = []  # list of usernames from LDAP attribute
         if isinstance(entry_username, list):
@@ -1043,10 +1053,11 @@ async def delete_oauth_session_by_provider(
 ############################
 
 
-@router.post('/add', response_model=AddUserResponse, response_model_exclude_none=True)
+@router.post('/add', response_model=AddUserResponse | None, response_model_exclude_none=True)
 async def add_user(
     request: Request,
     form_data: AddUserForm,
+    skip_existing: bool = False,
     user=Depends(get_admin_user),
     db: AsyncSession = Depends(get_async_session),
 ):
@@ -1055,6 +1066,8 @@ async def add_user(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT)
 
     if await Users.get_user_by_email(form_data.email.lower(), db=db):
+        if skip_existing:
+            return None
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
     try:
@@ -1106,6 +1119,13 @@ async def add_user(
             }
         else:
             raise HTTPException(500, detail=ERROR_MESSAGES.CREATE_USER_ERROR)
+    except IntegrityError:
+        await db.rollback()
+        if await Users.get_user_by_email(form_data.email.lower(), db=db):
+            if skip_existing:
+                return None
+            raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
+        raise HTTPException(500, detail=ERROR_MESSAGES.CREATE_USER_ERROR)
     except HTTPException:
         raise
     except Exception as err:
@@ -1178,11 +1198,15 @@ class AdminConfig(MfaConfigForm):
     AUTOMATION_MIN_INTERVAL: int | str | None = None
     ENABLE_AUTOMATIONS: bool
     ENABLE_CHANNELS: bool
+    ENABLE_ENCRYPTED_CHANNELS: bool = False
     ENABLE_APPS: bool = False
     CHANNEL_MODEL_RESPONSE_MODE: str = 'thread'
     ENABLE_CALENDAR: bool
     ENABLE_MEMORIES: bool
     ENABLE_MEMORY_SYSTEM_CONTEXT: bool
+    ENABLE_SKILL_LAZY_LOADING: bool = False
+    SKILL_CONTENT_MAX_CHARS: int | None = Field(default=None, gt=0, strict=True)
+    SKILL_PREVIEW_MAX_CHARS: int | None = Field(default=None, gt=0, strict=True)
     ENABLE_NOTES: bool
     ENABLE_USER_WEBHOOKS: bool
     ENABLE_USER_STATUS: bool
@@ -1225,10 +1249,18 @@ async def update_admin_config(request: Request, form_data: AdminConfig, user=Dep
             updates.pop(key, None)
     if 'ENABLE_LOGIN_FORM' not in form_data.model_fields_set:
         updates.pop('ui.enable_login_form', None)
+    if 'ENABLE_ENCRYPTED_CHANNELS' not in form_data.model_fields_set:
+        updates.pop('channels.encryption.enable', None)
     if 'ENABLE_APPS' not in form_data.model_fields_set:
         updates.pop('apps.enable', None)
     if 'I18N' not in form_data.model_fields_set:
         updates.pop('ui.i18n', None)
+    if 'ENABLE_SKILL_LAZY_LOADING' not in form_data.model_fields_set:
+        updates.pop('skills.lazy_loading.enable', None)
+    if 'SKILL_CONTENT_MAX_CHARS' not in form_data.model_fields_set:
+        updates.pop('skills.content_max_chars', None)
+    if 'SKILL_PREVIEW_MAX_CHARS' not in form_data.model_fields_set:
+        updates.pop('skills.preview_max_chars', None)
     updates['ui.default_interface_settings'] = form_data.DEFAULT_INTERFACE_SETTINGS or {}
     updates['folders.max_file_count'] = int(form_data.FOLDER_MAX_FILE_COUNT) if form_data.FOLDER_MAX_FILE_COUNT else ''
     updates['automations.max_count'] = int(form_data.AUTOMATION_MAX_COUNT) if form_data.AUTOMATION_MAX_COUNT else ''
@@ -1257,6 +1289,7 @@ class LdapServerConfig(BaseModel):
     host: str
     port: int | None = None
     attribute_for_mail: str = 'mail'
+    default_email_domain: str = ''
     attribute_for_username: str = 'uid'
     app_dn: str
     app_dn_password: str

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import { createEventDispatcher } from 'svelte';
-	import { onMount, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import { addUser } from '$lib/apis/auths';
 
 	import { WEBUI_BASE_URL } from '$lib/constants';
@@ -38,106 +38,96 @@
 	}
 
 	const submitHandler = async () => {
-		const stopLoading = () => {
-			dispatch('save');
-			loading = false;
-		};
-
-		if (tab === '') {
-			loading = true;
-
-			const res = await addUser(
-				localStorage.token,
-				_user.name,
-				_user.email,
-				_user.password,
-				_user.role,
-				generateInitialsImage(_user.name)
-			).catch((error) => {
-				toast.error(`${error}`);
-			});
-
-			if (res) {
-				stopLoading();
+		if (loading) return;
+		loading = true;
+		try {
+			if (tab === '') {
+				await addUser(
+					localStorage.token,
+					_user.name,
+					_user.email,
+					_user.password,
+					_user.role,
+					generateInitialsImage(_user.name)
+				);
+				dispatch('save');
 				show = false;
-			}
-		} else {
-			if (inputFiles) {
-				loading = true;
-
-				const file = inputFiles[0];
-				const reader = new FileReader();
-
-				reader.onload = async (e) => {
-					const csv = e.target.result;
-					const rows = csv.split('\n');
-
-					const validRows = [];
-
-					for (const [idx, row] of rows.entries()) {
-						const columns = row.split(',').map((col) => col.trim());
-						console.debug(idx, columns);
-
-						if (idx > 0 && !(columns.length === 1 && columns[0] === '')) {
-							if (
-								columns.length === 4 &&
-								['admin', 'user', 'pending'].includes(columns[3].toLowerCase())
-							) {
-								validRows.push({ idx, columns });
-							} else {
-								toast.error(`Row ${idx + 1}: invalid format.`);
-							}
-						}
-					}
-
-					let userCount = 0;
-					const BATCH_SIZE = 10;
-
-					for (let i = 0; i < validRows.length; i += BATCH_SIZE) {
-						const batch = validRows.slice(i, i + BATCH_SIZE);
-						const results = await Promise.allSettled(
-							batch.map(({ idx, columns }) =>
-								addUser(
-									localStorage.token,
-									columns[0],
-									columns[1],
-									columns[2],
-									columns[3].toLowerCase(),
-									generateInitialsImage(columns[0])
-								).catch((error) => {
-									toast.error(`Row ${idx + 1}: ${error}`);
-									return null;
-								})
-							)
-						);
-
-						for (const result of results) {
-							if (result.status === 'fulfilled' && result.value) {
-								userCount++;
-							}
-						}
-					}
-
-					toast.success(
-						$i18n.t('Successfully imported {{userCount}} users.', { userCount: userCount })
-					);
-					inputFiles = null;
-					const uploadInputElement = document.getElementById('upload-user-csv-input');
-
-					if (uploadInputElement) {
-						uploadInputElement.value = null;
-					}
-
-					stopLoading();
-				};
-
-				reader.readAsText(file, 'utf-8');
 			} else {
-				toast.error($i18n.t('File not found.'));
-			}
-		}
+				if (!inputFiles?.[0]) {
+					toast.error($i18n.t('File not found.'));
+					return;
+				}
+				const csv = await inputFiles[0].text();
+				const validRows: { idx: number; columns: string[] }[] = [];
+				const seenEmails = new Set<string>();
+				let skippedCount = 0;
+				for (const [idx, row] of csv.split(/\r?\n/).entries()) {
+					const columns = row.split(',').map((col) => col.trim());
+					if (idx === 0 || (columns.length === 1 && columns[0] === '')) continue;
+					if (
+						columns.length === 4 &&
+						['admin', 'user', 'pending'].includes(columns[3].toLowerCase())
+					) {
+						const email = columns[1].toLowerCase();
+						if (seenEmails.has(email)) {
+							skippedCount++;
+							continue;
+						}
+						seenEmails.add(email);
+						validRows.push({ idx, columns });
+					} else {
+						toast.error($i18n.t('Row {{row}}: invalid format.', { row: idx + 1 }));
+					}
+				}
 
-		loading = false;
+				let userCount = 0;
+				const BATCH_SIZE = 10;
+				for (let i = 0; i < validRows.length; i += BATCH_SIZE) {
+					const batch = validRows.slice(i, i + BATCH_SIZE);
+					const results = await Promise.allSettled(
+						batch.map(({ columns }) =>
+							addUser(
+								localStorage.token,
+								columns[0],
+								columns[1],
+								columns[2],
+								columns[3].toLowerCase() === 'admin' ? 'admin' : 'user',
+								generateInitialsImage(columns[0]),
+								true
+							)
+						)
+					);
+					for (const [idx, result] of results.entries()) {
+						if (result.status === 'rejected') {
+							toast.error(
+								$i18n.t('Row {{row}}: {{error}}', {
+									row: batch[idx].idx + 1,
+									error: String(result.reason)
+								})
+							);
+						} else if (result.value) {
+							userCount++;
+						} else {
+							skippedCount++;
+						}
+					}
+				}
+				if (userCount > 0) {
+					toast.success($i18n.t('Successfully imported {{userCount}} users.', { userCount }));
+					dispatch('save');
+				}
+				if (skippedCount > 0) {
+					toast.info($i18n.t('Skipped {{count}} existing users.', { count: skippedCount }));
+				}
+				inputFiles = null;
+				const input = document.getElementById('upload-user-csv-input') as HTMLInputElement | null;
+				if (input) input.value = '';
+			}
+		} catch (error) {
+			toast.error(String(error));
+		} finally {
+			loading = false;
+		}
 	};
 </script>
 
@@ -282,6 +272,11 @@
 									</button>
 								</div>
 
+								<p class="mb-2 text-xs text-gray-500">
+									{$i18n.t(
+										'Existing users are skipped. Imported pending users are activated as users.'
+									)}
+								</p>
 								<div class=" text-xs text-gray-500">
 									ⓘ {$i18n.t(
 										'Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.'

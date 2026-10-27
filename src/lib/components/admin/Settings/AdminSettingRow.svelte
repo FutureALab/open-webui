@@ -9,13 +9,14 @@
 	const labelId = `admin-setting-${uuidv4()}`;
 </script>
 
-<div class="flex items-center justify-between gap-4 {className}">
-	<div
+<div class="group/setting-row flex items-center justify-between gap-4 {className}">
+	<label
+		for={`${labelId}-control`}
 		id={labelId}
-		class="min-w-0 text-[15px] font-medium leading-5 text-gray-700 dark:text-gray-300 {labelClassName}"
+		class="min-w-0 text-[15px] font-medium leading-5 text-gray-700 group-has-[button[id$=-control]:enabled]/setting-row:cursor-pointer group-has-[button[id$=-control]:disabled]/setting-row:cursor-not-allowed transition-colors duration-150 group-hover/setting-row:text-gray-900 group-focus-within/setting-row:text-gray-900 dark:text-gray-300 dark:group-hover/setting-row:text-white dark:group-focus-within/setting-row:text-white {labelClassName}"
 	>
 		<slot name="label">{label}</slot>
-	</div>
+	</label>
 
 	<div class="min-w-0">
 		<slot {labelId} />

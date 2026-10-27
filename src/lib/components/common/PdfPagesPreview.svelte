@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick } from 'svelte';
-	import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
+	import { loadPdfJs, pdfResourceOptions } from '$lib/utils/pdf';
 	import Spinner from './Spinner.svelte';
 	import PDFViewer from './PDFViewer.svelte';
+	import type { FileComment, CommentResult } from '$lib/utils/comments/types';
 
 	export let data: ArrayBuffer | Uint8Array | null = null;
 	export let currentSlide = 0;
@@ -11,12 +12,19 @@
 	export let singlePage = false;
 	export let itemLabel = 'Page';
 	export let listLabel = 'Pages';
+	export let onComments: ((result: CommentResult) => void) | null = null;
+	export let onCommentsError: (() => void) | null = null;
+	export let onCommentSelect: ((comment: FileComment) => void) | null = null;
+	export let selectedComment: FileComment | null = null;
+	export let sourceComments: FileComment[] | null = null;
+	export let onAnchors: ((ids: string[]) => void) | null = null;
 
 	type PdfDocument = import('pdfjs-dist').PDFDocumentProxy;
 
 	let rootEl: HTMLDivElement;
 	let pdfViewerRef: PDFViewer;
 	let viewerData: ArrayBuffer | Uint8Array | null = null;
+	let loadedData: ArrayBuffer | Uint8Array | null = null;
 	let pageTarget: number | null = null;
 	let thumbsLoading = false;
 	let thumbnails: string[] = [];
@@ -63,11 +71,10 @@
 		thumbnails = [];
 
 		try {
-			const pdfjs = await import('pdfjs-dist');
-			pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+			const pdfjs = await loadPdfJs();
 
 			pdfDoc?.destroy();
-			pdfDoc = await pdfjs.getDocument({ data: pdfData }).promise;
+			pdfDoc = await pdfjs.getDocument({ ...pdfResourceOptions, data: pdfData }).promise;
 
 			const rendered: string[] = [];
 			for (let i = 1; i <= pdfDoc.numPages; i++) {
@@ -95,10 +102,12 @@
 		}
 	};
 
-	$: if (data) {
+	$: if (data && data !== loadedData) {
+		loadedData = data;
 		viewerData = copyPdfData(data);
 		void loadThumbnails(copyPdfData(data));
-	} else {
+	} else if (!data) {
+		loadedData = null;
 		viewerData = null;
 		thumbnails = [];
 	}
@@ -192,6 +201,12 @@
 				{singlePage}
 				{itemLabel}
 				onPageChange={handlePageChange}
+				{onComments}
+				{onCommentsError}
+				{onCommentSelect}
+				{selectedComment}
+				{sourceComments}
+				{onAnchors}
 				className="w-full h-full"
 			/>
 		{:else}

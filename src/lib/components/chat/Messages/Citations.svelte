@@ -185,15 +185,9 @@
 				<div class="flex -space-x-1 items-center">
 					{#each urlCitations.slice(0, 3) as citation, idx}
 						<img
-							src="https://www.google.com/s2/favicons?sz=32&domain={citation.source.name}"
+							src="/favicon.png"
 							alt="favicon"
 							class="size-4 rounded-full shrink-0 border border-white dark:border-gray-850 bg-white dark:bg-gray-900"
-							on:error={(e) => {
-								// LICENSE covers this Open WebUI fallback logo.
-								// Do not alter, remove, obscure, or replace it except as LICENSE permits:
-								// https://docs.openwebui.com/license.
-								e.target.src = '/favicon.png';
-							}}
 						/>
 					{/each}
 					{#if citations.length > 3}
@@ -226,7 +220,7 @@
 				<button
 					id={`source-${id}-${idx + 1}`}
 					aria-label={$i18n.t('View source: {{name}}', {
-						name: decodeString(citation.source.name)
+						name: `${idx + 1} ${decodeString(citation.source.name)}`
 					})}
 					class="no-toggle outline-hidden flex dark:text-gray-300 bg-transparent text-gray-600 rounded-xl gap-1.5 items-center"
 					on:click={() => {
