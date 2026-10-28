@@ -60,8 +60,6 @@
 			items.slice(idx * size, idx * size + size)
 		);
 
-	const unique = <T,>(items: T[]) => [...new Set(items)];
-
 	const parseCsvRows = (csv: string): CsvParseResult =>
 		csv
 			.split(/\r?\n/)
@@ -169,14 +167,14 @@
 		}
 	};
 
-	const getExactUserIdByEmail = async ({ idx, email }: CsvImportRow) =>
+	const getExactUserByEmail = async ({ idx, email }: CsvImportRow) =>
 		getUsers(localStorage.token, email)
 			.then((res) => {
-				const user = ((res?.users ?? []) as { id?: string; email?: string }[]).find(
+				const user = ((res?.users ?? []) as GroupUser[]).find(
 					(u) => u.email?.toLowerCase() === email
 				);
 
-				if (user?.id) return user.id;
+				if (user?.id) return user;
 
 				toast.error(`Row ${idx + 1}: ${$i18n.t('User not found.')}`);
 				return null;
@@ -187,13 +185,22 @@
 			});
 
 	const resolveUserIds = async (rows: CsvImportRow[]) => {
-		const resolvedUserIds: (string | null)[] = [];
+		const resolvedUsers: (GroupUser | null)[] = [];
 
 		for (const rowsBatch of chunk(rows, BATCH_SIZE)) {
-			resolvedUserIds.push(...(await Promise.all(rowsBatch.map(getExactUserIdByEmail))));
+			resolvedUsers.push(...(await Promise.all(rowsBatch.map(getExactUserByEmail))));
 		}
 
-		return unique(resolvedUserIds.filter(isPresent));
+		const userIds: string[] = [];
+		let skippedCount = 0;
+		for (const user of resolvedUsers.filter(isPresent)) {
+			if (user.group_ids?.includes(groupId)) {
+				skippedCount++;
+			} else {
+				userIds.push(user.id);
+			}
+		}
+		return { userIds, skippedCount };
 	};
 
 	const addUserIdToCurrentGroup = async (userId: string) =>
@@ -202,16 +209,23 @@
 			return null;
 		});
 
-	const addUserIdsToCurrentGroup = (userIds: string[]) =>
-		userIds.reduce<Promise<GroupMemberUpdate | null>>(async (lastGroupPromise, userId) => {
-			const lastGroup = await lastGroupPromise;
+	const addUserIdsToCurrentGroup = async (userIds: string[]) => {
+		const addedUserIds = new Set<string>();
+		let lastGroup: GroupMemberUpdate | null = null;
+		let skippedCount = 0;
+		for (const userId of userIds) {
+			if (addedUserIds.has(userId)) {
+				skippedCount++;
+				continue;
+			}
 			const group = await addUserIdToCurrentGroup(userId);
-
-			if (!group) return lastGroup;
-
+			if (!group) continue;
+			addedUserIds.add(userId);
 			userCount = group.member_count ?? userCount;
-			return group;
-		}, Promise.resolve(null));
+			lastGroup = group;
+		}
+		return { lastGroup, skippedCount };
+	};
 
 	const importCsv = async (file: File) => {
 		if (!groupId || importing) return;
@@ -223,7 +237,9 @@
 			const initialCount = userCount;
 			invalidRows.forEach((idx) => toast.error(`Row ${idx + 1}: ${$i18n.t('Invalid format.')}`));
 
-			const lastGroup = await addUserIdsToCurrentGroup(await resolveUserIds(validRows));
+			const { userIds, skippedCount: existingCount } = await resolveUserIds(validRows);
+			const { lastGroup, skippedCount: duplicateCount } = await addUserIdsToCurrentGroup(userIds);
+			const skippedCount = existingCount + duplicateCount;
 
 			if (lastGroup) {
 				onMemberChange(lastGroup);
@@ -234,6 +250,9 @@
 				toast.success(
 					$i18n.t('Successfully imported {{userCount}} users.', { userCount: importedCount })
 				);
+			}
+			if (skippedCount > 0) {
+				toast.info($i18n.t('Skipped {{count}} existing users.', { count: skippedCount }));
 			}
 
 			await getUserList();

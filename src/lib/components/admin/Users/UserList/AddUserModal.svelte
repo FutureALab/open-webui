@@ -59,8 +59,6 @@
 				}
 				const csv = await inputFiles[0].text();
 				const validRows: { idx: number; columns: string[] }[] = [];
-				const seenEmails = new Set<string>();
-				let skippedCount = 0;
 				for (const [idx, row] of csv.split(/\r?\n/).entries()) {
 					const columns = row.split(',').map((col) => col.trim());
 					if (idx === 0 || (columns.length === 1 && columns[0] === '')) continue;
@@ -68,12 +66,6 @@
 						columns.length === 4 &&
 						['admin', 'user', 'pending'].includes(columns[3].toLowerCase())
 					) {
-						const email = columns[1].toLowerCase();
-						if (seenEmails.has(email)) {
-							skippedCount++;
-							continue;
-						}
-						seenEmails.add(email);
 						validRows.push({ idx, columns });
 					} else {
 						toast.error($i18n.t('Row {{row}}: invalid format.', { row: idx + 1 }));
@@ -81,35 +73,32 @@
 				}
 
 				let userCount = 0;
-				const BATCH_SIZE = 10;
-				for (let i = 0; i < validRows.length; i += BATCH_SIZE) {
-					const batch = validRows.slice(i, i + BATCH_SIZE);
-					const results = await Promise.allSettled(
-						batch.map(({ columns }) =>
-							addUser(
-								localStorage.token,
-								columns[0],
-								columns[1],
-								columns[2],
-								columns[3].toLowerCase() === 'admin' ? 'admin' : 'user',
-								generateInitialsImage(columns[0]),
-								true
-							)
-						)
-					);
-					for (const [idx, result] of results.entries()) {
-						if (result.status === 'rejected') {
-							toast.error(
-								$i18n.t('Row {{row}}: {{error}}', {
-									row: batch[idx].idx + 1,
-									error: String(result.reason)
-								})
-							);
-						} else if (result.value) {
+				let skippedCount = 0;
+				const seenEmails = new Set<string>();
+				for (const { idx, columns } of validRows) {
+					const email = columns[1].toLowerCase();
+					if (seenEmails.has(email)) {
+						skippedCount++;
+						continue;
+					}
+					try {
+						const user = await addUser(
+							localStorage.token,
+							columns[0],
+							email,
+							columns[2],
+							columns[3].toLowerCase() === 'admin' ? 'admin' : 'user',
+							generateInitialsImage(columns[0]),
+							true
+						);
+						seenEmails.add(email);
+						if (user) {
 							userCount++;
 						} else {
 							skippedCount++;
 						}
+					} catch (error) {
+						toast.error($i18n.t('Row {{row}}: {{error}}', { row: idx + 1, error: String(error) }));
 					}
 				}
 				if (userCount > 0) {
