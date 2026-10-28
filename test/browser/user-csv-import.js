@@ -113,6 +113,7 @@ async (page) => {
 		...imported.slice(1).map((user) => `${user.name},${user.email}`)
 	];
 	groupRows.splice(8, 0, groupRows[3]);
+	groupRows.push(groupRows[4]);
 	await page
 		.getByRole('dialog')
 		.locator('input[type=file]')
@@ -136,7 +137,7 @@ async (page) => {
 		'Group import must continue after the failed membership.'
 	);
 	await page.getByText('成功导入 13 个用户。', { exact: true }).waitFor();
-	await page.getByText('已跳过 1 个已有用户。', { exact: true }).waitFor();
+	await page.getByText('已跳过 2 个已有用户。', { exact: true }).waitFor();
 	const response = await page.request.get(`${origin}/api/v1/groups/id/${group.id}`, { headers });
 	check(
 		(await response.json()).member_count === 14,
@@ -151,12 +152,22 @@ async (page) => {
 			mimeType: 'text/csv',
 			buffer: Buffer.from(groupRows.join('\n'))
 		});
-	await page.getByText('已跳过 15 个已有用户。', { exact: true }).waitFor();
+	await page.getByText('已跳过 16 个已有用户。', { exact: true }).waitFor();
+	for (const user of imported) {
+		const memberships = await page.request.get(`${origin}/api/v1/groups/`, {
+			headers: { authorization: `Bearer ${user.token}` }
+		});
+		check(memberships.ok(), `Group member session is unusable: ${user.email}`);
+		check(
+			(await memberships.json()).some((item) => item.id === group.id),
+			`Missing membership: ${user.email}`
+		);
+	}
 	return {
 		created: 13,
 		skipped: 2,
 		authenticated: imported.length,
 		groupMembers: 14,
-		repeatSkipped: 15
+		repeatSkipped: 16
 	};
 };

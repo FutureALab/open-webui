@@ -1,5 +1,7 @@
 # AIOps 项目记忆
 
+- 2026-10-28：[[tasks/2026-10-28-csv-import-follow-up]]；双入口 CSV 提前去重遗漏复查、失败后同邮箱/同成员有效行重试、重复跳过计数和登录会话回归。
+
 - 2026-10-28：[[tasks/2026-10-27-main-csv-offline-preview]]；main 同步、CSV 重复跳过与账户可用性、PDF/Office 离线预览及本机运行环境验证。
 
 - 2026-10-15：[[tasks/2026-10-15-skill-upload-qa]]；四个复杂 skill 上传与逐文件完整性验证，修复导入弹窗关闭/重开。
